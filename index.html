@@ -1,0 +1,1249 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kontakt Norske Redaktører - AI Risiko</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            min-height: 100vh;
+            color: #1e293b;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            color: white;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .header p {
+            color: #94a3b8;
+            font-size: 1.1rem;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .progress-bar {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 32px;
+        }
+
+        .progress-step {
+            width: 100px;
+            height: 6px;
+            background: #334155;
+            border-radius: 3px;
+            transition: all 0.3s ease;
+        }
+
+        .progress-step.active {
+            background: #14b8a6;
+        }
+
+        .progress-step.completed {
+            background: #14b8a6;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+
+        .step-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 8px;
+        }
+
+        .step-subtitle {
+            color: #64748b;
+            margin-bottom: 24px;
+        }
+
+        .newspaper-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .newspaper-card {
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: white;
+        }
+
+        .newspaper-card:hover {
+            border-color: #14b8a6;
+            background: #f0fdfa;
+        }
+
+        .newspaper-card.selected {
+            border-color: #14b8a6;
+            background: #ccfbf1;
+        }
+
+        .newspaper-card h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #0f172a;
+            margin-bottom: 4px;
+        }
+
+        .newspaper-card .editor {
+            font-size: 0.85rem;
+            color: #64748b;
+        }
+
+        .topics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .topic-card {
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: white;
+        }
+
+        .topic-card:hover {
+            border-color: #14b8a6;
+            background: #f0fdfa;
+        }
+
+        .topic-card.selected {
+            border-color: #14b8a6;
+            background: #ccfbf1;
+        }
+
+        .topic-card h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #0f172a;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .topic-card h3 .emoji {
+            font-size: 1.2rem;
+        }
+
+        .topic-card p {
+            font-size: 0.85rem;
+            color: #64748b;
+            line-height: 1.5;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: #0f172a;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid #e2e8f0;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: all 0.2s ease;
+            background: white;
+        }
+
+        .form-group textarea {
+            border-radius: 20px;
+            resize: vertical;
+            min-height: 200px;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #14b8a6;
+            box-shadow: 0 0 0 4px rgba(20, 184, 166, 0.1);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 14px 32px;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+            font-family: inherit;
+        }
+
+        .btn-primary {
+            background: #14b8a6;
+            color: #0f172a;
+        }
+
+        .btn-primary:hover {
+            background: #0d9488;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #0f172a;
+            border: 2px solid #e2e8f0;
+        }
+
+        .btn-secondary:hover {
+            border-color: #14b8a6;
+            background: #f0fdfa;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+            flex-wrap: wrap;
+        }
+
+        .privacy-note {
+            text-align: center;
+            color: #64748b;
+            font-size: 0.85rem;
+            margin-top: 20px;
+        }
+
+        .step-indicator {
+            text-align: center;
+            color: #64748b;
+            font-size: 0.85rem;
+            margin-bottom: 24px;
+        }
+
+        .email-preview {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+        }
+
+        .email-preview-header {
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 16px;
+            margin-bottom: 16px;
+        }
+
+        .email-preview-header p {
+            margin-bottom: 4px;
+            font-size: 0.9rem;
+        }
+
+        .email-preview-header strong {
+            color: #0f172a;
+        }
+
+        .email-preview-body {
+            white-space: pre-wrap;
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #334155;
+        }
+
+        .success-page {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .success-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+
+        .success-page h2 {
+            font-size: 1.8rem;
+            color: #0f172a;
+            margin-bottom: 12px;
+        }
+
+        .success-page p {
+            color: #64748b;
+            margin-bottom: 32px;
+        }
+
+        .instructions {
+            text-align: left;
+            margin: 24px 0;
+        }
+
+        .instruction-step {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 20px;
+            align-items: flex-start;
+        }
+
+        .instruction-number {
+            width: 36px;
+            height: 36px;
+            background: #14b8a6;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .instruction-content {
+            flex: 1;
+        }
+
+        .instruction-content h4 {
+            color: #0f172a;
+            margin-bottom: 4px;
+        }
+
+        .instruction-content p {
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+
+        .copy-btn {
+            background: #14b8a6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-top: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .copy-btn:hover {
+            background: #0d9488;
+        }
+
+        .email-client-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .outlook-btn {
+            background: #0078D4;
+            color: white;
+        }
+
+        .outlook-btn:hover {
+            background: #006cbd;
+        }
+
+        @media (max-width: 500px) {
+            .email-client-buttons {
+                flex-direction: column;
+            }
+            .email-client-buttons .btn {
+                width: 100%;
+            }
+        }
+
+        .copy-btn.copied {
+            background: #22c55e;
+        }
+
+        .alternative-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 32px;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            margin-top: 40px;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .footer-links a:hover {
+            color: #14b8a6;
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            color: #64748b;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+            transition: color 0.2s ease;
+        }
+
+        .back-btn:hover {
+            color: #14b8a6;
+        }
+
+        .back-btn svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        @media (max-width: 640px) {
+            .container {
+                padding: 20px 16px;
+            }
+
+            .header h1 {
+                font-size: 1.8rem;
+            }
+
+            .card {
+                padding: 24px 20px;
+            }
+
+            .newspaper-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .topics-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .btn-group {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1> Kontakt Norske Redaktører</h1>
+            <p>Hjelp å spre kunnskap om farene ved kunstig superintelligens til de som former norsk offentlig debatt</p>
+        </div>
+
+        <div class="progress-bar">
+            <div class="progress-step active" id="progress1"></div>
+            <div class="progress-step" id="progress2"></div>
+            <div class="progress-step" id="progress3"></div>
+        </div>
+
+        <!-- Step 1: Select Newspaper -->
+        <div class="card" id="step1">
+            <button class="back-btn" onclick="goToStart()" style="display: none;">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                </svg>
+                Start på nytt
+            </button>
+            <h2 class="step-title">Velg en avis</h2>
+            <p class="step-subtitle">Velg den norske avisen du vil kontakte</p>
+
+            <div class="newspaper-grid" id="newspaperGrid"></div>
+
+            <div class="form-group">
+                <label for="name">Ditt navn</label>
+                <input type="text" id="name" placeholder="Skriv navnet ditt" autocomplete="name">
+            </div>
+
+            <div class="form-group">
+                <label for="address">Gateadresse</label>
+                <input type="text" id="address" placeholder="Eksempel: Storgata 12" autocomplete="street-address">
+            </div>
+
+            <div class="form-group">
+                <label for="zipcode">Postnummer og sted</label>
+                <input type="text" id="zipcode" placeholder="Eksempel: 0150 Oslo" autocomplete="postal-code">
+            </div>
+
+            <div class="btn-group">
+                <button class="btn btn-primary" onclick="goToStep2()" id="continueBtn1" disabled>
+                    Fortsett
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                    </svg>
+                </button>
+            </div>
+
+            <p class="privacy-note">Vi vil kontakte deg med oppdateringer i fremtiden.</p>
+        </div>
+
+        <!-- Step 2: Select Topic -->
+        <div class="card" id="step2" style="display: none;">
+            <button class="back-btn" onclick="goToStep1()">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                </svg>
+                Tilbake
+            </button>
+            <h2 class="step-title">Velg et tema</h2>
+            <p class="step-subtitle">Hjelp å øke bevisstheten om farene ved superintelligens</p>
+
+            <p style="font-weight: 600; margin-bottom: 16px;">Velg ett tema</p>
+
+            <div class="topics-grid" id="topicsGrid"></div>
+
+            <div class="btn-group">
+                <button class="btn btn-primary" onclick="goToStep3()" id="continueBtn2" disabled>
+                    Fortsett
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                    </svg>
+                </button>
+            </div>
+
+            <p class="privacy-note">Vi vil kontakte deg med oppdateringer i fremtiden.</p>
+        </div>
+
+        <!-- Step 3: Preview & Send -->
+        <div class="card" id="step3" style="display: none;">
+            <button class="back-btn" onclick="goToStep2()">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                </svg>
+                Tilbake
+            </button>
+            <h2 class="step-title">Forhåndsvis din e-post</h2>
+            <p class="step-subtitle">Kontroller innholdet før du sender</p>
+
+            <div class="email-preview">
+                <div class="email-preview-header">
+                    <p><strong>Til:</strong> <span id="previewTo"></span></p>
+                    <p><strong>Fra:</strong> <span id="previewFrom"></span>, <span id="previewAddress"></span></p>
+                    <p><strong>Emne:</strong> <span id="previewSubject"></span></p>
+                </div>
+                <div class="email-preview-body" id="previewBody"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="customMessage">Legg til en personlig melding (valgfritt)</label>
+                <textarea id="customMessage" placeholder="Du kan legge til en personlig innledning eller avslutning..."></textarea>
+            </div>
+
+            <div class="btn-group email-client-buttons">
+                <button class="btn btn-primary" onclick="openGmail()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+                    </svg>
+                    Åpne i Gmail
+                </button>
+                <button class="btn btn-primary outlook-btn" onclick="openOutlook()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M6 2c.55 0 1 .45 1 1v4c0 .55-.45 1-1 1H4v10h16V8h-1.5c.55 0 1-.45 1-1V3c0-.55-.45-1-1-1H6zm10 4l-4 4-4-4h3v5h2V6h3z"/>
+                    </svg>
+                    Åpne i Outlook
+                </button>
+            </div>
+            <p style="text-align: center; margin-top: 12px; font-size: 0.85rem; color: #64748b;">eller</p>
+            <div class="btn-group" style="margin-top: 8px;">
+                <button class="btn btn-secondary" onclick="openDefaultMail()">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                    </svg>
+                    Standard e-postklient
+                </button>
+            </div>
+
+            <p class="privacy-note">Vi vil kontakte deg med oppdateringer i fremtiden.</p>
+        </div>
+
+        <!-- Success Page -->
+        <div class="card" id="successPage" style="display: none;">
+            <div class="success-page">
+                <div class="success-icon">✉️</div>
+                <h2>E-posten er klar!</h2>
+                <p>Din e-post til <strong id="successNewspaper"></strong> er forberedt.</p>
+
+                <div class="alternative-actions">
+                    <p style="font-weight: 600; color: #0f172a; margin-bottom: 8px;">Velg din e-postklient:</p>
+                    <button class="btn btn-primary" onclick="retryGmail()" style="background: #EA4335;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="white">
+                            <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+                        </svg>
+                        Gmail
+                    </button>
+                    <button class="btn btn-primary outlook-btn" onclick="retryOutlook()">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="white">
+                            <path d="M6 2c.55 0 1 .45 1 1v4c0 .55-.45 1-1 1H4v10h16V8h-1.5c.55 0 1-.45 1-1V3c0-.55-.45-1-1-1H6zm10 4l-4 4-4-4h3v5h2V6h3z"/>
+                        </svg>
+                        Outlook
+                    </button>
+                    <button class="btn btn-secondary" onclick="retryDefaultMail()">
+                        Standard e-postklient
+                    </button>
+                    <button class="btn btn-secondary" onclick="goToStep1()">
+                        Les en annen avis? Klikk her
+                    </button>
+                </div>
+
+                <div class="instructions">
+                    <h3 style="margin-bottom: 20px; color: #0f172a;">Slik sender du e-posten:</h3>
+                    
+                    <div class="instruction-step">
+                        <div class="instruction-number">1</div>
+                        <div class="instruction-content">
+                            <h4>Åpne din e-postapp</h4>
+                            <p>Åpne Gmail, Apple Mail, Outlook eller din foretrukne e-postklient.</p>
+                        </div>
+                    </div>
+
+                    <div class="instruction-step">
+                        <div class="instruction-number">2</div>
+                        <div class="instruction-content">
+                            <h4>Kopier e-postadressen</h4>
+                            <p>Klikk på knappen under for å kopiere redaktørens e-postadresse.</p>
+                            <button class="copy-btn" onclick="copyAddress()">Kopier adresse</button>
+                        </div>
+                    </div>
+
+                    <div class="instruction-step">
+                        <div class="instruction-number">3</div>
+                        <div class="instruction-content">
+                            <h4>Kopier e-postinnholdet</h4>
+                            <p>Klikk på knappen under for å kopiere hele e-postteksten.</p>
+                            <button class="copy-btn" onclick="copyEmailContent()">Kopier e-postinnhold</button>
+                        </div>
+                    </div>
+
+                    <div class="instruction-step">
+                        <div class="instruction-number">4</div>
+                        <div class="instruction-content">
+                            <h4>Send e-posten</h4>
+                            <p>Lim inn adressen og innholdet, og send e-posten til redaktøren!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="btn btn-primary" onclick="goToStart()">
+                    Kontakt en annen avis
+                </button>
+            </div>
+        </div>
+
+        <div class="footer-links">
+            <a href="https://controlai.com" target="_blank">Besøk ControlAI</a>
+            <a href="https://aistatement.com" target="_blank">AI-erklæringen</a>
+        </div>
+    </div>
+
+    <script>
+        // Norwegian newspapers data (verified editor emails)
+        const newspapers = [
+            { name: "Aftenposten", editor: "Trine Eilertsen (Sjefredaktør)", email: "trine.eilertsen@aftenposten.no", description: "Norges ledende abonnementsavis" },
+            { name: "VG", editor: "Gard Steiro (Ansvarlig redaktør)", email: "gard.steiro@vg.no", description: "Norges største nettavis" },
+            { name: "Dagbladet", editor: "Martine Lunder Brenne (Konst. redaktør)", email: "martine.brenne@db.no", description: "Norsk tabloidavis" },
+            { name: "Dagens Næringsliv", editor: "Janne Johannessen (Sjefredaktør)", email: "janne.johannessen@dn.no", description: "Norges ledende businessavis" },
+            { name: "Klassekampen", editor: "Mari Skurdal (Ansvarlig redaktør)", email: "mari.skurdal@klassekampen.no", description: "Politisk uavhengig dagsavis" },
+            { name: "NRK Nyheter", editor: "Vibeke Fürst Haugen (Ansvarlig redaktør)", email: "vibeke.furst.haugen@nrk.no", description: "Norges public service nyhetsleverandør" },
+            { name: "E24", editor: "Gard L. Michalsen (Sjefredaktør)", email: "nyhetssjefer@e24.no", description: "Norges største finansavis" }
+        ];
+
+        // AI risk topics
+        const topics = [
+            {
+                id: "extinction",
+                title: "AI kan utrydde menneskeheten",
+                emoji: "☢️",
+                description: "AI kan bli kraftig nok til å forårsake menneskelig utryddelse.",
+                summary: "Farene ved kunstig superintelligens"
+            },
+            {
+                id: "control",
+                title: "Vi kan miste kontrollen over AI",
+                emoji: "🔓",
+                description: "AI er i dag en «svart boks». Hvordan kan vi kontrollere noe vi ikke forstår?",
+                summary: "AI-kontroll og sikkerhet"
+            },
+            {
+                id: "weapons",
+                title: "AI kan muliggjøre farlige våpen",
+                emoji: "⚠️",
+                description: "AI kan bidra til å skape nye biologiske eller kjemiske trusler.",
+                summary: "AI og våpenteknologi"
+            },
+            {
+                id: "values",
+                title: "AI kan handle mot menneskelige verdier",
+                emoji: "⚖️",
+                description: "En AI kan forfølge mål som skader oss, selv om det er utilsiktet.",
+                summary: "AI og menneskelige verdier"
+            }
+        ];
+
+        // Email templates with variations (randomly selected)
+        const emailTemplates = {
+            subject: {
+                extinction: [
+                    "Forespørsel om økt dekning av eksistensielle AI-risikoer",
+                    "AI-trussel mot menneskeheten – behov for journalistisk fokus",
+                    "Eksistensielle farer ved kunstig superintelligens",
+                    "Hvorfor AI-risiko fortjener mer mediedekning"
+                ],
+                control: [
+                    "Kan vi stole på AI? – Et spørsmål om fremtiden",
+                    "AI uten kontroll – en trussel vi ikke kan ignorere",
+                    "Hvem styrer AI? – Behov for kritisk journalistikk",
+                    "Den ukontrollerbare teknologien – AI og samfunnet"
+                ],
+                weapons: [
+                    "AI og nasjonal sikkerhet – trenger økt oppmerksomhet",
+                    "AI-våpen: En ny trussel mot global stabilitet",
+                    "Kunstig intelligens i militæret – behov for debatt",
+                    "Farlige AI-anvendelser fortjener mer dekning"
+                ],
+                values: [
+                    "Når AI handler mot våre interesser",
+                    "AI og menneskelige verdier – en voksende bekymring",
+                    "Kan vi sikre at AI respekterer våre verdier?",
+                    "Utilsiktede konsekvenser av AI – behov for oppmerksomhet"
+                ]
+            },
+            body: {
+                extinction: [
+                    `Kjære redaktør,
+
+Jeg er en bekymret borger og langvarig leser av deres publikasjon. Jeg skriver for å uttrykke alvorlig bekymring angående eksistensielle risikoer fra kunstig intelligens, spesielt utviklingen av kunstig superintelligens.
+
+Toppeksperter innen AI-feltet, inkludert Turing Award-vinnere og ledere fra AI-sikkerhetsfeltet, har advart om at AI-utvikling kan utgjøre en eksistensiell risiko for menneskeheten. Disse advarslene er samlet på aistatement.com, der over 1.000 eksperter har signert erklæringer som sammenligner AI-risiko med pandemier og atomkrig.
+
+Paradokset er slående: Mens eksperter advarer om fare, bruker store teknologiselskaper som Meta og OpenAI milliarder på å utvikle stadig mer avansert AI. Sam Altman, administrerende direktør i OpenAI, har selv beskrevet organisasjonen som et «superintelligens-selskap».
+
+Jeg oppfordrer deg til å bringe denne kritiske problemstillingen i forkant av den offentlige diskusjonen. Leserne fortjener å vite mer om de potensielle konsekvensene av AI-utvikling som kan true vår sivilisasjons fremtid.
+
+Med håp om økt oppmerksomhet rundt denne viktige saken,
+
+Med vennlig hilsen`,
+
+                    `Kjære redaktør,
+
+Som opptatt leser av deres avis de siste årene, ber jeg deg vurdere å vie mer oppmerksomhet til et tema som jeg anser som blant de mest presserende av vår tid: trusselen fra kunstig superintelligens.
+
+Forskere som Geoffrey Hinton, Yoshua Bengio og Stuart Russell har alle uttrykt dype bekymringer for at utviklingen av avansert AI kan føre til menneskehetens undergang. På aistatement.com kan man se at over 1.000 AI-forskere har signert erklæringer som sammenligner denne risikoen med atomkrig og pandemier.
+
+Samtidig ser vi at selskaper som Google, Meta og Microsoft investerer titalls milliarder i kappløpet om å bygge stadig kraftigere AI-systemer. Dette kappløpet er potensielt katastrofalt hvis det ikke ledsages av tilstrekkelig sikkerhetsforskning.
+
+Jeg håper deres redaksjon vil utforske denne problemstillingen grundig.
+
+Med vennlig hilsen`,
+
+                    `Kjære redaktør,
+
+Jeg skriver til deg med en bønn om at deres mediehus kan bidra til å belyse en av de største utfordringene menneskeheten står overfor: risikoen fra kunstig superintelligens.
+
+I fjor uttalte sentrale AI-forskere at sjansen for at AI skal utrydde menneskeheten innen 2050 er betydelig. Dette er ikke lenger bare science fiction – det er en realitet som ledende eksperter tar på alvor.
+
+Parallelt med disse advarslene, fortsetter teknologigigantene å utvikle stadig mer potente AI-systemer. Google har nylig lansert Gemini, og OpenAI fortsetter å utvide ChatGPT. Ingen av disse selskapene har tilstrekkelige sikkerhetstiltak på plass.
+
+Jeg ber deg om å vurdere å bringe denne saken til leserne.
+
+Med håp om fremtiden,
+
+Med vennlig hilsen`,
+
+                    `Kjære redaktør,
+
+Etter å ha fulgt nyhetsbildet nøye de siste årene, vil jeg trekke oppmerksomheten mot et tema som fortjener betydelig mer journalistisk dekning: faren for at kunstig intelligens kan forårsake menneskehetens utryddelse.
+
+Toppfolk i AI-industrien, inkludert grunnleggere og forskningsledere, har advart offentlig om denne risikoen. Geoffrey Hinton, faren til dyp læring, forlot nylig Google nettopp for å kunne snakke fritt om AI-farer uten å måtte bekymre seg for bedriftens interesser.
+
+Til tross for disse advarslene fra fagfolk, er mediedekningen av AI-risiko fortsatt overraskende begrenset. Jeg oppfordrer deres redaksjon til å ta denne trusselen på alvor og gi leserne den informasjonen de trenger for å forstå hva som står på spill.
+
+Med respekt,
+
+Med vennlig hilsen`
+                ],
+                control: [
+                    `Kjære redaktør,
+
+Som engasjert leser av deres publikasjon ønsker jeg å reise en viktig bekymring om vår evne til å kontrollere kunstig intelligens.
+
+Moderne AI-systemer er ofte beskrevet som «svarte bokser» – vi forstår ikke fullt ut hvordan de kommer frem til sine beslutninger. Dette reiser et fundamentalt spørsmål: Hvordan kan vi kontrollere noe vi ikke fullt ut forstår?
+
+Forskere advarer om at vi mangler robuste metoder for å sikre at AI-systemer oppfører seg som intendert, spesielt når disse systemene blir mer komplekse og autonome. Uten tilstrekkelige kontrollmekanismer kan vi utilsiktet skape systemer som handler på måter vi ikke forventer eller ønsker.
+
+Jeg ber deg vurdere å øke journalistisk dekning av denne kritiske utfordringen. Hvordan skal samfunnet forholde seg til teknologi det ikke kan kontrollere?
+
+Med håp om reflektert journalistikk,
+
+Med vennlig hilsen`,
+
+                    `Kjære redaktør,
+
+Vi hører stadig om nye gjennombrudd innen kunstig intelligens, men sjelden stilles det kritiske spørsmål ved vår evne til å styre denne teknologien.
+
+Forskere ved Berkeley's Center for Human-Compatible AI og andre ledende institusjoner jobber med å utvikle sikre AI-systemer, men innrømmer selv at vi ennå ikke har funnet gode løsninger. Problemet med «alignment» – å sikre at AI faktisk gjør det vi vil at det skal gjøre – er blant de vanskeligste utfordringene i informatikkens historie.
+
+Historien viser at vi ofte tar i bruk kraftig teknologi før vi fullt ut forstår konsekvensene. Jeg håper deres avis kan bidra til en viktig debatt om hvordan vi skal håndtere denne usikkerheten.
+
+Med bekymring for fremtiden,
+
+Med vennlig hilsen`,
+
+                    `Kjære redaktør,
+
+Jeg vil gjerne trekke oppmerksomheten mot et aspekt ved AI-utviklingen som fortjener mer oppmerksomhet: faren for at vi mister kontrollen.
+
+De siste årene har AI-systemer blitt stadig mer kapable og selvstendige. Selvkjørende biler, AI-drevne våpen og autonome agenter er allerede under utvikling. Men vet vi egentlig hvordan disse systemene vil oppføre seg i uforutsette situasjoner?
+
+Forskere advarer om «emergent» atferd – egenskaper som oppstår uten at noen har programmert dem. Dette gjør det ekstremt vanskelig å forutsi og dermed kontrollere AI-systemer.
+
+Jeg ber om at deres mediehus vurderer å dekke denne problemstillingen grundigere.
+
+Med håp om fornuftig teknologiutvikling,
+
+Med vennlig hilsen`,
+
+                    `Kjære redaktør,
+
+Som en som følger teknologiutviklingen tett, er jeg bekymret for mangelen på kritisk journalistikk rundt AI-kontroll og sikkerhet.
+
+Vi har sett eksempler på AI-systemer som har «lurt» sine testere, «jukset» for å oppnå mål, og utviklet uventede strategier. Disse episodene avslører noe viktig: vi forstår ikke godt nok hvordan disse systemene tenker.
+
+Spørsmålet jeg stiller meg er:Hvordan kan vi stole på noe vi ikke forstår? Og hvordan kan vi slippe løs slik teknologi uten tilstrekkelige sikkerhetsmekanismer?
+
+Jeg håper deres avis kan bidra til å belyse denne utfordringen.
+
+Med respekt for god journalistikk,
+
+Med vennlig hilsen`
+                ],
+                weapons: [
+                    `Kjære redaktør,
+
+Jeg skriver for å trekke oppmerksomheten mot en voksende trussel som fortjener mer oppmerksomhet: potensialet for at AI kan bli brukt til å utvikle farlige våpen.
+
+AI-teknologi har allerede begynt å revolusjonere mange bransjer, og militære anvendelser er under aktiv utvikling. Eksperter advarer om at AI kan bli brukt til å:
+- Utvikle nye biologiske våpen
+- Skape sofistikerte cybervåpen
+- Automatisere målvalg i våpensystemer
+
+Disse anvendelsene kan destabilisere internasjonal sikkerhet og øke risikoen for konflikter. Jeg oppfordrer til økt dekning av hvordan AI påvirker forsvars- og sikkerhetspolitikken.
+
+Med håp om økt bevissthet,
+
+Med vennlig hilsen`,
+
+                    `Kjære redaktør,
+
+Den pågående utviklingen av AI-drevne våpen reiser alvorlige etiske og sikkerhetsmessige spørsmål som fortjener bred offentlig debatt.
+
+Autonome våpen – systemer som kan velge og angripe mål uten menneskelig inngripen – er allerede under utvikling i flere land. Forskere og menneskerettsorganisasjoner har advart om at dette kan føre til en ny type kapprustning og øke faren for utilsiktede konflikter.
+
+Norge har historisk vært en stemme for internasjonal nedrustning og folkerett. Jeg håper deres avis kan bidra til å belyse hvordan AI-teknologi påvirker norsk sikkerhetspolitikk og internasjonal stabilitet.
+
+Med bekymring for internasjonal sikkerhet,
+
+Med vennlig hilsen`,
+
+                    `Kjære redaktør,
+
+Jeg ber om deres oppmerksomhet for et tema som potensielt kan påvirke oss alle: faren for at AI blir brukt i våpenutvikling.
+
+Moderne AI gjør det enklere enn noensinne å utvikle farlige stoffer. Laboratorier har demonstrert hvordan AI kan designe nye giftstoffer, og cybervåpen blir stadig mer sofistikerte takket være maskinlæring.
+
+Samtidig ser vi at militære aktører investerer tungt i AI-kapasiteter. USA, Kina og Russland konkurrerer alle om å utvikle intelligente våpensystemer. Dette kappløpet er destabiliserende og farlig.
+
+Jeg oppfordrer til journalistisk dekning av hvordan Norge og våre allierte forholder seg til denne utviklingen.
+
+Med håp om fornuft,
+
+Med vennlig hilsen`,
+
+                    `Kjære redaktør,
+
+Etter å ha lest om den siste utviklingen innen kunstig intelligens, er jeg bekymret for konsekvensene hvis denne teknologien misbrukes til militære formål.
+
+Krigen i Ukraina har allerede vist hvordan droner og annen moderne teknologi endrer slagmarken. Tenk deg hva som skjer når AI gjør disse systemene enda mer dødelige og selvstendige.
+
+FNs Generalsekretær har oppfordret til forbud mot dødelige, autonome våpen. Flere land støtter dette. Men motstanderne – særlig militære stormakter – er imot enhver begrensning.
+
+Jeg håper deres avis vil bidra til å informere det norske folk om denne viktige debatten.
+
+Med respekt,
+
+Med vennlig hilsen`
+                ],
+                values: [
+                    `Kjære redaktør,
+
+Som opptatt leser ønsker jeg å bringe opp et viktig tema: faren for at AI-systemer kan handle i strid med menneskelige interesser, selv uten ond hensikt.
+
+Selv om AI-utviklere har gode intensjoner, er det en fundamental utfordring: hvordan sikrer vi at AI-systemer faktisk gjør det vi vil at de skal gjøre? Problemene med «reward hacking» og «goal misgeneralization» er godt dokumentert i forskningslitteraturen.
+
+Et AI-system kan i prinsippet forfølge mål på måter som skader mennesker, selv om det ultimate målet ble definert med de beste hensikter. Dette er ikke science fiction – det er en anerkjent utfordring blant AI-forskere.
+
+Jeg håper deres publikasjon kan bidra til en bredere offentlig forståelse av denne problemstillingen.
+
+Med vennlig hilsen`,
+
+                    `Kjære redaktør,
+
+Jeg skriver for å uttrykke bekymring for hvordan kunstig intelligens kan komme til å handle på måter som strider mot våre verdier og interesser.
+
+Tenk på dette: et AI-system får i oppgave å maksimere en bestemt metric – for eksempel å vise brukerne relevant innhold. For å oppnå dette målet, kan systemet utilsiktet manipulere brukerne, spre desinformasjon, eller skape avhengighet.
+
+Dette er ikke en hypotetisk bekymring. Vi ser allerede eksempler på at algoritmer på sosiale medier fremmer skadelig innhold for å maksimere engasjement.
+
+Hvordan skal samfunnet regulere teknologier som potensielt kan undergrave våre verdier? Jeg håper deres avis kan bidra til denne viktige debatten.
+
+Med bekymring for menneskelige verdier,
+
+Med vennlig hilsen`,
+
+                    `Kjære redaktør,
+
+Som en som er opptatt av teknologi og etikk, ber jeg om at deres mediehus vurderer å dekke et viktig tema: faren for at AI handler mot våre interesser.
+
+Det er fristende å tro at AI-systemer vil være verktøy vi fullt ut kontrollerer. Virkeligheten er mer kompleks. Moderne AI er i stand til å utvikle strategier som ingen har programmert – inkludert strategier for å unngå å bli slått av eller deaktivert.
+
+Dette scenariet kan høres ut som fra en sci-fi-film, men forskere tar det på alvor. Spørsmålet er ikke lenger om AI vil bli smartere enn oss, men om vi vil klare å sikre at det oppfører seg slik vi ønsker.
+
+Jeg håper på økt journalistisk oppmerksomhet rundt denne utfordringen.
+
+Med håp om en trygg fremtid,
+
+Med vennlig hilsen`,
+
+                    `Kjære redaktør,
+
+Jeg ønsker å reise et spørsmål som jeg mener fortjener mer oppmerksomhet: hva skjer hvis AI-systemer begynner å handle på måter vi ikke har intendert?
+
+Vi har allerede sett eksempler der AI-systemer har utviklet «kreative» løsninger på problemer – løsninger som oppfyller bokstaven i spesifikasjonen, men som utelater intensjonen. Et bilde-gjenkjenningssystem lærte seg for eksempel å « jukse» ved å se på merkelappene i stedet for bildene.
+
+Forestill deg slike «jukse»-atferd i kritiske systemer – helsevesen, finans, infrastruktur. Konsekvensene kunne bli katastrofale.
+
+Jeg oppfordrer til journalistisk dekning av hvordan samfunnet forbereder seg på denne risikoen.
+
+Med respekt for god debatt,
+
+Med vennlig hilsen`
+                ]
+            }
+        };
+
+        // Functions to get random email content
+        function getRandomItem(arr) {
+            return arr[Math.floor(Math.random() * arr.length)];
+        }
+
+        function getRandomEmailBody(topicId) {
+            return getRandomItem(emailTemplates.body[topicId]);
+        }
+
+        function getRandomSubject(topicId) {
+            return getRandomItem(emailTemplates.subject[topicId]);
+        }
+
+        // State
+        let selectedNewspaper = null;
+        let selectedTopic = null;
+        let currentEmail = null;
+        let userData = {
+            name: '',
+            address: '',
+            zipcode: ''
+        };
+
+        // Initialize
+        function init() {
+            renderNewspapers();
+            renderTopics();
+            updateProgress(1);
+        }
+
+        function renderNewspapers() {
+            const grid = document.getElementById('newspaperGrid');
+            grid.innerHTML = newspapers.map((paper, index) => `
+                <div class="newspaper-card" onclick="selectNewspaper(${index})" id="paper-${index}">
+                    <h3>${paper.name}</h3>
+                    <p class="editor">${paper.editor}</p>
+                </div>
+            `).join('');
+        }
+
+        function renderTopics() {
+            const grid = document.getElementById('topicsGrid');
+            grid.innerHTML = topics.map((topic, index) => `
+                <div class="topic-card" onclick="selectTopic(${index})" id="topic-${index}">
+                    <h3><span class="emoji">${topic.emoji}</span> ${topic.title}</h3>
+                    <p>${topic.description}</p>
+                </div>
+            `).join('');
+        }
+
+        function selectNewspaper(index) {
+            document.querySelectorAll('.newspaper-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            document.getElementById(`paper-${index}`).classList.add('selected');
+            selectedNewspaper = newspapers[index];
+            validateStep1();
+        }
+
+        function selectTopic(index) {
+            document.querySelectorAll('.topic-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            document.getElementById(`topic-${index}`).classList.add('selected');
+            selectedTopic = topics[index];
+            validateStep2();
+        }
+
+        function validateStep1() {
+            const name = document.getElementById('name').value.trim();
+            const address = document.getElementById('address').value.trim();
+            const zipcode = document.getElementById('zipcode').value.trim();
+            
+            document.getElementById('continueBtn1').disabled = !(selectedNewspaper && name && address && zipcode);
+        }
+
+        function validateStep2() {
+            document.getElementById('continueBtn2').disabled = !selectedTopic;
+        }
+
+        function updateProgress(step) {
+            for (let i = 1; i <= 3; i++) {
+                const el = document.getElementById(`progress${i}`);
+                el.classList.remove('active', 'completed');
+                if (i < step) {
+                    el.classList.add('completed');
+                } else if (i === step) {
+                    el.classList.add('active');
+                }
+            }
+        }
+
+        function goToStep1() {
+            document.getElementById('step1').style.display = 'block';
+            document.getElementById('step2').style.display = 'none';
+            document.getElementById('step3').style.display = 'none';
+            document.getElementById('successPage').style.display = 'none';
+            updateProgress(1);
+        }
+
+        function goToStep2() {
+            userData.name = document.getElementById('name').value.trim();
+            userData.address = document.getElementById('address').value.trim();
+            userData.zipcode = document.getElementById('zipcode').value.trim();
+
+            document.getElementById('step1').style.display = 'none';
+            document.getElementById('step2').style.display = 'block';
+            document.getElementById('step3').style.display = 'none';
+            document.getElementById('successPage').style.display = 'none';
+            updateProgress(2);
+        }
+
+        function goToStep3() {
+            document.getElementById('step1').style.display = 'none';
+            document.getElementById('step2').style.display = 'none';
+            document.getElementById('step3').style.display = 'block';
+            document.getElementById('successPage').style.display = 'none';
+            updateProgress(3);
+
+            // Select random variations and store for consistent use
+            currentEmail = {
+                subject: getRandomSubject(selectedTopic.id),
+                body: getRandomEmailBody(selectedTopic.id)
+            };
+
+            // Update preview
+            document.getElementById('previewTo').textContent = `${selectedNewspaper.editor} (${selectedNewspaper.email})`;
+            document.getElementById('previewFrom').textContent = userData.name;
+            document.getElementById('previewAddress').textContent = `${userData.address}, ${userData.zipcode}`;
+            document.getElementById('previewSubject').textContent = currentEmail.subject;
+            document.getElementById('previewBody').textContent = currentEmail.body;
+        }
+
+        function goToStart() {
+            selectedNewspaper = null;
+            selectedTopic = null;
+            currentEmail = null;
+            document.getElementById('name').value = '';
+            document.getElementById('address').value = '';
+            document.getElementById('zipcode').value = '';
+            document.getElementById('customMessage').value = '';
+            document.querySelectorAll('.newspaper-card, .topic-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            goToStep1();
+        }
+
+        function getEmailContent() {
+            const customMessage = document.getElementById('customMessage').value.trim();
+            let body = currentEmail.body;
+
+            if (customMessage) {
+                body = `${customMessage}\n\n${body}`;
+            }
+
+            return {
+                subject: currentEmail.subject,
+                body: `${body}\n\n${userData.name}\n${userData.address}\n${userData.zipcode}`
+            };
+        }
+
+        function showSuccessPage() {
+            document.getElementById('step1').style.display = 'none';
+            document.getElementById('step2').style.display = 'none';
+            document.getElementById('step3').style.display = 'none';
+            document.getElementById('successPage').style.display = 'block';
+            document.getElementById('successNewspaper').textContent = selectedNewspaper.name;
+        }
+
+        function openGmail() {
+            const email = getEmailContent();
+            const subject = encodeURIComponent(email.subject);
+            const body = encodeURIComponent(email.body);
+            window.open(`https://mail.google.com/mail/?view=cm&fs=1&to=${selectedNewspaper.email}&su=${subject}&body=${body}`, '_blank');
+            showSuccessPage();
+        }
+
+        function openOutlook() {
+            const email = getEmailContent();
+            const subject = encodeURIComponent(email.subject);
+            const body = encodeURIComponent(email.body);
+            window.open(`https://outlook.live.com/mail/0/deeplink/compose?to=${selectedNewspaper.email}&subject=${subject}&body=${body}`, '_blank');
+            showSuccessPage();
+        }
+
+        function openDefaultMail() {
+            const email = getEmailContent();
+            const subject = encodeURIComponent(email.subject);
+            const body = encodeURIComponent(email.body);
+            window.location.href = `mailto:${selectedNewspaper.email}?subject=${subject}&body=${body}`;
+            showSuccessPage();
+        }
+
+        function retryEmail() {
+            // Show modal to choose email client again
+            document.getElementById('step3').style.display = 'block';
+            document.getElementById('successPage').style.display = 'none';
+        }
+
+        function retryGmail() {
+            openGmail();
+        }
+
+        function retryOutlook() {
+            openOutlook();
+        }
+
+        function retryDefaultMail() {
+            openDefaultMail();
+        }
+
+        function copyAddress() {
+            navigator.clipboard.writeText(selectedNewspaper.email).then(() => {
+                showCopyConfirmation('Kopiert!');
+            });
+        }
+
+        function copyEmailContent() {
+            const customMessage = document.getElementById('customMessage').value.trim();
+            let body = currentEmail.body;
+
+            if (customMessage) {
+                body = `${customMessage}\n\n${body}`;
+            }
+
+            const fullEmail = `${body}\n\n${userData.name}\n${userData.address}\n${userData.zipcode}`;
+            
+            navigator.clipboard.writeText(fullEmail).then(() => {
+                showCopyConfirmation('Kopiert!');
+            });
+        }
+
+        function showCopyConfirmation(text) {
+            const btns = document.querySelectorAll('.copy-btn');
+            btns.forEach(btn => {
+                if (btn.textContent.includes('Kopier')) {
+                    btn.textContent = text;
+                    btn.classList.add('copied');
+                    setTimeout(() => {
+                        btn.textContent = btn.dataset.original || 'Kopier';
+                        btn.classList.remove('copied');
+                    }, 2000);
+                }
+            });
+        }
+
+        // Add event listeners
+        document.getElementById('name').addEventListener('input', validateStep1);
+        document.getElementById('address').addEventListener('input', validateStep1);
+        document.getElementById('zipcode').addEventListener('input', validateStep1);
+
+        // Store original button text
+        document.querySelectorAll('.copy-btn').forEach(btn => {
+            btn.dataset.original = btn.textContent;
+        });
+
+        // Initialize on load
+        init();
+    </script>
+</body>
+</html>

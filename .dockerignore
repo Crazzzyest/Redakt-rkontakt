@@ -1,0 +1,5 @@
+dist
+.minimax
+*.png
+.git
+.dockerignore
