@@ -175,6 +175,35 @@
             margin-top: 2px;
         }
 
+        .politician-card.highlight {
+            border-color: #fca5a5;
+            background: #fef2f2;
+        }
+
+        .politician-card.highlight:hover {
+            border-color: #ef4444;
+            background: #fee2e2;
+        }
+
+        .politician-card.highlight.selected {
+            border-color: #ef4444;
+            background: #fecaca;
+        }
+
+        .politician-card .tag-anbefalt {
+            display: inline-block;
+            background: #ef4444;
+            color: white;
+            font-size: 0.6rem;
+            font-weight: 700;
+            padding: 1px 6px;
+            border-radius: 50px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-left: 6px;
+            vertical-align: middle;
+        }
+
         .topics-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -797,18 +826,20 @@
         ];
 
         const politicians = [
-            { name: "Sveinung Stensland", party: "Høyre", committee: "Helse- og omsorgskomiteen", email: "sveinung.stensland@stortinget.no" },
-            { name: "Himanshu Gulati", party: "Fremskrittspartiet", committee: "Næringskomiteen", email: "himanshu.gulati@stortinget.no" },
-            { name: "Kari Henriksen", party: "Arbeiderpartiet", committee: "Justiskomiteen", email: "kari.henriksen@stortinget.no" },
+            // Mest relevante – sikkerhet, justis, digitalisering, utenriks
+            { name: "Karianne Tung", party: "Arbeiderpartiet", committee: "Digitaliseringsminister", email: "karianne.tung@regjeringen.no", highlight: true },
+            { name: "Emilie Enger Mehl", party: "Senterpartiet", committee: "Justis- og beredskapsminister", email: "emilie.mehl@regjeringen.no", highlight: true },
+            { name: "Kari Henriksen", party: "Arbeiderpartiet", committee: "Justiskomiteen", email: "kari.henriksen@stortinget.no", highlight: true },
+            { name: "Nikolai Astrup", party: "Høyre", committee: "Finanskomiteen (tidl. digitaliseringsmin.)", email: "nikolai.astrup@stortinget.no", highlight: true },
+            { name: "Ine Eriksen Søreide", party: "Høyre", committee: "Utenriks- og forsvarskomiteen (leder)", email: "ine.eriksen.soreide@stortinget.no", highlight: true },
+            { name: "Åsmund Aukrust", party: "Arbeiderpartiet", committee: "Utenriks- og forsvarskomiteen (nestleder)", email: "asmund.aukrust@stortinget.no", highlight: true },
+            { name: "Guri Melby", party: "Venstre", committee: "Utenriks- og forsvarskomiteen", email: "guri.melby@stortinget.no", highlight: true },
+            // Sekundære – forskning og næring
             { name: "Abid Raja", party: "Venstre", committee: "Utdannings- og forskningskomiteen", email: "abid.raja@stortinget.no" },
-            { name: "Mímir Kristjánsson", party: "Rødt", committee: "Arbeids- og sosialkomiteen", email: "mimir.kristjansson@stortinget.no" },
-            { name: "Lan Marie Nguyen Berg", party: "Miljøpartiet De Grønne", committee: "Energi- og miljøkomiteen", email: "lan.nguyen.berg@stortinget.no" },
+            { name: "Himanshu Gulati", party: "Fremskrittspartiet", committee: "Næringskomiteen", email: "himanshu.gulati@stortinget.no" },
             { name: "Torgeir Knag Fylkesnes", party: "Sosialistisk Venstreparti", committee: "Næringskomiteen", email: "torgeir.fylkesnes@stortinget.no" },
-            { name: "Olaug Vervik Bollestad", party: "Kristelig Folkeparti", committee: "Helse- og omsorgskomiteen", email: "olaug.bollestad@stortinget.no" },
-            { name: "Emilie Enger Mehl", party: "Senterpartiet", committee: "Justiskomiteen", email: "emilie.mehl@stortinget.no" },
-            { name: "Nikolai Astrup", party: "Høyre", committee: "Finanskomiteen", email: "nikolai.astrup@stortinget.no" },
-            { name: "Tuva Moflag", party: "Arbeiderpartiet", committee: "Helse- og omsorgskomiteen", email: "tuva.moflag@stortinget.no" },
-            { name: "Tina Bru", party: "Høyre", committee: "Energi- og miljøkomiteen", email: "tina.bru@stortinget.no" }
+            { name: "Mímir Kristjánsson", party: "Rødt", committee: "Arbeids- og sosialkomiteen", email: "mimir.kristjansson@stortinget.no" },
+            { name: "Lan Marie Nguyen Berg", party: "Miljøpartiet De Grønne", committee: "Energi- og miljøkomiteen", email: "lan.nguyen.berg@stortinget.no" }
         ];
 
         // Shared AI risk topics
@@ -1510,8 +1541,8 @@ Med vennlig hilsen`
         function renderPoliticians() {
             const grid = document.getElementById('politicianGrid');
             grid.innerHTML = politicians.map((pol, index) => `
-                <div class="politician-card" onclick="selectTarget(${index})" id="target-${index}">
-                    <h3>${pol.name}</h3>
+                <div class="politician-card${pol.highlight ? ' highlight' : ''}" onclick="selectTarget(${index})" id="target-${index}">
+                    <h3>${pol.name}${pol.highlight ? '<span class="tag-anbefalt">Anbefalt</span>' : ''}</h3>
                     <p class="party">${pol.party}</p>
                     <p class="committee">${pol.committee}</p>
                 </div>
