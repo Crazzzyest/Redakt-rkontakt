@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kontakt Norske Redaktører - AI Risiko</title>
+    <title>Kontakt Beslutningstakere – AI Risiko</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -89,14 +89,56 @@
             margin-bottom: 24px;
         }
 
-        .newspaper-grid {
+        /* Mode selector */
+        .mode-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+
+        .mode-card {
+            border: 2px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 28px 20px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: white;
+            text-align: center;
+        }
+
+        .mode-card:hover {
+            border-color: #14b8a6;
+            background: #f0fdfa;
+            transform: translateY(-2px);
+        }
+
+        .mode-card .mode-icon {
+            font-size: 2.5rem;
+            margin-bottom: 12px;
+        }
+
+        .mode-card h3 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 6px;
+        }
+
+        .mode-card p {
+            font-size: 0.85rem;
+            color: #64748b;
+            line-height: 1.5;
+        }
+
+        .newspaper-grid, .politician-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
             gap: 16px;
             margin-bottom: 24px;
         }
 
-        .newspaper-card {
+        .newspaper-card, .politician-card {
             border: 2px solid #e2e8f0;
             border-radius: 12px;
             padding: 16px;
@@ -105,26 +147,32 @@
             background: white;
         }
 
-        .newspaper-card:hover {
+        .newspaper-card:hover, .politician-card:hover {
             border-color: #14b8a6;
             background: #f0fdfa;
         }
 
-        .newspaper-card.selected {
+        .newspaper-card.selected, .politician-card.selected {
             border-color: #14b8a6;
             background: #ccfbf1;
         }
 
-        .newspaper-card h3 {
+        .newspaper-card h3, .politician-card h3 {
             font-size: 1rem;
             font-weight: 600;
             color: #0f172a;
             margin-bottom: 4px;
         }
 
-        .newspaper-card .editor {
+        .newspaper-card .editor, .politician-card .party {
             font-size: 0.85rem;
             color: #64748b;
+        }
+
+        .politician-card .committee {
+            font-size: 0.75rem;
+            color: #94a3b8;
+            margin-top: 2px;
         }
 
         .topics-grid {
@@ -260,13 +308,6 @@
             margin-top: 20px;
         }
 
-        .step-indicator {
-            text-align: center;
-            color: #64748b;
-            font-size: 0.85rem;
-            margin-bottom: 24px;
-        }
-
         .email-preview {
             background: #f8fafc;
             border: 1px solid #e2e8f0;
@@ -373,6 +414,10 @@
             background: #0d9488;
         }
 
+        .copy-btn.copied {
+            background: #22c55e;
+        }
+
         .email-client-buttons {
             display: flex;
             gap: 12px;
@@ -386,19 +431,6 @@
 
         .outlook-btn:hover {
             background: #006cbd;
-        }
-
-        @media (max-width: 500px) {
-            .email-client-buttons {
-                flex-direction: column;
-            }
-            .email-client-buttons .btn {
-                width: 100%;
-            }
-        }
-
-        .copy-btn.copied {
-            background: #22c55e;
         }
 
         .alternative-actions {
@@ -462,7 +494,11 @@
                 padding: 24px 20px;
             }
 
-            .newspaper-grid {
+            .mode-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .newspaper-grid, .politician-grid {
                 grid-template-columns: 1fr;
             }
 
@@ -477,14 +513,21 @@
             .btn {
                 width: 100%;
             }
+
+            .email-client-buttons {
+                flex-direction: column;
+            }
+            .email-client-buttons .btn {
+                width: 100%;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1> Kontakt Norske Redaktører</h1>
-            <p>Hjelp å spre kunnskap om farene ved kunstig superintelligens til de som former norsk offentlig debatt</p>
+            <h1 id="mainTitle">Kontakt Beslutningstakere</h1>
+            <p id="mainSubtitle">Hjelp å spre kunnskap om farene ved kunstig superintelligens til de som former norsk offentlig debatt</p>
         </div>
 
         <div class="progress-bar">
@@ -493,18 +536,38 @@
             <div class="progress-step" id="progress3"></div>
         </div>
 
-        <!-- Step 1: Select Newspaper -->
-        <div class="card" id="step1">
-            <button class="back-btn" onclick="goToStart()" style="display: none;">
+        <!-- Step 0: Choose Mode -->
+        <div class="card" id="step0">
+            <h2 class="step-title">Hvem vil du kontakte?</h2>
+            <p class="step-subtitle">Velg om du vil sende e-post til en redaktør eller en stortingspolitiker</p>
+
+            <div class="mode-grid">
+                <div class="mode-card" onclick="selectMode('editor')">
+                    <div class="mode-icon">📰</div>
+                    <h3>Redaktører</h3>
+                    <p>Kontakt redaktørene i Norges største aviser og medier for å be om mer dekning av AI-risiko</p>
+                </div>
+                <div class="mode-card" onclick="selectMode('politician')">
+                    <div class="mode-icon">🏛️</div>
+                    <h3>Stortingspolitikere</h3>
+                    <p>Kontakt stortingsrepresentanter for å be om politisk handling og regulering av AI</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 1: Select Target -->
+        <div class="card" id="step1" style="display: none;">
+            <button class="back-btn" onclick="goToStep0()">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
                 </svg>
-                Start på nytt
+                Tilbake til valg
             </button>
-            <h2 class="step-title">Velg en avis</h2>
-            <p class="step-subtitle">Velg den norske avisen du vil kontakte</p>
+            <h2 class="step-title" id="step1Title">Velg en avis</h2>
+            <p class="step-subtitle" id="step1Subtitle">Velg den norske avisen du vil kontakte</p>
 
             <div class="newspaper-grid" id="newspaperGrid"></div>
+            <div class="politician-grid" id="politicianGrid" style="display: none;"></div>
 
             <div class="form-group">
                 <label for="name">Ditt navn</label>
@@ -542,7 +605,7 @@
                 Tilbake
             </button>
             <h2 class="step-title">Velg et tema</h2>
-            <p class="step-subtitle">Hjelp å øke bevisstheten om farene ved superintelligens</p>
+            <p class="step-subtitle" id="step2Subtitle">Hjelp å øke bevisstheten om farene ved superintelligens</p>
 
             <p style="font-weight: 600; margin-bottom: 16px;">Velg ett tema</p>
 
@@ -617,7 +680,7 @@
             <div class="success-page">
                 <div class="success-icon">✉️</div>
                 <h2>E-posten er klar!</h2>
-                <p>Din e-post til <strong id="successNewspaper"></strong> er forberedt.</p>
+                <p>Din e-post til <strong id="successTarget"></strong> er forberedt.</p>
 
                 <div class="alternative-actions">
                     <p style="font-weight: 600; color: #0f172a; margin-bottom: 8px;">Velg din e-postklient:</p>
@@ -636,14 +699,14 @@
                     <button class="btn btn-secondary" onclick="retryDefaultMail()">
                         Standard e-postklient
                     </button>
-                    <button class="btn btn-secondary" onclick="goToStep1()">
-                        Les en annen avis? Klikk her
+                    <button class="btn btn-secondary" onclick="goToStep0()">
+                        Kontakt en annen person
                     </button>
                 </div>
 
                 <div class="instructions">
                     <h3 style="margin-bottom: 20px; color: #0f172a;">Slik sender du e-posten:</h3>
-                    
+
                     <div class="instruction-step">
                         <div class="instruction-number">1</div>
                         <div class="instruction-content">
@@ -656,7 +719,7 @@
                         <div class="instruction-number">2</div>
                         <div class="instruction-content">
                             <h4>Kopier e-postadressen</h4>
-                            <p>Klikk på knappen under for å kopiere redaktørens e-postadresse.</p>
+                            <p>Klikk på knappen under for å kopiere e-postadressen.</p>
                             <button class="copy-btn" onclick="copyAddress()">Kopier adresse</button>
                         </div>
                     </div>
@@ -674,13 +737,13 @@
                         <div class="instruction-number">4</div>
                         <div class="instruction-content">
                             <h4>Send e-posten</h4>
-                            <p>Lim inn adressen og innholdet, og send e-posten til redaktøren!</p>
+                            <p>Lim inn adressen og innholdet, og send!</p>
                         </div>
                     </div>
                 </div>
 
-                <button class="btn btn-primary" onclick="goToStart()">
-                    Kontakt en annen avis
+                <button class="btn btn-primary" onclick="goToStep0()">
+                    Kontakt en annen beslutningstaker
                 </button>
             </div>
         </div>
@@ -692,7 +755,8 @@
     </div>
 
     <script>
-        // Norwegian newspapers data (verified editor emails)
+        // ========== DATA ==========
+
         const newspapers = [
             { name: "Aftenposten", editor: "Trine Eilertsen (Sjefredaktør)", email: "trine.eilertsen@aftenposten.no", description: "Norges ledende abonnementsavis" },
             { name: "VG", editor: "Gard Steiro (Ansvarlig redaktør)", email: "gard.steiro@vg.no", description: "Norges største nettavis" },
@@ -703,7 +767,22 @@
             { name: "E24", editor: "Gard L. Michalsen (Sjefredaktør)", email: "nyhetssjefer@e24.no", description: "Norges største finansavis" }
         ];
 
-        // AI risk topics
+        const politicians = [
+            { name: "Sveinung Stensland", party: "Høyre", committee: "Helse- og omsorgskomiteen", email: "sveinung.stensland@stortinget.no" },
+            { name: "Himanshu Gulati", party: "Fremskrittspartiet", committee: "Næringskomiteen", email: "himanshu.gulati@stortinget.no" },
+            { name: "Kari Henriksen", party: "Arbeiderpartiet", committee: "Justiskomiteen", email: "kari.henriksen@stortinget.no" },
+            { name: "Abid Raja", party: "Venstre", committee: "Utdannings- og forskningskomiteen", email: "abid.raja@stortinget.no" },
+            { name: "Mímir Kristjánsson", party: "Rødt", committee: "Arbeids- og sosialkomiteen", email: "mimir.kristjansson@stortinget.no" },
+            { name: "Lan Marie Nguyen Berg", party: "Miljøpartiet De Grønne", committee: "Energi- og miljøkomiteen", email: "lan.nguyen.berg@stortinget.no" },
+            { name: "Torgeir Knag Fylkesnes", party: "Sosialistisk Venstreparti", committee: "Næringskomiteen", email: "torgeir.fylkesnes@stortinget.no" },
+            { name: "Olaug Vervik Bollestad", party: "Kristelig Folkeparti", committee: "Helse- og omsorgskomiteen", email: "olaug.bollestad@stortinget.no" },
+            { name: "Emilie Enger Mehl", party: "Senterpartiet", committee: "Justiskomiteen", email: "emilie.mehl@stortinget.no" },
+            { name: "Nikolai Astrup", party: "Høyre", committee: "Finanskomiteen", email: "nikolai.astrup@stortinget.no" },
+            { name: "Tuva Moflag", party: "Arbeiderpartiet", committee: "Helse- og omsorgskomiteen", email: "tuva.moflag@stortinget.no" },
+            { name: "Tina Bru", party: "Høyre", committee: "Energi- og miljøkomiteen", email: "tina.bru@stortinget.no" }
+        ];
+
+        // Shared AI risk topics
         const topics = [
             {
                 id: "extinction",
@@ -735,8 +814,9 @@
             }
         ];
 
-        // Email templates with variations (randomly selected)
-        const emailTemplates = {
+        // ========== EMAIL TEMPLATES: EDITORS ==========
+
+        const editorEmailTemplates = {
             subject: {
                 extinction: [
                     "Forespørsel om økt dekning av eksistensielle AI-risikoer",
@@ -864,7 +944,7 @@ Som en som følger teknologiutviklingen tett, er jeg bekymret for mangelen på k
 
 Vi har sett eksempler på AI-systemer som har «lurt» sine testere, «jukset» for å oppnå mål, og utviklet uventede strategier. Disse episodene avslører noe viktig: vi forstår ikke godt nok hvordan disse systemene tenker.
 
-Spørsmålet jeg stiller meg er:Hvordan kan vi stole på noe vi ikke forstår? Og hvordan kan vi slippe løs slik teknologi uten tilstrekkelige sikkerhetsmekanismer?
+Spørsmålet jeg stiller meg er: Hvordan kan vi stole på noe vi ikke forstår? Og hvordan kan vi slippe løs slik teknologi uten tilstrekkelige sikkerhetsmekanismer?
 
 Jeg håper deres avis kan bidra til å belyse denne utfordringen.
 
@@ -973,7 +1053,7 @@ Med vennlig hilsen`,
 
 Jeg ønsker å reise et spørsmål som jeg mener fortjener mer oppmerksomhet: hva skjer hvis AI-systemer begynner å handle på måter vi ikke har intendert?
 
-Vi har allerede sett eksempler der AI-systemer har utviklet «kreative» løsninger på problemer – løsninger som oppfyller bokstaven i spesifikasjonen, men som utelater intensjonen. Et bilde-gjenkjenningssystem lærte seg for eksempel å « jukse» ved å se på merkelappene i stedet for bildene.
+Vi har allerede sett eksempler der AI-systemer har utviklet «kreative» løsninger på problemer – løsninger som oppfyller bokstaven i spesifikasjonen, men som utelater intensjonen. Et bilde-gjenkjenningssystem lærte seg for eksempel å «jukse» ved å se på merkelappene i stedet for bildene.
 
 Forestill deg slike «jukse»-atferd i kritiske systemer – helsevesen, finans, infrastruktur. Konsekvensene kunne bli katastrofale.
 
@@ -986,42 +1066,314 @@ Med vennlig hilsen`
             }
         };
 
-        // Functions to get random email content
+        // ========== EMAIL TEMPLATES: POLITICIANS ==========
+
+        const politicianEmailTemplates = {
+            subject: {
+                extinction: [
+                    "Behov for norsk politisk lederskap i møte med AI-risiko",
+                    "AI-trussel mot menneskeheten – Norge trenger en strategi",
+                    "Forespørsel om politisk handling mot eksistensielle AI-risikoer",
+                    "Stortinget bør ta AI-truslene på alvor"
+                ],
+                control: [
+                    "Vi trenger regulering av ukontrollerbar AI",
+                    "Forslag: Stortinget bør utrede AI-kontroll og sikkerhet",
+                    "Hvem kontrollerer AI i Norge? – Behov for politisk handling",
+                    "AI-sikkerhet krever politisk oppmerksomhet nå"
+                ],
+                weapons: [
+                    "Norges rolle i regulering av AI-våpen",
+                    "AI og nasjonal sikkerhet – behov for stortingsdebatt",
+                    "Forslag om norsk initiativ mot autonome AI-våpen",
+                    "AI-våpen truer internasjonal stabilitet – Norge bør handle"
+                ],
+                values: [
+                    "AI og norske verdier – behov for lovgivning",
+                    "Hvordan beskytte demokratiet mot AI som handler mot oss?",
+                    "Forslag: Regulering av AI som undergraver menneskelige verdier",
+                    "AI og etikk – Stortinget bør ta grep"
+                ]
+            },
+            body: {
+                extinction: [
+                    `Kjære stortingsrepresentant,
+
+Jeg skriver til deg som bekymret velger. Kunstig intelligens utvikler seg i et tempo som overgår all tidligere teknologiutvikling, og ledende eksperter advarer nå om at dette kan utgjøre en eksistensiell trussel mot menneskeheten.
+
+Over 1.000 AI-forskere, inkludert Turing Award-vinnere som Geoffrey Hinton og Yoshua Bengio, har signert erklæringer på aistatement.com som sammenligner AI-risiko med pandemier og atomkrig. Dette er ikke marginale stemmer – dette er forskerne som bygget teknologien.
+
+Norge kan ikke stå på sidelinjen. Jeg ber deg om å:
+- Ta initiativ til en stortingsdebatt om eksistensielle AI-risikoer
+- Støtte opprettelsen av et norsk AI-sikkerhetssenter
+- Arbeide for internasjonale avtaler om AI-sikkerhet, tilsvarende atomvåpenavtaler
+
+Andre land handler allerede. EU har vedtatt AI Act, Storbritannia har opprettet AI Safety Institute. Norge bør være med å forme denne utviklingen, ikke bare observere den.
+
+Takk for at du tar deg tid til å lese dette.
+
+Med vennlig hilsen`,
+
+                    `Kjære stortingsrepresentant,
+
+Som velger i din valgkrets vil jeg uttrykke min dype bekymring for den eksistensielle trusselen som kunstig superintelligens kan utgjøre for menneskeheten.
+
+Dette er ikke science fiction. Verdens fremste AI-forskere, inkludert folk som har bygget de mest avanserte AI-systemene, advarer nå åpent om at denne teknologien kan true menneskehetens eksistens. Erklæringen på aistatement.com er signert av over 1.000 eksperter.
+
+Mens teknologiselskapene investerer hundrevis av milliarder i å bygge stadig kraftigere AI, gjør politikerne svært lite for å sikre at denne utviklingen skjer trygt. Norge har en stolt tradisjon for å ta lederskap i internasjonale sikkerhetsspørsmål – fra landminer til klasevåpen.
+
+Jeg oppfordrer deg til å bruke din posisjon til å løfte AI-sikkerhet som en politisk prioritet. Fremtiden til våre barn og barnebarn kan avhenge av de valgene som tas nå.
+
+Med respekt og håp,
+
+Med vennlig hilsen`,
+
+                    `Kjære stortingsrepresentant,
+
+Jeg henvender meg til deg fordi jeg mener at Stortinget har et ansvar for å adressere en av vår tids mest alvorlige trusler: risikoen for at avansert kunstig intelligens kan forårsake uopprettelig skade på menneskeheten.
+
+Ledende AI-eksperter, inkludert grunnleggere av de største AI-laboratoriene, har offentlig advart om at vi kan utvikle teknologi vi ikke kan kontrollere, med potensielt katastrofale konsekvenser. Geoffrey Hinton, «gudfaren» av AI, forlot Google for å advare om disse farene.
+
+Norge trenger:
+- En nasjonal AI-sikkerhetsstrategi
+- Økte bevilgninger til AI-sikkerhetsforskning
+- Aktiv deltakelse i internasjonale forhandlinger om AI-regulering
+
+Jeg ber deg bringe dette temaet opp i relevante komiteer og debatter.
+
+Med vennlig hilsen`,
+
+                    `Kjære stortingsrepresentant,
+
+Jeg er en bekymret norsk borger som skriver til deg om behovet for politisk handling mot de eksistensielle risikoene ved kunstig intelligens.
+
+I dag pågår et kappløp mellom verdens største teknologiselskaper om å bygge kunstig superintelligens – en AI som er smartere enn mennesker på alle områder. Eksperter advarer om at dette kappløpet kan ende katastrofalt dersom det ikke reguleres.
+
+Sam Altman i OpenAI har selv innrømmet at det trengs regulering. Likevel fortsetter selskapene å prioritere tempo over sikkerhet, fordi ingen ønsker å falle bak konkurrentene.
+
+Dette er et klassisk eksempel på et problem som bare kan løses politisk. Markedet vil ikke regulere seg selv. Jeg ber deg om å ta lederskap i denne saken.
+
+Takk for din tjeneste for vårt demokrati.
+
+Med vennlig hilsen`
+                ],
+                control: [
+                    `Kjære stortingsrepresentant,
+
+Jeg kontakter deg angående et tema som jeg mener krever politisk handling: mangelen på kontroll over kunstig intelligens.
+
+Moderne AI-systemer er «svarte bokser» – selv utviklerne forstår ikke fullt ut hvorfor de tar de beslutningene de gjør. Likevel tas disse systemene i bruk i stadig mer kritiske sammenhenger: helsevesen, rettsvesen, finans og forsvar.
+
+Som folkevalgt har du et ansvar for å sikre at teknologi som påvirker borgernes liv, er underlagt demokratisk kontroll. Jeg ber deg om å:
+- Stille spørsmål til regjeringen om Norges strategi for AI-kontroll
+- Støtte krav om transparens og forklarbarhet i AI-systemer brukt av det offentlige
+- Arbeide for at Norge bidrar internasjonalt til å utvikle standarder for AI-sikkerhet
+
+Vi kan ikke vente til noe går galt. Forebyggende politikk er avgjørende.
+
+Med vennlig hilsen`,
+
+                    `Kjære stortingsrepresentant,
+
+Jeg skriver for å uttrykke bekymring for at Norge mangler tilstrekkelig politikk for å sikre kontroll over kunstig intelligens.
+
+AI-systemer tas nå i bruk på tvers av samfunnet, men vi har begrenset innsikt i hvordan de fungerer. Forskere kaller dette «alignment-problemet» – utfordringen med å sikre at AI faktisk gjør det vi ønsker. Det er et uløst problem.
+
+Norge har mulighet til å ta en ledende rolle. Vi har et sterkt forskningsmiljø, en velfungerende offentlig sektor, og en tradisjon for teknologisk innovasjon. Men uten politisk vilje vil vi bare bli tilskuere til en utvikling som andre styrer.
+
+Jeg oppfordrer deg til å engasjere deg i denne saken – for Norges og verdens skyld.
+
+Med håp om klok politikk,
+
+Med vennlig hilsen`,
+
+                    `Kjære stortingsrepresentant,
+
+Et spørsmål som bekymrer meg og mange andre: Hvordan skal Norge kontrollere AI-systemer som stadig blir mer autonome og uforutsigbare?
+
+Vi ser allerede eksempler på AI som utvikler uventede egenskaper – såkalt «emergent behavior». Dette betyr at selv utviklerne ikke kan forutsi hva systemene vil gjøre. Likevel tas de i bruk i kritisk infrastruktur.
+
+Jeg mener Stortinget bør:
+- Kreve risikovurderinger før AI tas i bruk i offentlig sektor
+- Opprette et uavhengig tilsyn for AI-systemer
+- Bevilge midler til norsk forskning på AI-sikkerhet og kontroll
+
+Forebygging er alltid billigere enn opprydding. Vennligst ta denne saken med deg inn i ditt politiske arbeid.
+
+Med vennlig hilsen`,
+
+                    `Kjære stortingsrepresentant,
+
+AI-utviklingen akselererer, men den politiske responsen henger etter. Jeg ber deg om å prioritere spørsmålet om AI-kontroll.
+
+Tenk på dette: Vi ville aldri tillatt at et flyselskap opererte fly uten at noen forsto hvordan flyene fungerte. Likevel lar vi AI-systemer ta beslutninger om lån, ansettelser, medisinsk behandling og strafferett – uten at noen fullt ut forstår hvordan beslutningene tas.
+
+Dette er et demokratisk problem. Borgerne har rett til å forstå teknologien som styrer livene deres. Jeg håper du vil bruke din posisjon til å sikre at AI forblir under menneskelig kontroll.
+
+Med tillit til demokratiet,
+
+Med vennlig hilsen`
+                ],
+                weapons: [
+                    `Kjære stortingsrepresentant,
+
+Jeg skriver til deg om et forsvars- og sikkerhetspolitisk spørsmål som jeg mener fortjener Stortingets oppmerksomhet: utviklingen av AI-drevne våpensystemer.
+
+Autonome våpen – systemer som kan velge og angripe mål uten menneskelig godkjenning – er under utvikling i flere land. FNs generalsekretær har oppfordret til et forbud, og over 30 land støtter dette.
+
+Norge har en stolt tradisjon som pådriver for internasjonal nedrustning og folkerett. Vi spilte en nøkkelrolle i forbudet mot landminer og klasevåpen. Nå trenger verden norsk lederskap igjen.
+
+Jeg ber deg om å:
+- Støtte et internasjonalt forbud mot dødelige autonome våpen
+- Arbeide for at NATO utvikler retningslinjer for ansvarlig bruk av AI i forsvar
+- Sikre at norsk forsvarsteknologi alltid har meningsfull menneskelig kontroll
+
+Takk for at du vurderer denne henvendelsen.
+
+Med vennlig hilsen`,
+
+                    `Kjære stortingsrepresentant,
+
+Utviklingen av AI-baserte våpensystemer er en av de mest presserende sikkerhetspolitiske utfordringene i vår tid, og jeg ber om at du engasjerer deg i denne saken.
+
+AI gjør det nå mulig å utvikle billige, autonome droner som kan identifisere og eliminere mål uten menneskelig inngripen. Krigen i Ukraina har allerede vist oss en forsmak på denne fremtiden. Teknologien er i ferd med å demokratisere tilgangen til dødelig makt på en måte vi aldri har sett før.
+
+I tillegg advarer forskere om at AI kan misbrukes til å utvikle biologiske og kjemiske våpen – med potensielt katastrofale konsekvenser.
+
+Norge bør ta internasjonalt lederskap for å regulere denne utviklingen, slik vi har gjort med landminer og klasevåpen.
+
+Med bekymring for global sikkerhet,
+
+Med vennlig hilsen`,
+
+                    `Kjære stortingsrepresentant,
+
+Som norsk borger er jeg dypt bekymret for den militære bruken av kunstig intelligens og ber deg ta dette opp i Stortinget.
+
+AI-våpenkappløpet er allerede i gang. USA, Kina og Russland investerer milliarder i autonome våpensystemer. Uten internasjonale avtaler risikerer vi en ny og farligere form for kapprustning.
+
+Norge kan gjøre en forskjell. Vi har troverdighet og erfaring med internasjonale forhandlinger om våpenkontroll. Jeg oppfordrer deg til å:
+- Fremme et norsk initiativ for regulering av autonome våpen i FN
+- Sikre at norsk forsvarspolitikk har klare grenser for bruk av AI
+- Støtte forskning på forsvar mot AI-drevne trusler
+
+Verden trenger modige politikere som tør å handle før det er for sent.
+
+Med vennlig hilsen`,
+
+                    `Kjære stortingsrepresentant,
+
+AI-teknologi endrer krigføring fundamentalt, og jeg mener Norge trenger en tydelig politikk på dette området.
+
+Autonome droner, AI-styrte cyberangrep og maskingenerert desinformasjon er allerede en realitet. Disse teknologiene senker terskelen for konflikt og gjør det vanskeligere å holde aktører ansvarlige.
+
+For et lite land som Norge er dette spesielt bekymringsfullt. AI-våpen kan gi stormakter asymmetriske fordeler som undergraver den regelbaserte verdensordenen vi er avhengige av.
+
+Jeg ber deg bruke din innflytelse til å sikre at Norge tar en aktiv rolle i å forme internasjonale normer for AI i militær bruk.
+
+Takk for at du representerer oss.
+
+Med vennlig hilsen`
+                ],
+                values: [
+                    `Kjære stortingsrepresentant,
+
+Jeg henvender meg til deg fordi jeg er bekymret for at AI-systemer i økende grad kan komme til å handle mot menneskelige verdier og interesser – og at vi mangler lovgivning for å beskytte oss.
+
+Allerede i dag ser vi at algoritmer på sosiale medier fremmer polariserende innhold, at AI-systemer diskriminerer i lånesøknader og ansettelser, og at automatiserte systemer tar beslutninger som påvirker folks liv uten noen form for ankeinstans.
+
+Disse problemene vil bare vokse ettersom AI blir kraftigere. Jeg ber deg om å arbeide for:
+- En norsk lov om algoritmisk ansvarlighet
+- Krav om konsekvensutredning før AI tas i bruk i offentlig sektor
+- Styrking av Datatilsynets mandat til å regulere AI-systemer
+
+Norske verdier som likhet, rettferdighet og demokrati må beskyttes aktivt i møte med denne teknologien.
+
+Med vennlig hilsen`,
+
+                    `Kjære stortingsrepresentant,
+
+Jeg er bekymret for at kunstig intelligens kan undergrave verdier som er grunnleggende for det norske samfunnet, og at politikken ikke holder tritt med utviklingen.
+
+AI-systemer optimaliserer for mål som er satt av utviklerne – ofte profitt eller engasjement. Disse målene er sjelden sammenfallende med samfunnets beste. Resultatet er systemer som manipulerer, diskriminerer og undergraver tilliten i samfunnet.
+
+Norge har en unik mulighet til å gå foran med etisk AI-lovgivning. Vi har verdier å beskytte, kompetanse å bygge på, og et politisk system som kan handle raskt.
+
+Jeg oppfordrer deg til å ta initiativ til en stortingsmelding om AI og menneskelige verdier.
+
+Med tro på norsk politikk,
+
+Med vennlig hilsen`,
+
+                    `Kjære stortingsrepresentant,
+
+Kunstig intelligens tar stadig flere beslutninger som påvirker nordmenns hverdag – fra hvilke nyheter vi ser, til om vi får lån eller jobb. Likevel finnes det knapt lovgivning som sikrer at disse systemene respekterer våre rettigheter og verdier.
+
+Forskning viser at AI-systemer kan:
+- Diskriminere basert på kjønn, etnisitet og alder
+- Manipulere folks meninger og atferd
+- Undergrave personvern og autonomi
+
+Som folkevalgt har du mulighet til å beskytte borgerne mot disse truslene. Jeg ber deg om å prioritere AI-regulering som sikrer at teknologien tjener menneskene – ikke omvendt.
+
+Med tillit til ditt engasjement,
+
+Med vennlig hilsen`,
+
+                    `Kjære stortingsrepresentant,
+
+Hva skjer når AI-systemer forfølger mål som strider mot samfunnets interesser? Dette er et spørsmål norsk politikk må ta stilling til nå.
+
+Vi ser allerede konturene av problemet: anbefalingsalgoritmer som fremmer ekstremt innhold, handelssystemer som skaper markedsustabilitet, og beslutningssystemer som behandler mennesker urettferdig.
+
+Med stadig kraftigere AI vil disse problemene forsterkes. Uten politisk handling risikerer vi at sentrale samfunnsverdier som demokrati, rettssikkerhet og likestilling undergraves av teknologi som optimaliserer for andre mål.
+
+Jeg ber deg som folkevalgt om å sikre at norsk lovgivning holder tritt med teknologiutviklingen og beskytter de verdiene vi holder høyt.
+
+Med respekt for ditt arbeid,
+
+Med vennlig hilsen`
+                ]
+            }
+        };
+
+        // ========== STATE ==========
+
+        let currentMode = null; // 'editor' or 'politician'
+        let selectedTarget = null;
+        let selectedTopic = null;
+        let currentEmail = null;
+        let userData = { name: '', address: '', zipcode: '' };
+
+        // ========== HELPERS ==========
+
         function getRandomItem(arr) {
             return arr[Math.floor(Math.random() * arr.length)];
         }
 
-        function getRandomEmailBody(topicId) {
-            return getRandomItem(emailTemplates.body[topicId]);
+        function getTemplates() {
+            return currentMode === 'editor' ? editorEmailTemplates : politicianEmailTemplates;
         }
 
-        function getRandomSubject(topicId) {
-            return getRandomItem(emailTemplates.subject[topicId]);
-        }
-
-        // State
-        let selectedNewspaper = null;
-        let selectedTopic = null;
-        let currentEmail = null;
-        let userData = {
-            name: '',
-            address: '',
-            zipcode: ''
-        };
-
-        // Initialize
-        function init() {
-            renderNewspapers();
-            renderTopics();
-            updateProgress(1);
-        }
+        // ========== RENDER ==========
 
         function renderNewspapers() {
             const grid = document.getElementById('newspaperGrid');
             grid.innerHTML = newspapers.map((paper, index) => `
-                <div class="newspaper-card" onclick="selectNewspaper(${index})" id="paper-${index}">
+                <div class="newspaper-card" onclick="selectTarget(${index})" id="target-${index}">
                     <h3>${paper.name}</h3>
                     <p class="editor">${paper.editor}</p>
+                </div>
+            `).join('');
+        }
+
+        function renderPoliticians() {
+            const grid = document.getElementById('politicianGrid');
+            grid.innerHTML = politicians.map((pol, index) => `
+                <div class="politician-card" onclick="selectTarget(${index})" id="target-${index}">
+                    <h3>${pol.name}</h3>
+                    <p class="party">${pol.party}</p>
+                    <p class="committee">${pol.committee}</p>
                 </div>
             `).join('');
         }
@@ -1036,12 +1388,43 @@ Med vennlig hilsen`
             `).join('');
         }
 
-        function selectNewspaper(index) {
-            document.querySelectorAll('.newspaper-card').forEach(card => {
+        // ========== SELECTION ==========
+
+        function selectMode(mode) {
+            currentMode = mode;
+            selectedTarget = null;
+
+            const newspaperGrid = document.getElementById('newspaperGrid');
+            const politicianGrid = document.getElementById('politicianGrid');
+
+            if (mode === 'editor') {
+                document.getElementById('mainTitle').textContent = 'Kontakt Norske Redaktører';
+                document.getElementById('step1Title').textContent = 'Velg en avis';
+                document.getElementById('step1Subtitle').textContent = 'Velg den norske avisen du vil kontakte';
+                document.getElementById('step2Subtitle').textContent = 'Hjelp å øke bevisstheten om farene ved superintelligens';
+                newspaperGrid.style.display = 'grid';
+                politicianGrid.style.display = 'none';
+                renderNewspapers();
+            } else {
+                document.getElementById('mainTitle').textContent = 'Kontakt Stortingspolitikere';
+                document.getElementById('step1Title').textContent = 'Velg en politiker';
+                document.getElementById('step1Subtitle').textContent = 'Velg stortingsrepresentanten du vil kontakte';
+                document.getElementById('step2Subtitle').textContent = 'Be om politisk handling mot AI-risikoer';
+                newspaperGrid.style.display = 'none';
+                politicianGrid.style.display = 'grid';
+                renderPoliticians();
+            }
+
+            renderTopics();
+            goToStep1();
+        }
+
+        function selectTarget(index) {
+            document.querySelectorAll('.newspaper-card, .politician-card').forEach(card => {
                 card.classList.remove('selected');
             });
-            document.getElementById(`paper-${index}`).classList.add('selected');
-            selectedNewspaper = newspapers[index];
+            document.getElementById(`target-${index}`).classList.add('selected');
+            selectedTarget = currentMode === 'editor' ? newspapers[index] : politicians[index];
             validateStep1();
         }
 
@@ -1054,35 +1437,55 @@ Med vennlig hilsen`
             validateStep2();
         }
 
+        // ========== VALIDATION ==========
+
         function validateStep1() {
             const name = document.getElementById('name').value.trim();
             const address = document.getElementById('address').value.trim();
             const zipcode = document.getElementById('zipcode').value.trim();
-            
-            document.getElementById('continueBtn1').disabled = !(selectedNewspaper && name && address && zipcode);
+            document.getElementById('continueBtn1').disabled = !(selectedTarget && name && address && zipcode);
         }
 
         function validateStep2() {
             document.getElementById('continueBtn2').disabled = !selectedTopic;
         }
 
+        // ========== NAVIGATION ==========
+
         function updateProgress(step) {
             for (let i = 1; i <= 3; i++) {
                 const el = document.getElementById(`progress${i}`);
                 el.classList.remove('active', 'completed');
-                if (i < step) {
-                    el.classList.add('completed');
-                } else if (i === step) {
-                    el.classList.add('active');
-                }
+                if (i < step) el.classList.add('completed');
+                else if (i === step) el.classList.add('active');
             }
         }
 
+        function hideAll() {
+            ['step0', 'step1', 'step2', 'step3', 'successPage'].forEach(id => {
+                document.getElementById(id).style.display = 'none';
+            });
+        }
+
+        function goToStep0() {
+            currentMode = null;
+            selectedTarget = null;
+            selectedTopic = null;
+            currentEmail = null;
+            document.getElementById('name').value = '';
+            document.getElementById('address').value = '';
+            document.getElementById('zipcode').value = '';
+            document.getElementById('customMessage').value = '';
+            document.getElementById('mainTitle').textContent = 'Kontakt Beslutningstakere';
+            document.getElementById('mainSubtitle').textContent = 'Hjelp å spre kunnskap om farene ved kunstig superintelligens til de som former norsk offentlig debatt';
+            hideAll();
+            document.getElementById('step0').style.display = 'block';
+            updateProgress(1);
+        }
+
         function goToStep1() {
+            hideAll();
             document.getElementById('step1').style.display = 'block';
-            document.getElementById('step2').style.display = 'none';
-            document.getElementById('step3').style.display = 'none';
-            document.getElementById('successPage').style.display = 'none';
             updateProgress(1);
         }
 
@@ -1090,57 +1493,40 @@ Med vennlig hilsen`
             userData.name = document.getElementById('name').value.trim();
             userData.address = document.getElementById('address').value.trim();
             userData.zipcode = document.getElementById('zipcode').value.trim();
-
-            document.getElementById('step1').style.display = 'none';
+            hideAll();
             document.getElementById('step2').style.display = 'block';
-            document.getElementById('step3').style.display = 'none';
-            document.getElementById('successPage').style.display = 'none';
             updateProgress(2);
         }
 
         function goToStep3() {
-            document.getElementById('step1').style.display = 'none';
-            document.getElementById('step2').style.display = 'none';
+            hideAll();
             document.getElementById('step3').style.display = 'block';
-            document.getElementById('successPage').style.display = 'none';
             updateProgress(3);
 
-            // Select random variations and store for consistent use
+            const templates = getTemplates();
             currentEmail = {
-                subject: getRandomSubject(selectedTopic.id),
-                body: getRandomEmailBody(selectedTopic.id)
+                subject: getRandomItem(templates.subject[selectedTopic.id]),
+                body: getRandomItem(templates.body[selectedTopic.id])
             };
 
-            // Update preview
-            document.getElementById('previewTo').textContent = `${selectedNewspaper.editor} (${selectedNewspaper.email})`;
+            const targetEmail = selectedTarget.email;
+            const targetLabel = currentMode === 'editor'
+                ? `${selectedTarget.editor} (${targetEmail})`
+                : `${selectedTarget.name}, ${selectedTarget.party} (${targetEmail})`;
+
+            document.getElementById('previewTo').textContent = targetLabel;
             document.getElementById('previewFrom').textContent = userData.name;
             document.getElementById('previewAddress').textContent = `${userData.address}, ${userData.zipcode}`;
             document.getElementById('previewSubject').textContent = currentEmail.subject;
             document.getElementById('previewBody').textContent = currentEmail.body;
         }
 
-        function goToStart() {
-            selectedNewspaper = null;
-            selectedTopic = null;
-            currentEmail = null;
-            document.getElementById('name').value = '';
-            document.getElementById('address').value = '';
-            document.getElementById('zipcode').value = '';
-            document.getElementById('customMessage').value = '';
-            document.querySelectorAll('.newspaper-card, .topic-card').forEach(card => {
-                card.classList.remove('selected');
-            });
-            goToStep1();
-        }
+        // ========== EMAIL FUNCTIONS ==========
 
         function getEmailContent() {
             const customMessage = document.getElementById('customMessage').value.trim();
             let body = currentEmail.body;
-
-            if (customMessage) {
-                body = `${customMessage}\n\n${body}`;
-            }
-
+            if (customMessage) body = `${customMessage}\n\n${body}`;
             return {
                 subject: currentEmail.subject,
                 body: `${body}\n\n${userData.name}\n${userData.address}\n${userData.zipcode}`
@@ -1148,102 +1534,70 @@ Med vennlig hilsen`
         }
 
         function showSuccessPage() {
-            document.getElementById('step1').style.display = 'none';
-            document.getElementById('step2').style.display = 'none';
-            document.getElementById('step3').style.display = 'none';
+            hideAll();
             document.getElementById('successPage').style.display = 'block';
-            document.getElementById('successNewspaper').textContent = selectedNewspaper.name;
+            document.getElementById('successTarget').textContent =
+                currentMode === 'editor' ? selectedTarget.name : selectedTarget.name + ' (' + selectedTarget.party + ')';
         }
 
         function openGmail() {
             const email = getEmailContent();
-            const subject = encodeURIComponent(email.subject);
-            const body = encodeURIComponent(email.body);
-            window.open(`https://mail.google.com/mail/?view=cm&fs=1&to=${selectedNewspaper.email}&su=${subject}&body=${body}`, '_blank');
+            window.open(`https://mail.google.com/mail/?view=cm&fs=1&to=${selectedTarget.email}&su=${encodeURIComponent(email.subject)}&body=${encodeURIComponent(email.body)}`, '_blank');
             showSuccessPage();
         }
 
         function openOutlook() {
             const email = getEmailContent();
-            const subject = encodeURIComponent(email.subject);
-            const body = encodeURIComponent(email.body);
-            window.open(`https://outlook.live.com/mail/0/deeplink/compose?to=${selectedNewspaper.email}&subject=${subject}&body=${body}`, '_blank');
+            window.open(`https://outlook.live.com/mail/0/deeplink/compose?to=${selectedTarget.email}&subject=${encodeURIComponent(email.subject)}&body=${encodeURIComponent(email.body)}`, '_blank');
             showSuccessPage();
         }
 
         function openDefaultMail() {
             const email = getEmailContent();
-            const subject = encodeURIComponent(email.subject);
-            const body = encodeURIComponent(email.body);
-            window.location.href = `mailto:${selectedNewspaper.email}?subject=${subject}&body=${body}`;
+            window.location.href = `mailto:${selectedTarget.email}?subject=${encodeURIComponent(email.subject)}&body=${encodeURIComponent(email.body)}`;
             showSuccessPage();
         }
 
-        function retryEmail() {
-            // Show modal to choose email client again
-            document.getElementById('step3').style.display = 'block';
-            document.getElementById('successPage').style.display = 'none';
-        }
-
-        function retryGmail() {
-            openGmail();
-        }
-
-        function retryOutlook() {
-            openOutlook();
-        }
-
-        function retryDefaultMail() {
-            openDefaultMail();
-        }
+        function retryGmail() { openGmail(); }
+        function retryOutlook() { openOutlook(); }
+        function retryDefaultMail() { openDefaultMail(); }
 
         function copyAddress() {
-            navigator.clipboard.writeText(selectedNewspaper.email).then(() => {
+            navigator.clipboard.writeText(selectedTarget.email).then(() => {
                 showCopyConfirmation('Kopiert!');
             });
         }
 
         function copyEmailContent() {
-            const customMessage = document.getElementById('customMessage').value.trim();
-            let body = currentEmail.body;
-
-            if (customMessage) {
-                body = `${customMessage}\n\n${body}`;
-            }
-
-            const fullEmail = `${body}\n\n${userData.name}\n${userData.address}\n${userData.zipcode}`;
-            
-            navigator.clipboard.writeText(fullEmail).then(() => {
+            const email = getEmailContent();
+            navigator.clipboard.writeText(email.body).then(() => {
                 showCopyConfirmation('Kopiert!');
             });
         }
 
         function showCopyConfirmation(text) {
-            const btns = document.querySelectorAll('.copy-btn');
-            btns.forEach(btn => {
-                if (btn.textContent.includes('Kopier')) {
+            document.querySelectorAll('.copy-btn').forEach(btn => {
+                const original = btn.dataset.original;
+                if (original) {
                     btn.textContent = text;
                     btn.classList.add('copied');
                     setTimeout(() => {
-                        btn.textContent = btn.dataset.original || 'Kopier';
+                        btn.textContent = original;
                         btn.classList.remove('copied');
                     }, 2000);
                 }
             });
         }
 
-        // Add event listeners
+        // ========== INIT ==========
+
         document.getElementById('name').addEventListener('input', validateStep1);
         document.getElementById('address').addEventListener('input', validateStep1);
         document.getElementById('zipcode').addEventListener('input', validateStep1);
 
-        // Store original button text
         document.querySelectorAll('.copy-btn').forEach(btn => {
             btn.dataset.original = btn.textContent;
         });
-
-        // Initialize on load
-        init();
     </script>
 </body>
 </html>
