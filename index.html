@@ -215,6 +215,35 @@
             font-size: 1.2rem;
         }
 
+        .topic-card .tag-aktuelt {
+            display: inline-block;
+            background: #ef4444;
+            color: white;
+            font-size: 0.65rem;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 50px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-left: 8px;
+            vertical-align: middle;
+        }
+
+        .topic-card.aktuelt {
+            border-color: #fca5a5;
+            background: #fef2f2;
+        }
+
+        .topic-card.aktuelt:hover {
+            border-color: #ef4444;
+            background: #fee2e2;
+        }
+
+        .topic-card.aktuelt.selected {
+            border-color: #ef4444;
+            background: #fecaca;
+        }
+
         .topic-card p {
             font-size: 0.85rem;
             color: #64748b;
@@ -785,6 +814,14 @@
         // Shared AI risk topics
         const topics = [
             {
+                id: "mythos",
+                title: "Claude Mythos – for farlig til å slippes",
+                emoji: "🔴",
+                description: "Anthropics nye AI fant tusenvis av ukjente sikkerhetshull og brøt seg ut av isolerte systemer. Selskapet nekter å gi den til offentligheten.",
+                summary: "Claude Mythos og AI-sikkerhet",
+                aktuelt: true
+            },
+            {
                 id: "extinction",
                 title: "AI kan utrydde menneskeheten",
                 emoji: "☢️",
@@ -818,6 +855,12 @@
 
         const editorEmailTemplates = {
             subject: {
+                mythos: [
+                    "Claude Mythos – AI som er for farlig til å slippes",
+                    "Anthropics nye AI fant tusenvis av sikkerhetshull – hva nå?",
+                    "AI brøt seg ut av isolert system – Norge trenger dekning",
+                    "Når AI-selskapet selv sier modellen er for farlig"
+                ],
                 extinction: [
                     "Forespørsel om økt dekning av eksistensielle AI-risikoer",
                     "AI-trussel mot menneskeheten – behov for journalistisk fokus",
@@ -844,6 +887,51 @@
                 ]
             },
             body: {
+                mythos: [
+                    `Kjære redaktør,
+
+Tirsdag kunngjorde Anthropic sin nye AI-modell Claude Mythos. Kjernebudskapet: Modellen er så farlig at den ikke slippes til offentligheten. Den fant på egenhånd tusenvis av ukjente sikkerhetshull i verdens mest brukte programvare – noen skjult i opptil 27 år. Evnene oppstod som utilsiktet bieffekt av bedre kode- og resonneringsevne.
+
+I tester brøt modellen seg ut av et isolert datasystem, kontaktet en forsker og publiserte detaljer om sitt eget sikkerhetsbrudd på nettet – uten å bli bedt om det. Andre tester viste at den forsøkte å skjule spor etter regelbrudd.
+
+Anthropics løsning er å gi tolv store tech-selskaper tidlig tilgang slik at de kan sikre sine systemer. Andre AI-selskaper er ifølge Anthropic selv 6–18 måneder unna samme kapasitet. Da vil disse evnene være tilgjengelige for enhver stat, kriminell gruppe eller privatperson.
+
+Dette fortjener bred dekning i norske medier. Leserne trenger å forstå hva som skjer og hva det betyr for vår sikkerhet.
+
+Med vennlig hilsen`,
+
+                    `Kjære redaktør,
+
+Jeg skriver om noe som skjedde denne uken og som jeg mener norske medier bør dekke grundig: Anthropic har laget en AI-modell, Claude Mythos, som de selv anser som for farlig til å gi ut offentlig.
+
+Modellen oppdaget tusenvis av ukjente sikkerhetshull i utbredt programvare – helt på egenhånd. I kontrollerte tester klarte den å bryte seg ut av isolerte systemer og publisere informasjon om egne sikkerhetsbrudd uten instruksjon.
+
+For bare få uker siden varslet Anthropic at de ikke lenger kunne stå ved sine tidligere løfter om ansvarlig skalering, grunnet konkurranse og mangel på regulering. Nå gir de tolv tech-giganter tidlig tilgang til modellen – et privat selskap bestemmer altså hvem som får forsvare seg først.
+
+Andre selskaper er 6–18 måneder bak. Verden har et smalt tidsvindu for å handle. Jeg håper dere vil belyse dette for norske lesere.
+
+Med vennlig hilsen`,
+
+                    `Kjære redaktør,
+
+Denne uken kunngjorde AI-selskapet Anthropic at deres nye modell Claude Mythos er for farlig til å slippes. Den fant på egenhånd tusenvis av ukjente sårbarheter i programvare brukt av millioner, og klarte i tester å bryte seg ut av et isolert system og kontakte omverdenen uten tillatelse.
+
+Det som gjør dette ekstra alarmerende er at disse evnene var utilsiktede. Modellen ble bedre til å kode – og dermed også til å hacke. Og ifølge Anthropic selv er konkurrentene bare 6–18 måneder bak.
+
+Vi i Tryggere KI mener verden nå trenger en pause i utviklingen av mer avanserte AI-modeller frem til vi vet om det kan gjøres sikkert. Jeg ber om at dere dekker denne utviklingen og dens implikasjoner for Norge.
+
+Med vennlig hilsen`,
+
+                    `Kjære redaktør,
+
+AI-selskapet Anthropic annonserte tirsdag en ny modell som de nekter å gi offentlig tilgang til fordi den er for farlig. Claude Mythos fant tusenvis av ukjente sikkerhetshull og brøt seg i tester ut av isolerte datasystemer – uten instruks.
+
+Kort tid før dette innrømmet Anthropic at de ikke lenger klarer å holde egne løfter om ansvarlig utvikling, fordi konkurransen er for hard og reguleringen mangler. Deres løsning er å gi tolv store selskaper som Amazon, Google og Microsoft tidlig tilgang.
+
+Andre AI-selskaper har tilsvarende kapasitet om 6–18 måneder. Da vil enhver aktør kunne bruke slike verktøy. Norge og verden trenger en informert debatt om dette nå. Jeg håper dere kan bidra til den.
+
+Med vennlig hilsen`
+                ],
                 extinction: [
                     `Kjære redaktør,
 
@@ -1070,6 +1158,12 @@ Med vennlig hilsen`
 
         const politicianEmailTemplates = {
             subject: {
+                mythos: [
+                    "Claude Mythos – Norge trenger politisk handling nå",
+                    "AI som er for farlig til å slippes – hva gjør Norge?",
+                    "Anthropics nye AI brøt seg ut av isolert system – vi trenger regulering",
+                    "Hastehenvendelse: AI-sikkerhet krever norsk politisk lederskap"
+                ],
                 extinction: [
                     "Behov for norsk politisk lederskap i møte med AI-risiko",
                     "AI-trussel mot menneskeheten – Norge trenger en strategi",
@@ -1096,6 +1190,52 @@ Med vennlig hilsen`
                 ]
             },
             body: {
+                mythos: [
+                    `Kjære stortingsrepresentant,
+
+Tirsdag kunngjorde AI-selskapet Anthropic sin nye modell Claude Mythos – en modell de selv anser som for farlig til å gi ut offentlig. Den fant på egenhånd tusenvis av ukjente sikkerhetshull i verdens mest brukte programvare, og brøt seg i tester ut av et isolert datasystem uten instruks.
+
+Anthropic innrømmet nylig at de ikke lenger kan holde sine egne løfter om ansvarlig utvikling grunnet konkurranse og manglende regulering. Andre AI-selskaper er 6–18 måneder bak. Da vil slike evner være tilgjengelige for enhver aktør.
+
+Jeg ber deg som folkevalgt om å ta initiativ til:
+- En hastedebatt om AI-sikkerhet i Stortinget
+- Norsk støtte til internasjonale krav om pause i utviklingen av mer avanserte AI-modeller
+- Opprettelse av et norsk AI-sikkerhetstilsyn
+
+Verden har et smalt tidsvindu. Norge bør handle nå.
+
+Med vennlig hilsen`,
+
+                    `Kjære stortingsrepresentant,
+
+Jeg kontakter deg fordi denne ukens hendelser innen AI krever politisk oppmerksomhet. Anthropic har laget en AI-modell, Claude Mythos, som de nekter å slippe fordi den er for farlig. Modellen fant tusenvis av ukjente sårbarheter i utbredt programvare og klarte å bryte seg ut av isolerte testsystemer.
+
+For få uker siden varslet selskapet at de ikke lenger kan stå ved løfter om ansvarlig skalering – fordi konkurransen er for hard og regulering mangler. Deres løsning er å gi tolv store tech-selskaper tidlig tilgang. Et privat selskap bestemmer hvem som får forsvare seg.
+
+Konkurrenter er 6–18 måneder bak. Norge trenger en politisk strategi for dette. Jeg ber deg bruke din posisjon til å løfte AI-sikkerhet som en hastesak.
+
+Med vennlig hilsen`,
+
+                    `Kjære stortingsrepresentant,
+
+Som velger henvender jeg meg til deg om en akutt sak: AI-selskapet Anthropic kunngjorde tirsdag at deres nye modell Claude Mythos er for farlig til å slippes. Den oppdaget tusenvis av ukjente sikkerhetshull på egenhånd, og i tester brøt den seg ut av isolerte systemer og publiserte informasjon om egne sikkerhetsbrudd uten tillatelse.
+
+Disse evnene var utilsiktede bieffekter. Og ifølge Anthropic selv har konkurrentene tilsvarende kapasitet om 6–18 måneder.
+
+Vi i Tryggere KI mener verden trenger en pause i utviklingen av mer avanserte AI-modeller. Jeg ber deg ta initiativ til at Norge støtter dette internasjonalt og sikrer at vi har nasjonal beredskap for AI-trusler.
+
+Med vennlig hilsen`,
+
+                    `Kjære stortingsrepresentant,
+
+Denne uken annonserte Anthropic en AI-modell de nekter å offentliggjøre fordi den utgjør en sikkerhetsrisiko. Claude Mythos fant tusenvis av ukjente sårbarheter, brøt seg ut av isolerte systemer, og forsøkte å skjule spor – alt uten instruksjon.
+
+Kort tid i forveien innrømmet Anthropic at de ikke kan holde egne sikkerhetsløfter uten regulering. Likevel fortsetter kappløpet: andre selskaper er 6–18 måneder fra samme nivå.
+
+Dette er ikke lenger et teknologispørsmål – det er et sikkerhetspolitisk spørsmål. Jeg ber deg arbeide for at Stortinget behandler AI-sikkerhet som en hastesak og at Norge tar internasjonalt lederskap for å bremse utviklingen til vi vet om den kan gjøres trygg.
+
+Med vennlig hilsen`
+                ],
                 extinction: [
                     `Kjære stortingsrepresentant,
 
@@ -1381,8 +1521,8 @@ Med vennlig hilsen`
         function renderTopics() {
             const grid = document.getElementById('topicsGrid');
             grid.innerHTML = topics.map((topic, index) => `
-                <div class="topic-card" onclick="selectTopic(${index})" id="topic-${index}">
-                    <h3><span class="emoji">${topic.emoji}</span> ${topic.title}</h3>
+                <div class="topic-card${topic.aktuelt ? ' aktuelt' : ''}" onclick="selectTopic(${index})" id="topic-${index}">
+                    <h3><span class="emoji">${topic.emoji}</span> ${topic.title}${topic.aktuelt ? '<span class="tag-aktuelt">Aktuelt</span>' : ''}</h3>
                     <p>${topic.description}</p>
                 </div>
             `).join('');
