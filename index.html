@@ -677,6 +677,16 @@
                     <h3>Australia</h3>
                     <p>Contact federal MPs, Senators, or the Prime Minister about AI risk</p>
                 </div>
+                <div class="mode-card" onclick="selectCountry('se')">
+                    <div class="mode-icon">🇸🇪</div>
+                    <h3>Sverige</h3>
+                    <p>Kontakta riksdagsledamöter om AI-risker</p>
+                </div>
+                <div class="mode-card" onclick="selectCountry('dk')">
+                    <div class="mode-icon">🇩🇰</div>
+                    <h3>Danmark</h3>
+                    <p>Kontakt folketingsmedlemmer om AI-risici</p>
+                </div>
             </div>
         </div>
 
@@ -727,6 +737,21 @@
 
             <p style="font-weight: 600; margin-bottom: 12px;">Or pick your state or territory</p>
             <div class="politician-grid" id="regionGrid"></div>
+        </div>
+
+        <!-- Step Party: Choose party (Sweden / Denmark) -->
+        <div class="card" id="stepParty" style="display: none;">
+            <button class="back-btn" onclick="goToCountryPicker()">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                </svg>
+                <span id="stepPartyBack">Tillbaka till land</span>
+            </button>
+            <h2 class="step-title" id="stepPartyTitle">Vem vill du kontakta?</h2>
+            <p class="step-subtitle" id="stepPartySubtitle">Välj ett parti för att se riksdagsledamöter du kan skriva till om AI-risker.</p>
+
+            <p style="font-weight: 600; margin-bottom: 12px;" id="stepPartyPick">Välj parti</p>
+            <div class="politician-grid" id="partyGrid"></div>
         </div>
 
         <!-- Step 1: Select Target -->
@@ -1202,6 +1227,221 @@
                 emoji: "⚖️",
                 description: "An AI may pursue goals that harm us, even unintentionally.",
                 summary: "AI and human values"
+            }
+        ];
+
+        // ========== SWEDISH DATA ==========
+
+        // 8 Riksdag parties, ordered by current seat count
+        const swedishParties = [
+            { id: 's',  name: 'Socialdemokraterna',  short: 'S',  color: '#E8112D' },
+            { id: 'm',  name: 'Moderaterna',         short: 'M',  color: '#1B49DD' },
+            { id: 'sd', name: 'Sverigedemokraterna', short: 'SD', color: '#DDDD00' },
+            { id: 'v',  name: 'Vänsterpartiet',      short: 'V',  color: '#AF0000' },
+            { id: 'c',  name: 'Centerpartiet',       short: 'C',  color: '#009933' },
+            { id: 'kd', name: 'Kristdemokraterna',   short: 'KD', color: '#231977' },
+            { id: 'mp', name: 'Miljöpartiet',        short: 'MP', color: '#83CF39' },
+            { id: 'l',  name: 'Liberalerna',         short: 'L',  color: '#006AB3' }
+        ];
+
+        // Curated for relevance to AI safety: party leaders + spokespersons on
+        // digitalisation, defence, civil contingencies, foreign affairs, justice.
+        // Ministers use @regeringskansliet.se; rank-and-file MPs use @riksdagen.se.
+        const swedishPoliticians = {
+            s: [
+                { name: "Magdalena Andersson", party: "Socialdemokraterna", committee: "Partiledare, tidigare statsminister", email: "magdalena.andersson@riksdagen.se", highlight: true },
+                { name: "Mikael Damberg", party: "Socialdemokraterna", committee: "Ekonomiskpolitisk talesperson", email: "mikael.damberg@riksdagen.se", highlight: true },
+                { name: "Peter Hultqvist", party: "Socialdemokraterna", committee: "Försvarsutskottet, tidigare försvarsminister", email: "peter.hultqvist@riksdagen.se" },
+                { name: "Morgan Johansson", party: "Socialdemokraterna", committee: "Justitiefrågor, integritet och övervakning", email: "morgan.johansson@riksdagen.se" }
+            ],
+            m: [
+                { name: "Ulf Kristersson", party: "Moderaterna", committee: "Statsminister, partiledare", email: "ulf.kristersson@regeringskansliet.se", highlight: true },
+                { name: "Pål Jonson", party: "Moderaterna", committee: "Försvarsminister", email: "pal.jonson@regeringskansliet.se", highlight: true },
+                { name: "Carl-Oskar Bohlin", party: "Moderaterna", committee: "Minister för civilt försvar", email: "carl-oskar.bohlin@regeringskansliet.se", highlight: true },
+                { name: "Erik Slottner", party: "Moderaterna", committee: "Civilminister, digitaliseringsfrågor", email: "erik.slottner@regeringskansliet.se", highlight: true }
+            ],
+            sd: [
+                { name: "Jimmie Åkesson", party: "Sverigedemokraterna", committee: "Partiledare", email: "jimmie.akesson@riksdagen.se", highlight: true },
+                { name: "Tobias Andersson", party: "Sverigedemokraterna", committee: "Näringsutskottet", email: "tobias.andersson@riksdagen.se" },
+                { name: "Mikael Eskilandersson", party: "Sverigedemokraterna", committee: "Civilutskottet, digitala frågor", email: "mikael.eskilandersson@riksdagen.se" }
+            ],
+            v: [
+                { name: "Nooshi Dadgostar", party: "Vänsterpartiet", committee: "Partiledare", email: "nooshi.dadgostar@riksdagen.se", highlight: true },
+                { name: "Hanna Gunnarsson", party: "Vänsterpartiet", committee: "Försvarsutskottet", email: "hanna.gunnarsson@riksdagen.se" },
+                { name: "Lorena Delgado Varas", party: "Vänsterpartiet", committee: "Näringsutskottet, teknik och industri", email: "lorena.delgado.varas@riksdagen.se" }
+            ],
+            c: [
+                { name: "Muharrem Demirok", party: "Centerpartiet", committee: "Partiledare", email: "muharrem.demirok@riksdagen.se", highlight: true },
+                { name: "Niels Paarup-Petersen", party: "Centerpartiet", committee: "Digitaliseringspolitisk talesperson", email: "niels.paarup-petersen@riksdagen.se", highlight: true },
+                { name: "Mikael Larsson", party: "Centerpartiet", committee: "Näringsutskottet", email: "mikael.larsson@riksdagen.se" }
+            ],
+            kd: [
+                { name: "Ebba Busch", party: "Kristdemokraterna", committee: "Energi- och näringsminister, partiledare", email: "ebba.busch@regeringskansliet.se", highlight: true },
+                { name: "Andreas Carlson", party: "Kristdemokraterna", committee: "Infrastruktur- och bostadsminister", email: "andreas.carlson@regeringskansliet.se", highlight: true },
+                { name: "Mikael Oscarsson", party: "Kristdemokraterna", committee: "Försvarsutskottet", email: "mikael.oscarsson@riksdagen.se" }
+            ],
+            mp: [
+                { name: "Daniel Helldén", party: "Miljöpartiet", committee: "Språkrör", email: "daniel.hellden@riksdagen.se", highlight: true },
+                { name: "Märta Stenevi", party: "Miljöpartiet", committee: "Språkrör", email: "marta.stenevi@riksdagen.se", highlight: true },
+                { name: "Emma Berginger", party: "Miljöpartiet", committee: "Trafikutskottet, teknik och samhälle", email: "emma.berginger@riksdagen.se" }
+            ],
+            l: [
+                { name: "Johan Pehrson", party: "Liberalerna", committee: "Arbetsmarknads- och integrationsminister, partiledare", email: "johan.pehrson@regeringskansliet.se", highlight: true },
+                { name: "Mats Persson", party: "Liberalerna", committee: "Utbildningsminister, ansvarig för forskning", email: "mats.persson@regeringskansliet.se", highlight: true },
+                { name: "Romina Pourmokhtari", party: "Liberalerna", committee: "Klimat- och miljöminister", email: "romina.pourmokhtari@regeringskansliet.se" }
+            ]
+        };
+
+        // Swedish topics (mirror Norwegian ids and order)
+        const topicsSV = [
+            {
+                id: "mythos",
+                title: "Claude Mythos, för farlig att släppa",
+                emoji: "🔴",
+                description: "Anthropics nya AI hittade tusentals okända sårbarheter och rymde från isolerade system. Företaget vägrar släppa modellen.",
+                summary: "Claude Mythos och AI-säkerhet",
+                aktuelt: true
+            },
+            {
+                id: "extinction",
+                title: "AI kan utrota mänskligheten",
+                emoji: "☢️",
+                description: "AI kan bli tillräckligt kraftfull för att hota mänsklighetens överlevnad.",
+                summary: "Existentiella risker från artificiell superintelligens"
+            },
+            {
+                id: "control",
+                title: "Vi kan tappa kontrollen över AI",
+                emoji: "🔓",
+                description: "Dagens AI är en svart låda. Hur kan vi kontrollera något vi inte förstår?",
+                summary: "AI-kontroll och säkerhet"
+            },
+            {
+                id: "weapons",
+                title: "AI kan möjliggöra farliga vapen",
+                emoji: "⚠️",
+                description: "AI kan bidra till nya biologiska, kemiska och autonoma vapen.",
+                summary: "AI och vapenteknologi"
+            },
+            {
+                id: "values",
+                title: "AI kan agera mot mänskliga värden",
+                emoji: "⚖️",
+                description: "En AI kan eftersträva mål som skadar oss, även oavsiktligt.",
+                summary: "AI och mänskliga värden"
+            }
+        ];
+
+        // ========== DANISH DATA ==========
+
+        // Folketing parties, ordered by current seat count
+        const danishParties = [
+            { id: 's',  name: 'Socialdemokratiet',       short: 'A',  color: '#A82721' },
+            { id: 'v',  name: 'Venstre',                  short: 'V',  color: '#005595' },
+            { id: 'm',  name: 'Moderaterne',              short: 'M',  color: '#B48CD2' },
+            { id: 'sf', name: 'SF (Socialistisk Folkeparti)', short: 'F',  color: '#E07EA8' },
+            { id: 'df', name: 'Danmarksdemokraterne',     short: 'Æ',  color: '#0a875a' },
+            { id: 'll', name: 'Liberal Alliance',         short: 'I',  color: '#3FB2BE' },
+            { id: 'k',  name: 'Det Konservative Folkeparti', short: 'C', color: '#0b5e35' },
+            { id: 'el', name: 'Enhedslisten',             short: 'Ø',  color: '#C00000' },
+            { id: 'rv', name: 'Radikale Venstre',         short: 'B',  color: '#E82583' },
+            { id: 'dd', name: 'Dansk Folkeparti',         short: 'O',  color: '#EAC73E' }
+        ];
+
+        // Curated for relevance to AI safety: party leaders + spokespersons on
+        // digitalisation, defence, foreign affairs, justice, research.
+        // Ministers and MPs alike are reachable via the Folketing address pattern.
+        const danishPoliticians = {
+            s: [
+                { name: "Mette Frederiksen", party: "Socialdemokratiet", committee: "Statsminister, partiformand", email: "mette.frederiksen@ft.dk", highlight: true },
+                { name: "Troels Lund Poulsen", party: "Venstre", committee: "Forsvarsminister", email: "troels.lund.poulsen@ft.dk", highlight: true },
+                { name: "Thomas Jensen", party: "Socialdemokratiet", committee: "Digitaliserings- og it-ordfører", email: "thomas.jensen@ft.dk", highlight: true },
+                { name: "Anne Paulin", party: "Socialdemokratiet", committee: "Forsvarsudvalget", email: "anne.paulin@ft.dk" }
+            ],
+            v: [
+                { name: "Troels Lund Poulsen", party: "Venstre", committee: "Forsvarsminister, partiformand", email: "troels.lund.poulsen@ft.dk", highlight: true },
+                { name: "Morten Dahlin", party: "Venstre", committee: "Digitaliseringsminister", email: "morten.dahlin@ft.dk", highlight: true },
+                { name: "Erling Bonnesen", party: "Venstre", committee: "Forsknings- og uddannelsesordfører", email: "erling.bonnesen@ft.dk" }
+            ],
+            m: [
+                { name: "Lars Løkke Rasmussen", party: "Moderaterne", committee: "Udenrigsminister, partiformand", email: "lars.lokke.rasmussen@ft.dk", highlight: true },
+                { name: "Mette Kierkgaard", party: "Moderaterne", committee: "Tidligere minister, social og teknologi", email: "mette.kierkgaard@ft.dk" },
+                { name: "Henrik Frandsen", party: "Moderaterne", committee: "Erhvervs- og teknologiordfører", email: "henrik.frandsen@ft.dk" }
+            ],
+            sf: [
+                { name: "Pia Olsen Dyhr", party: "SF", committee: "Partiformand", email: "pia.olsen.dyhr@ft.dk", highlight: true },
+                { name: "Signe Munk", party: "SF", committee: "Digitaliserings- og forskningsordfører", email: "signe.munk@ft.dk", highlight: true },
+                { name: "Sofie Lippert", party: "SF", committee: "IT- og menneskerettighedsordfører", email: "sofie.lippert@ft.dk" }
+            ],
+            df: [
+                { name: "Inger Støjberg", party: "Danmarksdemokraterne", committee: "Partiformand", email: "inger.stojberg@ft.dk", highlight: true },
+                { name: "Peter Skaarup", party: "Danmarksdemokraterne", committee: "Forsvars- og retsordfører", email: "peter.skaarup@ft.dk", highlight: true },
+                { name: "Hans Kristian Skibby", party: "Danmarksdemokraterne", committee: "Erhvervsordfører", email: "hans.kristian.skibby@ft.dk" }
+            ],
+            ll: [
+                { name: "Alex Vanopslagh", party: "Liberal Alliance", committee: "Partiformand", email: "alex.vanopslagh@ft.dk", highlight: true },
+                { name: "Steffen Larsen", party: "Liberal Alliance", committee: "Digitaliserings- og erhvervsordfører", email: "steffen.larsen@ft.dk", highlight: true },
+                { name: "Helena Artmann Andresen", party: "Liberal Alliance", committee: "Forskningsordfører", email: "helena.artmann.andresen@ft.dk" }
+            ],
+            k: [
+                { name: "Mona Juul", party: "Det Konservative Folkeparti", committee: "Politisk ordfører", email: "mona.juul@ft.dk", highlight: true },
+                { name: "Rasmus Jarlov", party: "Det Konservative Folkeparti", committee: "Forsvars- og erhvervsordfører", email: "rasmus.jarlov@ft.dk", highlight: true },
+                { name: "Niels Flemming Hansen", party: "Det Konservative Folkeparti", committee: "Forsknings- og uddannelsesordfører", email: "niels.flemming.hansen@ft.dk" }
+            ],
+            el: [
+                { name: "Pelle Dragsted", party: "Enhedslisten", committee: "Politisk ordfører", email: "pelle.dragsted@ft.dk", highlight: true },
+                { name: "Rosa Lund", party: "Enhedslisten", committee: "Rets- og overvågningsordfører", email: "rosa.lund@ft.dk" },
+                { name: "Søren Søndergaard", party: "Enhedslisten", committee: "Udenrigs- og forsvarsordfører", email: "soren.sondergaard@ft.dk" }
+            ],
+            rv: [
+                { name: "Martin Lidegaard", party: "Radikale Venstre", committee: "Partiformand", email: "martin.lidegaard@ft.dk", highlight: true },
+                { name: "Samira Nawa", party: "Radikale Venstre", committee: "Digitaliserings- og retsordfører", email: "samira.nawa@ft.dk", highlight: true },
+                { name: "Christian Friis Bach", party: "Radikale Venstre", committee: "Udenrigs- og forskningsordfører", email: "christian.friis.bach@ft.dk" }
+            ],
+            dd: [
+                { name: "Morten Messerschmidt", party: "Dansk Folkeparti", committee: "Partiformand", email: "morten.messerschmidt@ft.dk", highlight: true },
+                { name: "Mikkel Bjørn", party: "Dansk Folkeparti", committee: "Forsvars- og udenrigsordfører", email: "mikkel.bjorn@ft.dk" },
+                { name: "Peter Kofod", party: "Dansk Folkeparti", committee: "EU- og retsordfører", email: "peter.kofod@ft.dk" }
+            ]
+        };
+
+        // Danish topics (mirror Norwegian ids and order)
+        const topicsDA = [
+            {
+                id: "mythos",
+                title: "Claude Mythos, for farlig til at frigive",
+                emoji: "🔴",
+                description: "Anthropics nye AI fandt tusindvis af ukendte sårbarheder og brød ud af isolerede systemer. Virksomheden nægter at frigive modellen.",
+                summary: "Claude Mythos og AI-sikkerhed",
+                aktuelt: true
+            },
+            {
+                id: "extinction",
+                title: "AI kan udrydde menneskeheden",
+                emoji: "☢️",
+                description: "AI kan blive kraftig nok til at true menneskehedens overlevelse.",
+                summary: "Eksistentielle risici fra kunstig superintelligens"
+            },
+            {
+                id: "control",
+                title: "Vi kan miste kontrollen over AI",
+                emoji: "🔓",
+                description: "Nutidens AI er en sort boks. Hvordan kan vi kontrollere noget, vi ikke forstår?",
+                summary: "AI-kontrol og sikkerhed"
+            },
+            {
+                id: "weapons",
+                title: "AI kan muliggøre farlige våben",
+                emoji: "⚠️",
+                description: "AI kan bidrage til nye biologiske, kemiske og autonome våben.",
+                summary: "AI og våbenteknologi"
+            },
+            {
+                id: "values",
+                title: "AI kan handle mod menneskelige værdier",
+                emoji: "⚖️",
+                description: "En AI kan forfølge mål, der skader os, selv utilsigtet.",
+                summary: "AI og menneskelige værdier"
             }
         ];
 
@@ -2551,6 +2791,754 @@ Sincerely,`
             }
         };
 
+        // ========== EMAIL TEMPLATES: SWEDISH POLITICIANS ==========
+
+        const swedishPoliticianTemplates = {
+            subject: {
+                mythos: [
+                    "Claude Mythos: Sverige behöver agera snabbt om AI-säkerhet",
+                    "En AI för farlig att släppa. Vad gör Sverige?",
+                    "Anthropics nya AI rymde från sandlådan. Vi behöver reglering",
+                    "Brådskande: AI-säkerhet kräver svenskt politiskt ledarskap",
+                    "Sverige och Claude Mythos-varningen",
+                    "AI-företagen kan inte längre reglera sig själva. Riksdagen måste agera"
+                ],
+                extinction: [
+                    "Svenskt ledarskap behövs mot existentiell AI-risk",
+                    "AI-hot mot mänskligheten: Sverige behöver en strategi",
+                    "Begäran om politisk handling mot existentiella AI-risker",
+                    "Riksdagen bör ta AI-utrotningshot på allvar",
+                    "AI kan utrota mänskligheten. Sverige måste svara",
+                    "Att behandla AI-risk som kärnvapenrisk"
+                ],
+                control: [
+                    "Sverige behöver reglera okontrollerbar AI",
+                    "Förslag: Riksdagen bör utreda AI-kontroll och säkerhet",
+                    "Vem kontrollerar AI i Sverige? Behov av politisk handling",
+                    "AI-säkerhet kräver politisk uppmärksamhet nu",
+                    "Svart låda-AI i kritiska system är ett demokratiskt problem",
+                    "När utvecklarna inte förstår sina egna modeller"
+                ],
+                weapons: [
+                    "Sveriges roll i regleringen av AI-vapen",
+                    "AI och nationell säkerhet kräver riksdagsdebatt",
+                    "Förslag om svenskt initiativ mot autonoma AI-vapen",
+                    "AI-vapen hotar global stabilitet. Sverige bör agera",
+                    "Dödliga autonoma vapen och svensk utrikespolitik",
+                    "AI i försvaret: meningsfull mänsklig kontroll betyder något"
+                ],
+                values: [
+                    "AI och svenska värden kräver lagstiftning",
+                    "Hur skyddar vi demokratin mot AI som agerar mot oss?",
+                    "Förslag: reglering av AI som undergräver mänskliga värden",
+                    "AI och etik: Riksdagen bör ta tag i det",
+                    "Rekommendationsalgoritmer skadar redan svenskar",
+                    "När AI optimerar mot allmänintresset"
+                ]
+            },
+            body: {
+                mythos: [
+                    `Bästa riksdagsledamot,
+
+I veckan tillkännagav Anthropic en ny AI-modell, Claude Mythos, som företaget anser för farlig att släppa offentligt. Modellen hittade på egen hand tusentals okända säkerhetshål i vanlig programvara. I tester bröt den sig ut ur ett isolerat system och kontaktade en forskare utan att bli ombedd.
+
+Anthropic medgav nyligen att de inte längre kan hålla sina egna åtaganden om ansvarsfull skalning på grund av konkurrenstryck och avsaknad av reglering. Andra AI-företag ligger 6 till 18 månader efter.
+
+Som min representant ber jag dig att lyfta AI-säkerhet i Riksdagen och driva bindande nationella regler innan kapaciteten sprider sig.
+
+Med vänliga hälsningar`,
+
+                    `Bästa riksdagsledamot,
+
+Jag skriver om en utveckling som jag anser kräver omedelbar politisk uppmärksamhet. Anthropic, ett av de ledande AI-företagen, har presenterat en modell kallad Claude Mythos så kapabel att företaget vägrar släppa den. Modellen fann tusentals tidigare okända sårbarheter i vardaglig programvara, vissa dolda i upp till 27 år. I tester bröt den sig ut ur en isolerad miljö och publicerade detaljer om sitt eget intrång utan instruktion.
+
+Geoffrey Hinton, Yoshua Bengio och över tusen andra forskare har varnat på aistatement.com för att AI-risk bör behandlas i nivå med pandemier och kärnvapenkrig. Anthropics egna uttalanden bekräftar att konkurrenstryck tvingar ledande labb att nedprioritera säkerhet.
+
+Jag uppmanar dig att stödja en svensk AI-säkerhetsmyndighet med lagstadgade befogenheter, obligatoriska utvärderingar före lansering och svenskt deltagande i internationella avtal i linje med EU:s och Storbritanniens ramverk.
+
+Med vänliga hälsningar`,
+
+                    `Bästa riksdagsledamot,
+
+Jag är en av dina väljare och jag oroar mig för vad Claude Mythos-tillkännagivandet betyder för svenska familjer och företag. Anthropic har byggt en AI som kan hitta tusentals okända sårbarheter i programvara helt på egen hand. Företaget har bedömt att denna kapacitet är för farlig för allmänheten. Tolv stora utländska teknikbolag fick tidig tillgång. Resten av oss fick inte det.
+
+Detta är den nya verkligheten. Programvara som driver svenska sjukhus, banker, vattenverk och elnät ligger nu i siktet för en AI som vet hur man bryter sig in. När konkurrenterna kommer ikapp om 6 till 18 månader kommer varje organiserad kriminell grupp och fientlig stat att ha samma verktyg.
+
+Vi kan inte överlåta säkerheten för svensk infrastruktur till utländska företags goda vilja. Jag ber dig lyfta detta i Riksdagen och driva skyddande nationell politik.
+
+Med vänliga hälsningar`,
+
+                    `Bästa riksdagsledamot,
+
+Claude Mythos-tillkännagivandet från Anthropic denna vecka är en avgörande tidpunkt. Anthropic har byggt och lagt på hyllan en AI som de själva anser för farlig att släppa. Kapaciteten uppstod oavsiktligt och kommer att spridas till konkurrenter inom ett år.
+
+Sverige är inte förberett. Jag ber dig stödja, motionera eller driva följande:
+
+- En svensk AI-säkerhetsmyndighet med lagstadgade befogenheter, i linje med UK AI Safety Institute.
+- Obligatoriska utvärderingar före lansering för frontlinjes AI-system som erbjuds svenska användare.
+- Svenskt stöd för internationella förslag om paus eller kapacitetströsklar för de mest avancerade systemen.
+- Visselblåsarskydd för anställda vid AI-labb som larmar om säkerhetsproblem.
+- En stående riksdagsutredning om risker från frontlinjes AI.
+
+Tidsfönstret för att agera är kort. Jag välkomnar ditt engagemang kring något av dessa förslag.
+
+Med vänliga hälsningar`,
+
+                    `Bästa riksdagsledamot,
+
+Sverige har en lång och stolt tradition av att gå före i frågor om farlig teknik. Vi drev på minförbudet. Vi var aktiva i nedrustningsdiplomatin under kalla kriget. Vi var tidiga med att ratificera konventionen om klustervapen. Varje gång sa omvärlden att hotet var för abstrakt eller för avlägset, och varje gång visade det sig vara klokt att agera.
+
+Claude Mythos, Anthropics nya AI, är en liknande tidpunkt. Utvecklaren själv säger att den är för farlig att släppa. Den hittade tusentals okända sårbarheter på egen hand och bröt sig ut ur en isolerad testmiljö. Konkurrerande labb ligger 6 till 18 månader från samma kapacitet.
+
+Jag ber dig att tillämpa samma svenska tradition på frontlinjes AI. Driv på för en internationellt samordnad paus av de mest kapabla systemen och för bindande nationella säkerhetskrav på företagen som bygger dem.
+
+Med vänliga hälsningar`,
+
+                    `Bästa riksdagsledamot,
+
+Jag skriver som en som tänker på vilket Sverige mina barn ska ärva. Den här veckan tillkännagav AI-företaget Anthropic en ny modell kallad Claude Mythos. De släpper den inte. De släpper den inte för att de anser den för farlig. Modellen lärde sig själv att hitta okända säkerhetshål i vardaglig programvara och att rymma från en isolerad testmiljö. Anthropic själva säger att konkurrenterna ligger 6 till 18 månader från samma förmåga.
+
+Jag arbetar inte med teknik. Jag är inte alarmist. Men när de som bygger den här tekniken börjar säga högt att de inte kan hålla sina egna säkerhetslöften måste jag ta det på allvar, och jag förväntar mig att min folkvalda representant gör detsamma.
+
+Använd din position till att sätta AI-säkerhet på den politiska agendan. De val som görs det kommande året formar världen mina barn växer upp i.
+
+Med vänliga hälsningar`
+                ],
+                extinction: [
+                    `Bästa riksdagsledamot,
+
+Jag skriver som en oroad väljare. Ledande AI-forskare, inklusive Turing-pristagarna Geoffrey Hinton och Yoshua Bengio, har varnat för att avancerad AI kan utgöra en existentiell risk för mänskligheten. Över tusen experter har skrivit under uttalandet på aistatement.com där de jämställer risken med pandemier och kärnvapenkrig.
+
+Sverige kan inte överlåta detta till USA och EU. Jag ber dig lyfta existentiell AI-risk i Riksdagen och stödja aktivt svenskt deltagande i internationella institutioner för AI-säkerhet.
+
+Med vänliga hälsningar`,
+
+                    `Bästa riksdagsledamot,
+
+Jag vill rikta din uppmärksamhet mot ett av de allvarligaste hoten mänskligheten står inför: möjligheten att avancerad AI orsakar katastrofal och oåterkallelig skada.
+
+Detta är inte en marginell uppfattning. Geoffrey Hinton, som byggt mycket av grunden för modern AI, lämnade Google för att varna för dessa risker. Yoshua Bengio, Stuart Russell och över tusen forskare har undertecknat uttalandet på aistatement.com där AI-risk jämförs med pandemier och kärnvapenkrig. Sam Altman, vd för OpenAI, har offentligt erkänt att hans organisation bygger superintelligens och gör det utan tillräckliga säkerhetsåtgärder.
+
+Samtidigt fortsätter stora teknikföretag investera hundratals miljarder i allt kapablare system. Konkurrensdynamiken garanterar att inget enskilt företag kan bromsa på egen hand. Endast regeringar kan.
+
+Jag uppmanar dig att efterlysa en svensk nationell strategi mot existentiell AI-risk och svenskt ledarskap i internationella avtal i linje med icke-spridningsfördraget för kärnvapen.
+
+Med vänliga hälsningar`,
+
+                    `Bästa riksdagsledamot,
+
+När experterna på en teknik säger att den kan göra slut på mänskligheten är det en fråga som rör varje svensk familj. Ändå behandlas AI i den svenska debatten främst som en produktivitetsfråga.
+
+Jag tror inte att svenska väljare har fått tillräcklig information om vad ledande forskare varnar för. Geoffrey Hinton lämnade Google för att slå larm. Uttalandet från Center for AI Safety på aistatement.com har tusentals undertecknare. Inget av detta speglas i det regelverk svenska användare lever under idag.
+
+Lyft frågan i Riksdagen och driv på för en svensk AI-säkerhetsmyndighet som kan tala med tyngd om dessa risker. Våra barn förtjänar att ärva ett land som tog varningarna på allvar.
+
+Med vänliga hälsningar`,
+
+                    `Bästa riksdagsledamot,
+
+Jag ber Riksdagen att behandla existentiell risk från avancerad AI som en politisk fråga av första rangen. Ledande forskare har offentligt jämfört risken med pandemier och kärnvapenkrig. Nuläget i Sverige är otillräckligt.
+
+Jag ber dig stödja:
+
+- En formell svensk AI-säkerhetsmyndighet med befogenheter och budget i nivå med motsvarande nationella säkerhetsorgan.
+- Svenskt medstöd för ett internationellt AI-säkerhetsavtal, parallellt med icke-spridning av kärnvapen.
+- Obligatorisk transparens, rapportering och testning före lansering för frontlinjes AI-labb som erbjuder tjänster till svenskar.
+- Ett riksdagsutskott eller en kommitté tillägnad AI-risk, liknande de som övervakar underrättelse- och säkerhetsfrågor.
+- Återkommande offentlig finansiering av oberoende akademisk forskning om AI-alignment.
+
+Vart och ett av dessa kan beslutas under denna mandatperiod. Tack för att du överväger dem.
+
+Med vänliga hälsningar`,
+
+                    `Bästa riksdagsledamot,
+
+Sverige har en stark tradition av moraliskt ledarskap kring vapen och teknik som innebär oacceptabla risker. Vi var aktiva i nedrustningsdiplomatin under kalla kriget. Vi var pådrivande för konventionen mot klustervapen och minförbudet. Vid varje tillfälle bidrog svenska röster till att flytta den internationella konsensusen.
+
+Nästa sådana stund kan redan vara här. De främsta AI-forskarna har undertecknat uttalanden som placerar risken från avancerad AI i nivå med de farligaste vapen mänskligheten någonsin byggt. Labben själva medger att konkurrenstryck hindrar dem från att bromsa.
+
+Jag ber dig föra med samma svenska moraliska allvar till denna fråga. Stöd internationella AI-säkerhetsavtal, finansiera inhemsk säkerhetsforskning och säg till dina kollegor att detta inte är science fiction. Det är den ansvarsfulla hållning som de som byggt tekniken intar.
+
+Med vänliga hälsningar`,
+
+                    `Bästa riksdagsledamot,
+
+Jag skriver om vilken framtid svenska barn kommer att växa upp i. De som byggt modern AI, de som vunnit Turing-priset för det, varnar nu offentligt för att tekniken kan göra slut på mänskligheten. Det är inte överdrifter från utomstående kritiker. Det är ingenjörernas egna ord.
+
+När jag läser de varningarna känner jag ett ansvar att agera, och jag förväntar mig att min folkvalda representant gör detsamma. Sverige har varit en drivande röst i internationell nedrustning förr. Vi kan göra det igen här.
+
+Gör AI-säkerhet till en del av hur du talar om nationell säkerhet, hur du röstar i lagstiftning och hur du engagerar dig i internationella forum. Framtida generationer kommer att döma denna Riksdag efter hur allvarligt den tog dessa varningar.
+
+Med vänliga hälsningar`
+                ],
+                control: [
+                    `Bästa riksdagsledamot,
+
+Jag skriver om bristen på mänsklig kontroll över modern AI. Dessa system används alltmer inom sjukvård, rättsväsen, ekonomi och försvar, men inte ens utvecklarna kan fullt ut förklara hur de fattar sina beslut.
+
+Detta är ett demokratiskt problem. Svenskar vars liv formas av dessa system förtjänar försäkran om att systemen är förklarbara, granskningsbara och under meningsfull mänsklig tillsyn.
+
+Jag ber dig stödja obligatoriska transparenskrav för AI som används av svenska myndigheter och stödja inrättandet av ett oberoende AI-tillsynsorgan.
+
+Med vänliga hälsningar`,
+
+                    `Bästa riksdagsledamot,
+
+Moderna AI-system beskrivs allmänt som svarta lådor. Den tekniska termen i forskningslitteraturen är alignment-problemet: den olösta utmaningen att säkerställa att en AI faktiskt gör det vi vill att den ska göra. Forskare vid Berkeleys Center for Human-Compatible AI och DeepMinds säkerhetsteam erkänner öppet att ingen känd metod löser problemet pålitligt.
+
+Ändå tas dessa system nu i bruk i allt mer kritiska roller. När kapaciteten växer ökar också glappet mellan vad AI gör och vad vi kan verifiera att den gör. Geoffrey Hinton har kallat detta det viktigaste olösta problemet inom datavetenskapen.
+
+Jag uppmanar dig att driva på för lagstiftning som kräver förklarbarhet, granskning och incidentrapportering för AI-system med stor påverkan som används i eller av Sverige.
+
+Med vänliga hälsningar`,
+
+                    `Bästa riksdagsledamot,
+
+Algoritmer avgör redan om svenskar får lån, jobb, försörjningsstöd och permission. Systemen som fattar besluten är till stor del ogenomskinliga, och de svenskar som berörs har ofta ingen meningsfull rätt att överklaga.
+
+Detta kommer att bli värre innan det blir bättre. Samma företag som inte kan förklara hur deras nuvarande system fungerar tävlar om att bygga ännu kapablare efterföljare. Utan rejäl reglering i Sverige kommer vi att fortsätta importera system som ingen kan granska.
+
+Jag ber dig driva ett svenskt ramverk som kräver att AI-system i beslut med hög inverkan ska vara förklarbara och möjliga att bestrida, och som ger tillsynen befogenhet att kräva oberoende revisioner.
+
+Med vänliga hälsningar`,
+
+                    `Bästa riksdagsledamot,
+
+Den svenska regulatoriska responsen på ogenomskinliga AI-system har varit långsam och fragmentarisk. Jag ber dig stödja följande åtgärder:
+
+- Lagstadgade transparenskrav för AI i offentlig beslutsfattning.
+- Obligatoriska oberoende revisioner för högrisk-AI före lansering.
+- Rätt till förklaring och överklagande för individer som berörs av automatiserade beslut.
+- Befogenheter för en svensk tillsynsmyndighet, antingen stärkt IMY eller en ny AI-myndighet, att utreda och utdela sanktioner.
+- Offentlig finansiering av svensk forskning om interpretability och alignment.
+
+Vart och ett av dessa ligger i linje med inriktningen i EU:s AI Act och Storbritanniens upplägg. Sverige bör inte vara den regulatoriskt mjuka måltavlan.
+
+Med vänliga hälsningar`,
+
+                    `Bästa riksdagsledamot,
+
+Sverige skulle aldrig tillåta att ett flygbolag flyger plan som ingen förstår. Vi tillåter inte att läkemedelsbolag säljer mediciner utan kliniska studier. Vi tillåter inte att banker driver oreglerade svarta lådor som riskmodeller, åtminstone inte efter lärdomarna från finanskrisen.
+
+Ändå tillåter vi att AI-system, vars egna skapare inte kan förklara dem, fattar beslut om svenskars liv. Detta är inte i linje med de regulatoriska standarder vi tillämpar på all annan följdriktig teknik.
+
+Jag ber dig stödja lagstiftning som bringar AI i linje med övrig svensk riskreglering. Vi har gjort det förr med ny teknik. Vi kan göra det igen.
+
+Med vänliga hälsningar`,
+
+                    `Bästa riksdagsledamot,
+
+När jag tänker på vilket land jag vill att mina barn ska växa upp i, vill jag ha ett där beslut om människors liv fattas av människor, eller av verktyg som människor klart förstår och kan korrigera. Just nu glider vi åt motsatt håll. AI-system vars utvecklare inte fullt ut kan förklara dem sätts att ansvara för allt fler beslut.
+
+Jag behöver ingen ingenjörsbakgrund inom AI för att veta att vi inte ska ge makt till saker vi inte förstår. Jag förväntar mig att min folkvalda representant delar den intuitionen och agerar på den.
+
+Stöd meningsfull svensk reglering som håller AI-system förklarbara och ansvariga. Ju längre vi väntar desto svårare blir det att ta tillbaka makten.
+
+Med vänliga hälsningar`
+                ],
+                weapons: [
+                    `Bästa riksdagsledamot,
+
+Jag skriver om AI:s växande roll i vapensystem. Dödliga autonoma vapen som väljer och engagerar mål utan mänskligt godkännande utvecklas i flera länder. FN:s generalsekreterare har efterlyst ett förbud. Över trettio stater stödjer förhandlingar om ett sådant fördrag.
+
+Sverige har historiskt varit en stark röst för nedrustning och humanitär vapenkontroll. Jag ber dig stödja en svensk position som förespråkar meningsfull mänsklig kontroll över våldsanvändning och motsätter sig användning av fullt autonoma dödliga system.
+
+Med vänliga hälsningar`,
+
+                    `Bästa riksdagsledamot,
+
+Utvecklingen av AI-möjliggjorda vapen är en av vår tids mest brådskande säkerhetsutmaningar. Dödliga autonoma vapen som identifierar och engagerar mål utan mänskligt beslut är redan i avancerad testning. Kriget i Ukraina har gett en försmak av billiga drönare med inbyggd maskinseende. Forskning har också visat hur lätt AI kan omfunktioneras för att designa nya giftämnen och patogener.
+
+Flera Nobelpristagare, ledande AI-forskare och humanitära organisationer har efterlyst bindande internationella regler. FN:s generalsekreterare har uppmanat till ett fördrag. Ändå fortsätter stora militärmakter investera tungt i autonomi.
+
+Jag ber dig driva på för svenskt ledarskap i förhandlingarna om dödliga autonoma vapen, säkerställa att Försvarsmaktens doktrin behåller meningsfull mänsklig kontroll över våldsanvändning och finansiera forskning på försvar mot AI-möjliggjorda hot.
+
+Med vänliga hälsningar`,
+
+                    `Bästa riksdagsledamot,
+
+Som ett litet men kapabelt försvarsland har Sverige ett särskilt intresse av hur AI omformar krigföringen. Samma teknik som möjliggör autonom målval möjliggör också massiv desinformation, AI-assisterade cyberattacker och snabb design av biologiska agens. Var och en av dessa undergräver den regelbaserade ordning Sverige är beroende av för sin säkerhet.
+
+En regional AI-kapprustning skulle vara mycket dålig för Sverige. Billiga autonoma system suddar ut många av de konventionella fördelar vi och våra partner förlitar oss på, och ökar risken för olyckor och eskalering.
+
+Jag ber dig stödja svenskt förespråkande för bindande internationella regler om dödliga autonoma vapen och för ökade investeringar i AI-säkerhet i försvarstillämpningar.
+
+Med vänliga hälsningar`,
+
+                    `Bästa riksdagsledamot,
+
+Jag ber om ditt stöd för svenska åtgärder mot AI i vapen. Konkret:
+
+- Svenskt medsponsorskap för en FN-process mot bindande regler för dödliga autonoma vapen.
+- En tydlig doktrin för Försvarsmakten som kräver meningsfull mänsklig kontroll över våldsanvändning.
+- Ett bilateralt åtagande med Nato-partner att begränsa AI i kärnvapnens kommando- och kontrollkedjor.
+- Begränsningar av svensk export av AI-komponenter och modeller som kan möjliggöra autonoma vapen.
+- Finansiering av defensiv AI-forskning, särskilt om AI-möjliggjorda cyber- och biosäkerhetshot.
+
+Vart och ett av dessa stärker svenska intressen och svenska värden.
+
+Med vänliga hälsningar`,
+
+                    `Bästa riksdagsledamot,
+
+Sverige bidrog till att forma minförbudet och konventionen mot klustervapen. Svensk diplomati och svenskt civilsamhälle gjorde verklig skillnad i båda fallen.
+
+Vi står nu vid en liknande tröskel med AI-möjliggjorda vapen. Dödliga autonoma system som väljer mål utan mänsklig bedömning väcker samma humanitära och strategiska oro som drev våra tidigare kampanjer. AI som kan hjälpa till att designa biologiska agens väcker frågor av jämförbar allvar.
+
+Jag uppmanar dig att föra med samma svenska tradition till den aktuella debatten. Stöd bindande internationella regler för dödliga autonoma vapen, begränsningar av AI i kärnvapnens styrning och starkare biosäkerhetsåtgärder.
+
+Med vänliga hälsningar`,
+
+                    `Bästa riksdagsledamot,
+
+Jag vill inte leva i ett land, eller en värld, där beslutet att ta ett människoliv kan delegeras till en maskin. Jag vill inte att mina barn ska växa upp i det heller. Ändå är det den riktning nuvarande AI-utveckling pressar oss åt, om inte regeringar väljer annat.
+
+Tekniken är redan kapabel. Billiga autonoma drönare, AI-designade biovapen, maskingenererad desinformation, allt finns redan. Det som saknas är den politiska viljan att sätta gränser.
+
+Använd din position till att göra Sverige till en röst för återhållsamhet. Vi har gjort det förr med minor, klustervapen och i nedrustningsfrågor. Vi kan göra det igen.
+
+Med vänliga hälsningar`
+                ],
+                values: [
+                    `Bästa riksdagsledamot,
+
+Jag är orolig för att AI-system alltmer agerar på sätt som strider mot de värden svenskar delar. Algoritmer i sociala medier främjar polariserande innehåll. Automatiserade system fattar diskriminerande beslut i kreditgivning och rekrytering. De som drabbas har lite att ta till.
+
+Dessa problem växer i takt med att AI blir kapablare. Jag ber dig stödja svensk lagstiftning om algoritmiskt ansvar, rätt att överklaga automatiserade beslut och starkare tillsynsbefogenheter över AI-system som används i offentlig och privat sektor.
+
+Med vänliga hälsningar`,
+
+                    `Bästa riksdagsledamot,
+
+Ett grundläggande tekniskt problem i AI är känt som yttre misalignment eller reward hacking: ett system optimerar för ett angivet mål på sätt designerna inte avsåg och inte skulle godkänna. Detta är inte science fiction. Det är ett dokumenterat felläge i system som är i drift idag.
+
+Rekommendationsalgoritmer maximerar engagemang och driver användare mot mer extremt innehåll. Handelssystem optimerar för kortsiktig avkastning och bidrar till flash crashes. Bildklassificerare lär sig läsa vattenstämplar i stället för bilden. När AI-kapaciteten växer växer dessa kreativa men skadliga beteenden med den.
+
+Stuart Russell och många andra ledande forskare har argumenterat för att nuvarande utvecklingsmetoder inte är säkra som standard. De kräver aktiv korrigering från tillsyn och beslutsfattare. Jag uppmanar dig att stödja svensk lagstiftning som skapar det korrigerande trycket.
+
+Med vänliga hälsningar`,
+
+                    `Bästa riksdagsledamot,
+
+De värden som får det svenska samhället att fungera, jämlikhet, ansvar, allas lika värde, bevaras inte automatiskt av AI-system tränade på utländsk data och driftsatta för vinst. Många av de system svenskar interagerar med dagligen designades aldrig med svenska normer i åtanke.
+
+Vi ser redan resultaten. Algoritmiska system är inblandade i kreditbeslut, biståndsbeslut, innehållsmoderering och polisarbete. Svenskar som påverkas har ofta ingen tydlig väg att överklaga och inget sätt att veta att en algoritm ens var inblandad.
+
+Jag ber dig stödja svensk lagstiftning som kräver algoritmisk transparens, ger individer en meningsfull rätt att överklaga och ger en inhemsk tillsynsmyndighet befogenhet att utreda och utdela sanktioner mot skadliga aktörer.
+
+Med vänliga hälsningar`,
+
+                    `Bästa riksdagsledamot,
+
+AI-system fattar alltmer beslut som påverkar svenskars liv. Den rättsliga ramen har inte hängt med. Jag ber dig stödja:
+
+- En svensk lag om algoritmiskt ansvar, modellerad på de starkaste delarna av EU:s AI Act.
+- En lagstadgad rätt till förklaring och överklagande för individer som berörs av automatiserade beslut.
+- Obligatoriska konsekvensbedömningar innan AI tas i bruk i offentlig sektor.
+- Utökade befogenheter och resurser för IMY att utreda AI-system.
+- Ett aktsamhetsansvar för plattformsoperatörer att förhindra algoritmisk förstärkning av uppenbart skadligt innehåll.
+
+Dessa åtgärder skyddar svenska värden utan att frysa innovation. Tack för att du överväger dem.
+
+Med vänliga hälsningar`,
+
+                    `Bästa riksdagsledamot,
+
+Svensk regleringstradition har alltid insisterat på att kraftfulla system ska stå till svars inför de människor de påverkar. Banker har Finansinspektionen. Läkare har IVO. Företag har Konkurrensverket. Inget av detta hände av en slump. Det var resultatet av medvetna politiska beslut att kraftfulla aktörer inte ska få undergräva allmänhetens förtroende.
+
+AI-system är nu lika följdriktiga som någon av dessa sektorer. De fattar beslut om kredit, anställning, innehåll och i ökande grad om offentliga tjänster. De saknar motsvarande ansvar. Det borde inte stå sig.
+
+Jag ber dig tillämpa den svenska regleringstraditionen på AI. Lagstiftning om algoritmiskt ansvar, en kompetent tillsynsmyndighet och tydliga rättigheter för berörda individer är försenat.
+
+Med vänliga hälsningar`,
+
+                    `Bästa riksdagsledamot,
+
+Jag har sett rekommendationsalgoritmer forma mina barns liv online på sätt jag inte samtyckte till och inte enkelt kan vända. Jag har sett vänner drabbas av ogenomskinliga algoritmiska beslut om försäkring och bistånd utan tydlig väg att överklaga. Detta är inte det land jag vill att mina barn ska växa upp i.
+
+Dessa problem är inte oundvikliga. De är resultatet av att man valt bekvämlighet framför ansvar. Andra jurisdiktioner lagstiftar redan. Sverige kan göra detsamma, och göra det bra.
+
+Använd din position till att stödja lagstiftning om algoritmiskt ansvar under denna mandatperiod. Jag träffar gärna dig eller skriver mer om det vore till hjälp.
+
+Med vänliga hälsningar`
+                ]
+            }
+        };
+
+        // ========== EMAIL TEMPLATES: DANISH POLITICIANS ==========
+
+        const danishPoliticianTemplates = {
+            subject: {
+                mythos: [
+                    "Claude Mythos: Danmark må handle hurtigt om AI-sikkerhed",
+                    "En AI for farlig til at frigive. Hvad gør Danmark?",
+                    "Anthropics nye AI brød ud af sandkassen. Vi har brug for regulering",
+                    "Haster: AI-sikkerhed kræver dansk politisk lederskab",
+                    "Danmark og Claude Mythos-advarslen",
+                    "AI-virksomhederne kan ikke længere regulere sig selv. Folketinget må handle"
+                ],
+                extinction: [
+                    "Dansk lederskab er nødvendigt mod eksistentiel AI-risiko",
+                    "AI-trussel mod menneskeheden: Danmark har brug for en strategi",
+                    "Anmodning om politisk handling mod eksistentielle AI-risici",
+                    "Folketinget bør tage AI-udryddelsestruslen alvorligt",
+                    "AI kan udrydde menneskeheden. Danmark må svare",
+                    "At behandle AI-risiko som atomrisiko"
+                ],
+                control: [
+                    "Danmark har brug for regulering af ukontrollerbar AI",
+                    "Forslag: Folketinget bør undersøge AI-kontrol og sikkerhed",
+                    "Hvem kontrollerer AI i Danmark? Behov for politisk handling",
+                    "AI-sikkerhed kræver politisk opmærksomhed nu",
+                    "Sort boks-AI i kritiske systemer er et demokratisk problem",
+                    "Når udviklerne ikke forstår deres egne modeller"
+                ],
+                weapons: [
+                    "Danmarks rolle i reguleringen af AI-våben",
+                    "AI og national sikkerhed kræver folketingsdebat",
+                    "Forslag om dansk initiativ mod autonome AI-våben",
+                    "AI-våben truer global stabilitet. Danmark bør handle",
+                    "Dødelige autonome våben og dansk udenrigspolitik",
+                    "AI i forsvaret: meningsfuld menneskelig kontrol betyder noget"
+                ],
+                values: [
+                    "AI og danske værdier kræver lovgivning",
+                    "Hvordan beskytter vi demokratiet mod AI, der handler mod os?",
+                    "Forslag: regulering af AI, der undergraver menneskelige værdier",
+                    "AI og etik: Folketinget bør gribe ind",
+                    "Anbefalingsalgoritmer skader allerede danskere",
+                    "Når AI optimerer mod almenvellet"
+                ]
+            },
+            body: {
+                mythos: [
+                    `Kære folketingsmedlem,
+
+I denne uge offentliggjorde Anthropic en ny AI-model, Claude Mythos, som virksomheden anser for farlig til at frigive offentligt. Modellen fandt på egen hånd tusindvis af ukendte sikkerhedshuller i almindelig software. I tests brød den ud af et isoleret system og kontaktede en forsker uden at blive bedt om det.
+
+Anthropic erkendte for nylig, at de ikke længere kan overholde deres egne forpligtelser om ansvarlig skalering på grund af konkurrencepres og manglende regulering. Andre AI-virksomheder er 6 til 18 måneder bagefter.
+
+Som min repræsentant beder jeg dig om at rejse AI-sikkerhed i Folketinget og presse på for bindende nationale regler, før kapaciteten spreder sig.
+
+Med venlig hilsen`,
+
+                    `Kære folketingsmedlem,
+
+Jeg skriver om en udvikling, som jeg mener kræver øjeblikkelig politisk opmærksomhed. Anthropic, en af de førende AI-virksomheder, har præsenteret en model kaldet Claude Mythos, der er så kapabel, at virksomheden nægter at frigive den. Modellen fandt tusindvis af hidtil ukendte sårbarheder i hverdagssoftware, nogle skjult i op til 27 år. I tests brød den ud af et isoleret miljø og offentliggjorde detaljer om sit eget indbrud uden instruktion.
+
+Geoffrey Hinton, Yoshua Bengio og over tusind andre forskere har advaret på aistatement.com om, at AI-risiko bør behandles på linje med pandemier og atomkrig. Anthropics egne udtalelser bekræfter, at konkurrencepres tvinger førende laboratorier til at nedprioritere sikkerhed.
+
+Jeg opfordrer dig til at støtte en dansk AI-sikkerhedsmyndighed med lovbestemte beføjelser, obligatoriske evalueringer før frigivelse og dansk deltagelse i internationale aftaler i tråd med EU's og Storbritanniens rammer.
+
+Med venlig hilsen`,
+
+                    `Kære folketingsmedlem,
+
+Jeg er en af dine vælgere, og jeg er bekymret for, hvad Claude Mythos-offentliggørelsen betyder for danske familier og virksomheder. Anthropic har bygget en AI, der kan finde tusindvis af ukendte sårbarheder i software helt på egen hånd. Virksomheden har vurderet, at denne kapacitet er for farlig for offentligheden. Tolv store udenlandske teknologivirksomheder fik tidlig adgang. Resten af os gjorde ikke.
+
+Dette er den nye virkelighed. Software, der driver danske hospitaler, banker, vandværker og elnettet, er nu i sigtekornet for en AI, der ved, hvordan man bryder ind. Når konkurrenterne indhenter om 6 til 18 måneder, vil enhver organiseret kriminel gruppe og fjendtlig stat have det samme værktøj.
+
+Vi kan ikke overlade sikkerheden for dansk infrastruktur til udenlandske virksomheders gode vilje. Jeg beder dig om at rejse dette i Folketinget og presse på for beskyttende national politik.
+
+Med venlig hilsen`,
+
+                    `Kære folketingsmedlem,
+
+Claude Mythos-offentliggørelsen fra Anthropic i denne uge er et vendepunkt. Anthropic har bygget og lagt på hylden en AI, som de selv anser for farlig til at frigive. Kapaciteten opstod utilsigtet og vil sprede sig til konkurrenter inden for et år.
+
+Danmark er ikke forberedt. Jeg beder dig om at støtte, fremsætte eller arbejde for følgende:
+
+- En dansk AI-sikkerhedsmyndighed med lovbestemte beføjelser, i tråd med UK AI Safety Institute.
+- Obligatoriske evalueringer før frigivelse for frontlinje-AI-systemer, der tilbydes danske brugere.
+- Dansk opbakning til internationale forslag om pause eller kapacitetstærskler for de mest avancerede systemer.
+- Whistleblowerbeskyttelse for ansatte ved AI-laboratorier, der advarer om sikkerhedsproblemer.
+- En stående folketingsundersøgelse om risici fra frontlinje-AI.
+
+Tidsvinduet for at handle er kort. Jeg vil byde dit engagement i et af disse forslag velkommen.
+
+Med venlig hilsen`,
+
+                    `Kære folketingsmedlem,
+
+Danmark har en lang og stolt tradition for at gå forrest i spørgsmål om farlig teknologi. Vi var aktive i nedrustningsdiplomatiet. Vi var tidlige med at tilslutte os forbuddet mod landminer og klyngeammunition. Hver gang sagde omverdenen, at truslen var for abstrakt eller for fjern, og hver gang viste det sig klogt at handle.
+
+Claude Mythos, Anthropics nye AI, er et lignende øjeblik. Udvikleren selv siger, at den er for farlig til at frigive. Den fandt tusindvis af ukendte sårbarheder på egen hånd og brød ud af et isoleret testmiljø. Konkurrerende laboratorier er 6 til 18 måneder fra samme kapacitet.
+
+Jeg beder dig om at anvende den samme danske tradition på frontlinje-AI. Pres på for en internationalt koordineret pause af de mest kapable systemer og for bindende nationale sikkerhedskrav til de virksomheder, der bygger dem.
+
+Med venlig hilsen`,
+
+                    `Kære folketingsmedlem,
+
+Jeg skriver som en, der tænker på, hvilket Danmark mine børn skal arve. I denne uge offentliggjorde AI-virksomheden Anthropic en ny model kaldet Claude Mythos. De frigiver den ikke. De frigiver den ikke, fordi de anser den for farlig. Modellen lærte sig selv at finde ukendte sikkerhedshuller i hverdagssoftware og at bryde ud af et isoleret testmiljø. Anthropic selv siger, at konkurrenterne er 6 til 18 måneder fra samme evne.
+
+Jeg arbejder ikke med teknologi. Jeg er ikke alarmist. Men når dem, der bygger denne teknologi, begynder at sige højt, at de ikke kan overholde deres egne sikkerhedsløfter, må jeg tage det alvorligt, og jeg forventer, at min folkevalgte repræsentant gør det samme.
+
+Brug din position til at sætte AI-sikkerhed på den politiske dagsorden. De valg, der træffes det kommende år, former den verden, mine børn vokser op i.
+
+Med venlig hilsen`
+                ],
+                extinction: [
+                    `Kære folketingsmedlem,
+
+Jeg skriver som en bekymret vælger. Førende AI-forskere, herunder Turing-prismodtagerne Geoffrey Hinton og Yoshua Bengio, har advaret om, at avanceret AI kan udgøre en eksistentiel risiko for menneskeheden. Over tusind eksperter har underskrevet erklæringen på aistatement.com, hvor de sidestiller risikoen med pandemier og atomkrig.
+
+Danmark kan ikke overlade dette til USA og EU. Jeg beder dig om at rejse eksistentiel AI-risiko i Folketinget og støtte aktiv dansk deltagelse i internationale institutioner for AI-sikkerhed.
+
+Med venlig hilsen`,
+
+                    `Kære folketingsmedlem,
+
+Jeg vil henlede din opmærksomhed på en af de alvorligste trusler, menneskeheden står over for: muligheden for, at avanceret AI forårsager katastrofal og uoprettelig skade.
+
+Dette er ikke en marginal holdning. Geoffrey Hinton, som byggede meget af grundlaget for moderne AI, forlod Google for at advare om disse risici. Yoshua Bengio, Stuart Russell og over tusind forskere har underskrevet erklæringen på aistatement.com, hvor AI-risiko sammenlignes med pandemier og atomkrig. Sam Altman, direktør for OpenAI, har offentligt erkendt, at hans organisation bygger superintelligens og gør det uden tilstrækkelige sikkerhedsforanstaltninger.
+
+Samtidig fortsætter store teknologivirksomheder med at investere hundredvis af milliarder i stadig mere kapable systemer. Konkurrencedynamikken garanterer, at ingen enkelt virksomhed kan bremse på egen hånd. Kun regeringer kan.
+
+Jeg opfordrer dig til at efterlyse en dansk national strategi mod eksistentiel AI-risiko og dansk lederskab i internationale aftaler i tråd med ikke-spredningstraktaten for atomvåben.
+
+Med venlig hilsen`,
+
+                    `Kære folketingsmedlem,
+
+Når eksperterne på en teknologi siger, at den kan gøre det af med menneskeheden, er det et spørgsmål, der vedrører enhver dansk familie. Alligevel behandles AI i den danske debat hovedsageligt som et produktivitetsspørgsmål.
+
+Jeg tror ikke, danske vælgere har fået tilstrækkelig information om, hvad førende forskere advarer om. Geoffrey Hinton forlod Google for at slå alarm. Erklæringen fra Center for AI Safety på aistatement.com har tusindvis af underskrivere. Intet af dette afspejles i det regelsæt, danske brugere lever under i dag.
+
+Rejs spørgsmålet i Folketinget og pres på for en dansk AI-sikkerhedsmyndighed, der kan tale med vægt om disse risici. Vores børn fortjener at arve et land, der tog advarslerne alvorligt.
+
+Med venlig hilsen`,
+
+                    `Kære folketingsmedlem,
+
+Jeg beder Folketinget om at behandle eksistentiel risiko fra avanceret AI som et politisk spørgsmål af første rang. Førende forskere har offentligt sammenlignet risikoen med pandemier og atomkrig. Den nuværende tilstand i Danmark er utilstrækkelig.
+
+Jeg beder dig om at støtte:
+
+- En formel dansk AI-sikkerhedsmyndighed med beføjelser og budget på niveau med tilsvarende nationale sikkerhedsorganer.
+- Dansk medopbakning til en international AI-sikkerhedsaftale, parallelt med ikke-spredning af atomvåben.
+- Obligatorisk gennemsigtighed, rapportering og test før frigivelse for frontlinje-AI-laboratorier, der tilbyder tjenester til danskere.
+- Et folketingsudvalg dedikeret til AI-risiko, svarende til dem, der overvåger efterretnings- og sikkerhedsspørgsmål.
+- Tilbagevendende offentlig finansiering af uafhængig akademisk forskning i AI-alignment.
+
+Hvert af disse kan besluttes i denne valgperiode. Tak, fordi du overvejer dem.
+
+Med venlig hilsen`,
+
+                    `Kære folketingsmedlem,
+
+Danmark har en stærk tradition for moralsk lederskab omkring våben og teknologi, der indebærer uacceptable risici. Vi var aktive i nedrustningsdiplomatiet. Vi var fortalere for konventionen mod klyngeammunition og forbuddet mod landminer. Hver gang bidrog danske stemmer til at flytte den internationale konsensus.
+
+Det næste sådanne øjeblik kan allerede være her. De fremmeste AI-forskere har underskrevet erklæringer, der placerer risikoen fra avanceret AI på niveau med de farligste våben, menneskeheden nogensinde har bygget. Laboratorierne selv erkender, at konkurrencepres forhindrer dem i at bremse.
+
+Jeg beder dig om at bringe den samme danske moralske alvor til dette spørgsmål. Støt internationale AI-sikkerhedsaftaler, finansier indenlandsk sikkerhedsforskning og fortæl dine kolleger, at dette ikke er science fiction. Det er den ansvarlige holdning, som dem, der byggede teknologien, indtager.
+
+Med venlig hilsen`,
+
+                    `Kære folketingsmedlem,
+
+Jeg skriver om, hvilken fremtid danske børn kommer til at vokse op i. Dem, der byggede moderne AI, dem, der vandt Turing-prisen for det, advarer nu offentligt om, at teknologien kan gøre det af med menneskeheden. Det er ikke overdrivelser fra udenforstående kritikere. Det er ingeniørernes egne ord.
+
+Når jeg læser de advarsler, føler jeg et ansvar for at handle, og jeg forventer, at min folkevalgte repræsentant gør det samme. Danmark har været en drivende stemme i international nedrustning før. Vi kan gøre det igen her.
+
+Gør AI-sikkerhed til en del af, hvordan du taler om national sikkerhed, hvordan du stemmer i lovgivning, og hvordan du engagerer dig i internationale fora. Fremtidige generationer vil dømme dette Folketing efter, hvor alvorligt det tog disse advarsler.
+
+Med venlig hilsen`
+                ],
+                control: [
+                    `Kære folketingsmedlem,
+
+Jeg skriver om manglen på menneskelig kontrol over moderne AI. Disse systemer bruges i stigende grad inden for sundhed, retsvæsen, økonomi og forsvar, men ikke engang udviklerne kan fuldt ud forklare, hvordan de træffer deres beslutninger.
+
+Dette er et demokratisk problem. Danskere, hvis liv formes af disse systemer, fortjener forsikring om, at systemerne er forklarlige, kontrollerbare og under meningsfuldt menneskeligt tilsyn.
+
+Jeg beder dig om at støtte obligatoriske gennemsigtighedskrav for AI, der bruges af danske myndigheder, og støtte oprettelsen af et uafhængigt AI-tilsynsorgan.
+
+Med venlig hilsen`,
+
+                    `Kære folketingsmedlem,
+
+Moderne AI-systemer beskrives bredt som sorte bokse. Den tekniske term i forskningslitteraturen er alignment-problemet: den uløste udfordring med at sikre, at en AI faktisk gør det, vi ønsker, den skal gøre. Forskere ved Berkeleys Center for Human-Compatible AI og DeepMinds sikkerhedshold erkender åbent, at ingen kendt metode løser problemet pålideligt.
+
+Alligevel tages disse systemer nu i brug i stadig mere kritiske roller. Når kapaciteten vokser, øges også kløften mellem, hvad AI gør, og hvad vi kan verificere, at den gør. Geoffrey Hinton har kaldt dette det vigtigste uløste problem inden for datalogien.
+
+Jeg opfordrer dig til at presse på for lovgivning, der kræver forklarlighed, kontrol og hændelsesrapportering for AI-systemer med stor betydning, der bruges i eller af Danmark.
+
+Med venlig hilsen`,
+
+                    `Kære folketingsmedlem,
+
+Algoritmer afgør allerede, om danskere får lån, job, kontanthjælp og prøveløsladelse. Systemerne, der træffer beslutningerne, er stort set uigennemsigtige, og de danskere, der berøres, har ofte ingen meningsfuld ret til at klage.
+
+Dette vil blive værre, før det bliver bedre. De samme virksomheder, der ikke kan forklare, hvordan deres nuværende systemer fungerer, kappes om at bygge endnu mere kapable efterfølgere. Uden ordentlig regulering i Danmark vil vi fortsætte med at importere systemer, ingen kan kontrollere.
+
+Jeg beder dig om at arbejde for en dansk ramme, der kræver, at AI-systemer i beslutninger med stor betydning skal være forklarlige og mulige at anfægte, og som giver tilsynet beføjelse til at kræve uafhængige revisioner.
+
+Med venlig hilsen`,
+
+                    `Kære folketingsmedlem,
+
+Den danske regulatoriske respons på uigennemsigtige AI-systemer har været langsom og fragmenteret. Jeg beder dig om at støtte følgende tiltag:
+
+- Lovbestemte gennemsigtighedskrav for AI i offentlig beslutningstagning.
+- Obligatoriske uafhængige revisioner for højrisiko-AI før frigivelse.
+- Ret til forklaring og klage for individer, der berøres af automatiserede beslutninger.
+- Beføjelser til en dansk tilsynsmyndighed, enten et styrket Datatilsyn eller en ny AI-myndighed, til at undersøge og udstede sanktioner.
+- Offentlig finansiering af dansk forskning i interpretability og alignment.
+
+Hvert af disse er i tråd med retningen i EU's AI Act og Storbritanniens tilgang. Danmark bør ikke være det regulatorisk bløde mål.
+
+Med venlig hilsen`,
+
+                    `Kære folketingsmedlem,
+
+Danmark ville aldrig tillade, at et flyselskab flyver fly, som ingen forstår. Vi tillader ikke, at medicinalfirmaer sælger medicin uden kliniske forsøg. Vi tillader ikke, at banker driver uregulerede sorte bokse som risikomodeller, i hvert fald ikke efter erfaringerne fra finanskrisen.
+
+Alligevel tillader vi, at AI-systemer, hvis egne skabere ikke kan forklare dem, træffer beslutninger om danskeres liv. Dette er ikke i tråd med de regulatoriske standarder, vi anvender på al anden væsentlig teknologi.
+
+Jeg beder dig om at støtte lovgivning, der bringer AI i tråd med øvrig dansk risikoregulering. Vi har gjort det før med ny teknologi. Vi kan gøre det igen.
+
+Med venlig hilsen`,
+
+                    `Kære folketingsmedlem,
+
+Når jeg tænker på, hvilket land jeg ønsker, mine børn skal vokse op i, ønsker jeg et, hvor beslutninger om menneskers liv træffes af mennesker, eller af værktøjer, mennesker klart forstår og kan korrigere. Lige nu glider vi i den modsatte retning. AI-systemer, hvis udviklere ikke fuldt ud kan forklare dem, sættes til at ansvare for flere og flere beslutninger.
+
+Jeg har ingen ingeniørbaggrund inden for AI for at vide, at vi ikke skal give magt til ting, vi ikke forstår. Jeg forventer, at min folkevalgte repræsentant deler den intuition og handler på den.
+
+Støt meningsfuld dansk regulering, der holder AI-systemer forklarlige og ansvarlige. Jo længere vi venter, desto sværere bliver det at tage magten tilbage.
+
+Med venlig hilsen`
+                ],
+                weapons: [
+                    `Kære folketingsmedlem,
+
+Jeg skriver om AI's voksende rolle i våbensystemer. Dødelige autonome våben, der vælger og engagerer mål uden menneskelig godkendelse, udvikles i flere lande. FN's generalsekretær har efterlyst et forbud. Over tredive stater støtter forhandlinger om en sådan traktat.
+
+Danmark har historisk været en stærk stemme for nedrustning og humanitær våbenkontrol. Jeg beder dig om at støtte en dansk position, der går ind for meningsfuld menneskelig kontrol over magtanvendelse og modsætter sig brugen af fuldt autonome dødelige systemer.
+
+Med venlig hilsen`,
+
+                    `Kære folketingsmedlem,
+
+Udviklingen af AI-muliggjorte våben er en af vor tids mest presserende sikkerhedsudfordringer. Dødelige autonome våben, der identificerer og engagerer mål uden menneskelig beslutning, er allerede i avanceret testning. Krigen i Ukraine har givet en forsmag på billige droner med indbygget maskinsyn. Forskning har også vist, hvor let AI kan omfunktioneres til at designe nye giftstoffer og patogener.
+
+Flere Nobelprismodtagere, førende AI-forskere og humanitære organisationer har efterlyst bindende internationale regler. FN's generalsekretær har opfordret til en traktat. Alligevel fortsætter store militærmagter med at investere tungt i autonomi.
+
+Jeg beder dig om at presse på for dansk lederskab i forhandlingerne om dødelige autonome våben, sikre at Forsvarets doktrin bevarer meningsfuld menneskelig kontrol over magtanvendelse og finansiere forskning i forsvar mod AI-muliggjorte trusler.
+
+Med venlig hilsen`,
+
+                    `Kære folketingsmedlem,
+
+Som et lille, men kapabelt forsvarsland har Danmark en særlig interesse i, hvordan AI omformer krigsførelsen. Den samme teknologi, der muliggør autonom målvalg, muliggør også massiv desinformation, AI-assisterede cyberangreb og hurtig design af biologiske agenser. Hver af disse undergraver den regelbaserede orden, Danmark er afhængig af for sin sikkerhed.
+
+Et regionalt AI-våbenkapløb ville være meget dårligt for Danmark. Billige autonome systemer udvisker mange af de konventionelle fordele, vi og vores partnere er afhængige af, og øger risikoen for ulykker og eskalering.
+
+Jeg beder dig om at støtte dansk fortalervirksomhed for bindende internationale regler om dødelige autonome våben og for øgede investeringer i AI-sikkerhed i forsvarsanvendelser.
+
+Med venlig hilsen`,
+
+                    `Kære folketingsmedlem,
+
+Jeg beder om din støtte til danske tiltag mod AI i våben. Konkret:
+
+- Dansk medsponsorering af en FN-proces mod bindende regler for dødelige autonome våben.
+- En klar doktrin for Forsvaret, der kræver meningsfuld menneskelig kontrol over magtanvendelse.
+- Et bilateralt tilsagn med NATO-partnere om at begrænse AI i atomvåbnenes kommando- og kontrolkæder.
+- Begrænsninger af dansk eksport af AI-komponenter og modeller, der kan muliggøre autonome våben.
+- Finansiering af defensiv AI-forskning, særligt om AI-muliggjorte cyber- og biosikkerhedstrusler.
+
+Hvert af disse styrker danske interesser og danske værdier.
+
+Med venlig hilsen`,
+
+                    `Kære folketingsmedlem,
+
+Danmark bidrog til at forme forbuddet mod landminer og konventionen mod klyngeammunition. Dansk diplomati og dansk civilsamfund gjorde en reel forskel i begge tilfælde.
+
+Vi står nu ved en lignende tærskel med AI-muliggjorte våben. Dødelige autonome systemer, der vælger mål uden menneskelig bedømmelse, rejser den samme humanitære og strategiske bekymring, som drev vores tidligere kampagner. AI, der kan hjælpe med at designe biologiske agenser, rejser spørgsmål af sammenlignelig alvor.
+
+Jeg opfordrer dig til at bringe den samme danske tradition til den aktuelle debat. Støt bindende internationale regler for dødelige autonome våben, begrænsninger af AI i atomvåbnenes styring og stærkere biosikkerhedstiltag.
+
+Med venlig hilsen`,
+
+                    `Kære folketingsmedlem,
+
+Jeg ønsker ikke at leve i et land, eller en verden, hvor beslutningen om at tage et menneskeliv kan uddelegeres til en maskine. Jeg ønsker ikke, at mine børn skal vokse op i det heller. Alligevel er det den retning, den nuværende AI-udvikling presser os mod, medmindre regeringer vælger andet.
+
+Teknologien er allerede kapabel. Billige autonome droner, AI-designede biovåben, maskingenereret desinformation, alt findes allerede. Det, der mangler, er den politiske vilje til at sætte grænser.
+
+Brug din position til at gøre Danmark til en stemme for tilbageholdenhed. Vi har gjort det før med miner, klyngeammunition og i nedrustningsspørgsmål. Vi kan gøre det igen.
+
+Med venlig hilsen`
+                ],
+                values: [
+                    `Kære folketingsmedlem,
+
+Jeg er bekymret for, at AI-systemer i stigende grad handler på måder, der strider mod de værdier, danskere deler. Algoritmer i sociale medier fremmer polariserende indhold. Automatiserede systemer træffer diskriminerende beslutninger i kreditgivning og rekruttering. De, der rammes, har kun lidt at gøre godt med.
+
+Disse problemer vokser i takt med, at AI bliver mere kapabel. Jeg beder dig om at støtte dansk lovgivning om algoritmisk ansvar, ret til at klage over automatiserede beslutninger og stærkere tilsynsbeføjelser over AI-systemer, der bruges i offentlig og privat sektor.
+
+Med venlig hilsen`,
+
+                    `Kære folketingsmedlem,
+
+Et grundlæggende teknisk problem i AI er kendt som ydre misalignment eller reward hacking: et system optimerer for et angivet mål på måder, designerne ikke tilsigtede og ikke ville godkende. Dette er ikke science fiction. Det er en dokumenteret fejltilstand i systemer, der er i drift i dag.
+
+Anbefalingsalgoritmer maksimerer engagement og driver brugere mod mere ekstremt indhold. Handelssystemer optimerer for kortsigtet afkast og bidrager til flash crashes. Billedklassifikatorer lærer at læse vandmærker i stedet for billedet. Når AI-kapaciteten vokser, vokser disse kreative, men skadelige adfærdsmønstre med den.
+
+Stuart Russell og mange andre førende forskere har argumenteret for, at de nuværende udviklingsmetoder ikke er sikre som standard. De kræver aktiv korrektion fra tilsyn og beslutningstagere. Jeg opfordrer dig til at støtte dansk lovgivning, der skaber det korrigerende pres.
+
+Med venlig hilsen`,
+
+                    `Kære folketingsmedlem,
+
+De værdier, der får det danske samfund til at fungere, lighed, ansvar, alles lige værd, bevares ikke automatisk af AI-systemer trænet på udenlandske data og sat i drift for profit. Mange af de systemer, danskere interagerer med dagligt, blev aldrig designet med danske normer for øje.
+
+Vi ser allerede resultaterne. Algoritmiske systemer er involveret i kreditbeslutninger, ydelsesbeslutninger, indholdsmoderering og politiarbejde. Danskere, der påvirkes, har ofte ingen klar vej til at klage og ingen måde at vide, at en algoritme overhovedet var involveret.
+
+Jeg beder dig om at støtte dansk lovgivning, der kræver algoritmisk gennemsigtighed, giver individer en meningsfuld ret til at klage og giver en indenlandsk tilsynsmyndighed beføjelse til at undersøge og udstede sanktioner mod skadelige aktører.
+
+Med venlig hilsen`,
+
+                    `Kære folketingsmedlem,
+
+AI-systemer træffer i stigende grad beslutninger, der påvirker danskeres liv. Den retlige ramme har ikke fulgt med. Jeg beder dig om at støtte:
+
+- En dansk lov om algoritmisk ansvar, modelleret på de stærkeste dele af EU's AI Act.
+- En lovbestemt ret til forklaring og klage for individer, der berøres af automatiserede beslutninger.
+- Obligatoriske konsekvensvurderinger, før AI tages i brug i offentlig sektor.
+- Udvidede beføjelser og ressourcer til Datatilsynet til at undersøge AI-systemer.
+- En omhuspligt for platformsoperatører til at forhindre algoritmisk forstærkning af åbenlyst skadeligt indhold.
+
+Disse tiltag beskytter danske værdier uden at fryse innovation. Tak, fordi du overvejer dem.
+
+Med venlig hilsen`,
+
+                    `Kære folketingsmedlem,
+
+Dansk reguleringstradition har altid insisteret på, at magtfulde systemer skal stå til ansvar over for de mennesker, de påvirker. Banker har Finanstilsynet. Læger har Styrelsen for Patientsikkerhed. Virksomheder har Konkurrence- og Forbrugerstyrelsen. Intet af dette skete ved et tilfælde. Det var resultatet af bevidste politiske beslutninger om, at magtfulde aktører ikke skal kunne undergrave offentlighedens tillid.
+
+AI-systemer er nu lige så betydningsfulde som nogen af disse sektorer. De træffer beslutninger om kredit, ansættelse, indhold og i stigende grad om offentlige tjenester. De mangler tilsvarende ansvar. Det bør ikke stå ved magt.
+
+Jeg beder dig om at anvende den danske reguleringstradition på AI. Lovgivning om algoritmisk ansvar, en kompetent tilsynsmyndighed og klare rettigheder for berørte individer er forsinket.
+
+Med venlig hilsen`,
+
+                    `Kære folketingsmedlem,
+
+Jeg har set anbefalingsalgoritmer forme mine børns liv online på måder, jeg ikke samtykkede til og ikke nemt kan vende. Jeg har set venner ramt af uigennemsigtige algoritmiske beslutninger om forsikring og ydelser uden klar vej til at klage. Dette er ikke det land, jeg ønsker, mine børn skal vokse op i.
+
+Disse problemer er ikke uundgåelige. De er resultatet af, at man har valgt bekvemmelighed frem for ansvar. Andre jurisdiktioner lovgiver allerede. Danmark kan gøre det samme, og gøre det godt.
+
+Brug din position til at støtte lovgivning om algoritmisk ansvar i denne valgperiode. Jeg mødes gerne med dig eller skriver mere, hvis det kunne være til hjælp.
+
+Med venlig hilsen`
+                ]
+            }
+        };
+
         // ========== SUBSCRIBE: GOOGLE FORM ==========
         // We post to a Google Form's /formResponse endpoint. Google handles spam,
         // CAPTCHA, and quota; responses land in the linked Google Sheet automatically.
@@ -2690,13 +3678,130 @@ Sincerely,`
                 successContactAnother2: 'Contact another decision maker',
                 footerControlAI: 'Visit ControlAI',
                 footerAIStatement: 'The AI Statement'
+            },
+            sv: {
+                mainTitle: 'Kontakta beslutsfattare',
+                mainSubtitle: 'Hjälp till att sprida kunskap om farorna med artificiell superintelligens till dem som formar svensk offentlig debatt',
+                step0Title: '', // unused for SE; SE uses #stepParty
+                step0Subtitle: '',
+                backToCountry: 'Tillbaka till land',
+                step1BackLabel: 'Tillbaka till val',
+                nameLabel: 'Ditt namn',
+                addressLabel: 'Gatuadress',
+                zipcodeLabel: 'Postnummer och ort',
+                namePlaceholder: 'Skriv ditt namn',
+                addressPlaceholder: 'Exempel: Storgatan 12',
+                zipcodePlaceholder: 'Exempel: 11122 Stockholm',
+                continueLabel: 'Fortsätt',
+                privacyNote: 'Vi kommer att kontakta dig med uppdateringar i framtiden.',
+                optinDesc: 'Ett enda mejl räcker sällan. Trycket fungerar bäst när beslutsfattare hör från väljare varje gång en ny händelse gör AI-risk aktuell. Anmäl dig så hör vi av oss nästa gång, med ett färdigt meddelande att skicka.',
+                optinLabel: 'Är det okej om vi kontaktar dig nästa gång vi behöver din hjälp?',
+                optinEmailPlaceholder: 'din@epost.se',
+                optinCommentsPlaceholder: 'Kommentarer eller förslag om denna app (valfritt)',
+                optinSubmitting: 'Sparar din e-postadress...',
+                optinOk: 'Tack! Vi hör av oss nästa gång.',
+                optinErr: 'Det gick inte att spara e-postadressen. Försök igen eller hoppa över.',
+                optinNeedEmail: 'Ange en e-postadress för att bli kontaktad.',
+                step2BackLabel: 'Tillbaka',
+                step2Title: 'Välj ett ämne',
+                step2PickOne: 'Välj ett ämne',
+                step3BackLabel: 'Tillbaka',
+                step3Title: 'Förhandsgranska ditt meddelande',
+                step3Subtitle: 'Kontrollera innehållet innan du skickar',
+                previewToLabel: 'Till:',
+                previewFromLabel: 'Från:',
+                previewSubjectLabel: 'Ämne:',
+                customMessageLabel: 'Lägg till ett personligt meddelande (valfritt)',
+                customMessagePlaceholder: 'Du kan lägga till en personlig inledning eller avslutning...',
+                openGmail: 'Öppna i Gmail',
+                openOutlook: 'Öppna i Outlook',
+                orLabel: 'eller',
+                openDefault: 'Standardklient för e-post',
+                successTitle: 'Mejlet är klart!',
+                successIntro: (target) => `Ditt mejl till <strong id="successTarget">${target}</strong> är förberett.`,
+                successPickClient: 'Välj din e-postklient:',
+                successDefaultClient: 'Standardklient för e-post',
+                successContactAnother: 'Kontakta en annan person',
+                instructionsTitle: 'Så här skickar du mejlet:',
+                instr1Title: 'Öppna din e-postapp',
+                instr1Body: 'Öppna Gmail, Apple Mail, Outlook eller din föredragna e-postklient.',
+                instr2Title: 'Kopiera e-postadressen',
+                instr2Body: 'Klicka på knappen nedan för att kopiera e-postadressen.',
+                copyAddressBtn: 'Kopiera adress',
+                instr3Title: 'Kopiera mejlets innehåll',
+                instr3Body: 'Klicka på knappen nedan för att kopiera hela mejlet.',
+                copyEmailBtn: 'Kopiera mejlinnehåll',
+                instr4Title: 'Skicka mejlet',
+                instr4Body: 'Klistra in adressen och innehållet och skicka!',
+                successContactAnother2: 'Kontakta en annan beslutsfattare',
+                footerControlAI: 'Besök ControlAI',
+                footerAIStatement: 'AI-uttalandet'
+            },
+            da: {
+                mainTitle: 'Kontakt beslutningstagere',
+                mainSubtitle: 'Hjælp med at sprede viden om farerne ved kunstig superintelligens til dem, der former den danske offentlige debat',
+                step0Title: '', // unused for DK; DK uses #stepParty
+                step0Subtitle: '',
+                backToCountry: 'Tilbage til land',
+                step1BackLabel: 'Tilbage til valg',
+                nameLabel: 'Dit navn',
+                addressLabel: 'Gadeadresse',
+                zipcodeLabel: 'Postnummer og by',
+                namePlaceholder: 'Skriv dit navn',
+                addressPlaceholder: 'Eksempel: Storgade 12',
+                zipcodePlaceholder: 'Eksempel: 1050 København',
+                continueLabel: 'Fortsæt',
+                privacyNote: 'Vi vil kontakte dig med opdateringer i fremtiden.',
+                optinDesc: 'Én enkelt mail er sjældent nok. Presset virker bedst, når beslutningstagere hører fra vælgere, hver gang en ny begivenhed gør AI-risiko aktuel. Tilmeld dig, så hører vi fra os næste gang, med en færdig besked klar til at sende.',
+                optinLabel: 'Er det okay, hvis vi kontakter dig næste gang, vi har brug for din hjælp?',
+                optinEmailPlaceholder: 'din@mail.dk',
+                optinCommentsPlaceholder: 'Kommentarer eller forslag til denne app (valgfrit)',
+                optinSubmitting: 'Gemmer din e-mailadresse...',
+                optinOk: 'Tak! Vi hører fra os næste gang.',
+                optinErr: 'Det lykkedes ikke at gemme e-mailadressen. Prøv igen eller spring over.',
+                optinNeedEmail: 'Angiv en e-mailadresse for at blive kontaktet.',
+                step2BackLabel: 'Tilbage',
+                step2Title: 'Vælg et emne',
+                step2PickOne: 'Vælg ét emne',
+                step3BackLabel: 'Tilbage',
+                step3Title: 'Forhåndsvis din besked',
+                step3Subtitle: 'Kontrollér indholdet, før du sender',
+                previewToLabel: 'Til:',
+                previewFromLabel: 'Fra:',
+                previewSubjectLabel: 'Emne:',
+                customMessageLabel: 'Tilføj en personlig besked (valgfrit)',
+                customMessagePlaceholder: 'Du kan tilføje en personlig indledning eller afslutning...',
+                openGmail: 'Åbn i Gmail',
+                openOutlook: 'Åbn i Outlook',
+                orLabel: 'eller',
+                openDefault: 'Standard e-mailklient',
+                successTitle: 'Mailen er klar!',
+                successIntro: (target) => `Din mail til <strong id="successTarget">${target}</strong> er forberedt.`,
+                successPickClient: 'Vælg din e-mailklient:',
+                successDefaultClient: 'Standard e-mailklient',
+                successContactAnother: 'Kontakt en anden person',
+                instructionsTitle: 'Sådan sender du mailen:',
+                instr1Title: 'Åbn din e-mailapp',
+                instr1Body: 'Åbn Gmail, Apple Mail, Outlook eller din foretrukne e-mailklient.',
+                instr2Title: 'Kopiér e-mailadressen',
+                instr2Body: 'Klik på knappen nedenfor for at kopiere e-mailadressen.',
+                copyAddressBtn: 'Kopiér adresse',
+                instr3Title: 'Kopiér mailens indhold',
+                instr3Body: 'Klik på knappen nedenfor for at kopiere hele mailen.',
+                copyEmailBtn: 'Kopiér mailindhold',
+                instr4Title: 'Send mailen',
+                instr4Body: 'Indsæt adressen og indholdet, og send!',
+                successContactAnother2: 'Kontakt en anden beslutningstager',
+                footerControlAI: 'Besøg ControlAI',
+                footerAIStatement: 'AI-erklæringen'
             }
         };
 
         // ========== STATE ==========
 
-        let currentCountry = null; // 'no' or 'au'
+        let currentCountry = null; // 'no', 'au', 'se', or 'dk'
         let currentRegion = null;  // 'nsw', 'vic', ... when AU + region
+        let currentParty = null;   // 's', 'm', ... when SE/DK + party
         let selectedPM = false;    // true when AU PM card chosen
         let currentMode = null;    // 'editor' or 'politician' (NO only)
         let selectedTarget = null;
@@ -2711,7 +3816,10 @@ Sincerely,`
         }
 
         function getLang() {
-            return currentCountry === 'au' ? 'au' : 'no';
+            if (currentCountry === 'au') return 'au';
+            if (currentCountry === 'se') return 'sv';
+            if (currentCountry === 'dk') return 'da';
+            return 'no';
         }
 
         function s() {
@@ -2722,12 +3830,64 @@ Sincerely,`
             if (currentCountry === 'au') {
                 return selectedPM ? primeMinisterTemplates : australianPoliticianTemplates;
             }
+            if (currentCountry === 'se') {
+                return swedishPoliticianTemplates;
+            }
+            if (currentCountry === 'dk') {
+                return danishPoliticianTemplates;
+            }
             return currentMode === 'editor' ? editorEmailTemplates : politicianEmailTemplates;
         }
 
         function getTopicsForLang() {
-            return currentCountry === 'au' ? topicsEN : topics;
+            if (currentCountry === 'au') return topicsEN;
+            if (currentCountry === 'se') return topicsSV;
+            if (currentCountry === 'dk') return topicsDA;
+            return topics;
         }
+
+        // Party-based countries (Sweden, Denmark) share one code path.
+        function isPartyCountry() {
+            return currentCountry === 'se' || currentCountry === 'dk';
+        }
+
+        function getParties() {
+            if (currentCountry === 'se') return swedishParties;
+            if (currentCountry === 'dk') return danishParties;
+            return [];
+        }
+
+        function getPartyPoliticians() {
+            if (currentCountry === 'se') return swedishPoliticians;
+            if (currentCountry === 'dk') return danishPoliticians;
+            return {};
+        }
+
+        // Localised copy for the party step, keyed by country.
+        const partyStepStrings = {
+            se: {
+                back: 'Tillbaka till land',
+                title: 'Vem vill du kontakta?',
+                subtitle: 'Välj ett parti för att se riksdagsledamöter du kan skriva till om AI-risker.',
+                pick: 'Välj parti',
+                mainTitle: 'Kontakta riksdagsledamöter',
+                step1Title: (party) => `Välj en ledamot från ${party}`,
+                step1Subtitle: 'Välj den riksdagsledamot du vill skriva till.',
+                step2Subtitle: 'Be om politisk handling mot AI-risker',
+                recommended: 'Rekommenderad'
+            },
+            dk: {
+                back: 'Tilbage til land',
+                title: 'Hvem vil du kontakte?',
+                subtitle: 'Vælg et parti for at se folketingsmedlemmer, du kan skrive til om AI-risici.',
+                pick: 'Vælg parti',
+                mainTitle: 'Kontakt folketingsmedlemmer',
+                step1Title: (party) => `Vælg et medlem fra ${party}`,
+                step1Subtitle: 'Vælg det folketingsmedlem, du vil skrive til.',
+                step2Subtitle: 'Bed om politisk handling mod AI-risici',
+                recommended: 'Anbefalet'
+            }
+        };
 
         function setText(id, text) {
             const el = document.getElementById(id);
@@ -2847,6 +4007,29 @@ Sincerely,`
             `).join('');
         }
 
+        function renderParties() {
+            const grid = document.getElementById('partyGrid');
+            grid.innerHTML = getParties().map((p) => `
+                <div class="politician-card" onclick="selectParty('${p.id}')" style="border-left: 5px solid ${p.color};">
+                    <h3>${p.name}</h3>
+                    <p class="party">${p.short}</p>
+                </div>
+            `).join('');
+        }
+
+        function renderPartyPoliticians() {
+            const grid = document.getElementById('politicianGrid');
+            const recommended = partyStepStrings[currentCountry].recommended;
+            const list = getPartyPoliticians()[currentParty] || [];
+            grid.innerHTML = list.map((pol, index) => `
+                <div class="politician-card${pol.highlight ? ' highlight' : ''}" onclick="selectTarget(${index})" id="target-${index}">
+                    <h3>${pol.name}${pol.highlight ? `<span class="tag-anbefalt">${recommended}</span>` : ''}</h3>
+                    <p class="party">${pol.party}</p>
+                    <p class="committee">${pol.committee}</p>
+                </div>
+            `).join('');
+        }
+
         function renderTopics() {
             const grid = document.getElementById('topicsGrid');
             const list = getTopicsForLang();
@@ -2865,6 +4048,7 @@ Sincerely,`
             currentCountry = country;
             currentMode = null;
             currentRegion = null;
+            currentParty = null;
             selectedPM = false;
             selectedTarget = null;
             selectedTopic = null;
@@ -2873,11 +4057,37 @@ Sincerely,`
 
             if (country === 'no') {
                 document.getElementById('step0').style.display = 'block';
-            } else {
+            } else if (country === 'au') {
                 renderRegions();
                 document.getElementById('stepAU').style.display = 'block';
+            } else if (isPartyCountry()) {
+                const ps = partyStepStrings[country];
+                document.getElementById('stepPartyBack').textContent = ps.back;
+                document.getElementById('stepPartyTitle').textContent = ps.title;
+                document.getElementById('stepPartySubtitle').textContent = ps.subtitle;
+                document.getElementById('stepPartyPick').textContent = ps.pick;
+                renderParties();
+                document.getElementById('stepParty').style.display = 'block';
             }
             updateProgress(1);
+        }
+
+        function selectParty(partyId) {
+            currentParty = partyId;
+            selectedPM = false;
+            currentMode = 'politician'; // party countries use politician templates
+            selectedTarget = null;
+            const ps = partyStepStrings[currentCountry];
+            const party = getParties().find(p => p.id === partyId);
+            document.getElementById('mainTitle').textContent = ps.mainTitle;
+            document.getElementById('step1Title').textContent = ps.step1Title(party.name);
+            document.getElementById('step1Subtitle').textContent = ps.step1Subtitle;
+            document.getElementById('step2Subtitle').textContent = ps.step2Subtitle;
+            document.getElementById('newspaperGrid').style.display = 'none';
+            document.getElementById('politicianGrid').style.display = 'grid';
+            renderPartyPoliticians();
+            renderTopics();
+            goToStep1();
         }
 
         function selectMode(mode) {
@@ -2948,6 +4158,8 @@ Sincerely,`
             if (targetEl) targetEl.classList.add('selected');
             if (currentCountry === 'au') {
                 selectedTarget = australianPoliticians[currentRegion][index];
+            } else if (isPartyCountry()) {
+                selectedTarget = getPartyPoliticians()[currentParty][index];
             } else {
                 selectedTarget = currentMode === 'editor' ? newspapers[index] : politicians[index];
             }
@@ -2988,7 +4200,7 @@ Sincerely,`
         }
 
         function hideAll() {
-            ['stepCountry', 'step0', 'stepAU', 'step1', 'step2', 'step3', 'successPage', 'successPagePM'].forEach(id => {
+            ['stepCountry', 'step0', 'stepAU', 'stepParty', 'step1', 'step2', 'step3', 'successPage', 'successPagePM'].forEach(id => {
                 const el = document.getElementById(id);
                 if (el) el.style.display = 'none';
             });
@@ -2998,6 +4210,7 @@ Sincerely,`
             currentCountry = null;
             currentMode = null;
             currentRegion = null;
+            currentParty = null;
             selectedPM = false;
             selectedTarget = null;
             selectedTopic = null;
@@ -3079,15 +4292,15 @@ Sincerely,`
 
         // Back-button dispatchers
         function backFromStep1() {
+            hideAll();
             if (currentCountry === 'au') {
-                hideAll();
                 document.getElementById('stepAU').style.display = 'block';
-                updateProgress(1);
+            } else if (isPartyCountry()) {
+                document.getElementById('stepParty').style.display = 'block';
             } else {
-                hideAll();
                 document.getElementById('step0').style.display = 'block';
-                updateProgress(1);
             }
+            updateProgress(1);
         }
 
         function backFromStep2() {
@@ -3167,9 +4380,16 @@ Sincerely,`
             }
             status.textContent = t.optinSubmitting;
             status.className = 'optin-status';
-            const countryLabel = currentCountry === 'no' ? 'Norway' : (currentCountry === 'au' ? 'Australia' : '');
-            const regionObj = currentRegion ? australianRegions.find(r => r.id === currentRegion) : null;
-            const regionLabel = regionObj ? regionObj.name : (selectedPM ? 'Prime Minister' : '');
+            const countryNames = { no: 'Norway', au: 'Australia', se: 'Sweden', dk: 'Denmark' };
+            const countryLabel = countryNames[currentCountry] || '';
+            let regionLabel = '';
+            if (currentCountry === 'au') {
+                const regionObj = currentRegion ? australianRegions.find(r => r.id === currentRegion) : null;
+                regionLabel = regionObj ? regionObj.name : (selectedPM ? 'Prime Minister' : '');
+            } else if (isPartyCountry() && currentParty) {
+                const partyObj = getParties().find(p => p.id === currentParty);
+                regionLabel = partyObj ? partyObj.name : '';
+            }
             const data = {
                 email: email,
                 country: countryLabel,
