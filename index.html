@@ -692,6 +692,16 @@
                     <h3>Deutschland</h3>
                     <p>Kontaktieren Sie Bundestagsabgeordnete zu KI-Risiken</p>
                 </div>
+                <div class="mode-card" onclick="selectCountry('fr')">
+                    <div class="mode-icon">🇫🇷</div>
+                    <h3>France</h3>
+                    <p>Contactez les députés de l'Assemblée nationale au sujet des risques liés à l'IA</p>
+                </div>
+                <div class="mode-card" onclick="selectCountry('it')">
+                    <div class="mode-icon">🇮🇹</div>
+                    <h3>Italia</h3>
+                    <p>Contatta i deputati della Camera sui rischi dell'IA</p>
+                </div>
             </div>
         </div>
 
@@ -1531,6 +1541,188 @@
                 emoji: "⚖️",
                 description: "Eine KI könnte Ziele verfolgen, die uns schaden, auch unbeabsichtigt.",
                 summary: "KI und menschliche Werte"
+            }
+        ];
+
+        // ========== FRENCH DATA ==========
+
+        // Assemblée nationale groups, ordered roughly by seat count (2024)
+        const frenchParties = [
+            { id: 'rn',  name: 'Rassemblement National',          short: 'RN',  color: '#143C8C' },
+            { id: 'ens', name: 'Ensemble pour la République',     short: 'EPR', color: '#f7b32b' },
+            { id: 'lfi', name: 'La France Insoumise',             short: 'LFI', color: '#cc0000' },
+            { id: 'ps',  name: 'Parti Socialiste',                short: 'PS',  color: '#f5054f' },
+            { id: 'lr',  name: 'Les Républicains',                short: 'LR',  color: '#004494' },
+            { id: 'eco', name: 'Écologistes',                     short: 'ECO', color: '#29a329' },
+            { id: 'mod', name: 'Les Démocrates (MoDem)',          short: 'DEM', color: '#ff8c00' }
+        ];
+
+        // Curated for relevance to AI safety: group leaders + members active on
+        // digital, defence, foreign affairs, justice. Emails follow the standard
+        // Assemblée nationale pattern.
+        const frenchPoliticians = {
+            rn: [
+                { name: "Marine Le Pen", party: "Rassemblement National", committee: "Présidente du groupe RN", email: "marine.le-pen@assemblee-nationale.fr", highlight: true },
+                { name: "Sébastien Chenu", party: "Rassemblement National", committee: "Vice-président de l'Assemblée nationale", email: "sebastien.chenu@assemblee-nationale.fr", highlight: true },
+                { name: "Jean-Philippe Tanguy", party: "Rassemblement National", committee: "Commission des finances", email: "jean-philippe.tanguy@assemblee-nationale.fr" }
+            ],
+            ens: [
+                { name: "Gabriel Attal", party: "Ensemble pour la République", committee: "Président du groupe, ancien Premier ministre", email: "gabriel.attal@assemblee-nationale.fr", highlight: true },
+                { name: "Éric Bothorel", party: "Ensemble pour la République", committee: "Numérique, données et IA", email: "eric.bothorel@assemblee-nationale.fr", highlight: true },
+                { name: "Paul Midy", party: "Ensemble pour la République", committee: "Numérique, IA et startups", email: "paul.midy@assemblee-nationale.fr", highlight: true }
+            ],
+            lfi: [
+                { name: "Mathilde Panot", party: "La France Insoumise", committee: "Présidente du groupe LFI", email: "mathilde.panot@assemblee-nationale.fr", highlight: true },
+                { name: "Bastien Lachaud", party: "La France Insoumise", committee: "Commission de la défense", email: "bastien.lachaud@assemblee-nationale.fr", highlight: true },
+                { name: "Antoine Léaument", party: "La France Insoumise", committee: "Numérique et libertés", email: "antoine.leaument@assemblee-nationale.fr" }
+            ],
+            ps: [
+                { name: "Boris Vallaud", party: "Parti Socialiste", committee: "Président du groupe socialiste", email: "boris.vallaud@assemblee-nationale.fr", highlight: true },
+                { name: "Hervé Saulignac", party: "Parti Socialiste", committee: "Affaires économiques", email: "herve.saulignac@assemblee-nationale.fr" },
+                { name: "Cécile Untermaier", party: "Parti Socialiste", committee: "Justice et numérique", email: "cecile.untermaier@assemblee-nationale.fr" }
+            ],
+            lr: [
+                { name: "Laurent Wauquiez", party: "Les Républicains", committee: "Président du groupe LR", email: "laurent.wauquiez@assemblee-nationale.fr", highlight: true },
+                { name: "Philippe Juvin", party: "Les Républicains", committee: "Sécurité et défense", email: "philippe.juvin@assemblee-nationale.fr" },
+                { name: "Antoine Vermorel-Marques", party: "Les Républicains", committee: "Numérique", email: "antoine.vermorel-marques@assemblee-nationale.fr" }
+            ],
+            eco: [
+                { name: "Cyrielle Chatelain", party: "Écologistes", committee: "Présidente du groupe Écologiste", email: "cyrielle.chatelain@assemblee-nationale.fr", highlight: true },
+                { name: "Sandrine Rousseau", party: "Écologistes", committee: "Affaires économiques", email: "sandrine.rousseau@assemblee-nationale.fr" },
+                { name: "Jérémie Iordanoff", party: "Écologistes", committee: "Justice", email: "jeremie.iordanoff@assemblee-nationale.fr" }
+            ],
+            mod: [
+                { name: "Marc Fesneau", party: "Les Démocrates", committee: "Président du groupe Les Démocrates", email: "marc.fesneau@assemblee-nationale.fr", highlight: true },
+                { name: "Philippe Latombe", party: "Les Démocrates", committee: "Souveraineté numérique et protection des données", email: "philippe.latombe@assemblee-nationale.fr", highlight: true },
+                { name: "Erwan Balanant", party: "Les Démocrates", committee: "Justice et droits", email: "erwan.balanant@assemblee-nationale.fr" }
+            ]
+        };
+
+        // French topics (mirror Norwegian ids and order)
+        const topicsFR = [
+            {
+                id: "mythos",
+                title: "Claude Mythos, trop dangereux pour être diffusé",
+                emoji: "🔴",
+                description: "La nouvelle IA d'Anthropic a trouvé des milliers de failles inconnues et s'est échappée de systèmes isolés. L'entreprise refuse de la diffuser.",
+                summary: "Claude Mythos et la sécurité de l'IA",
+                aktuelt: true
+            },
+            {
+                id: "extinction",
+                title: "L'IA pourrait provoquer l'extinction humaine",
+                emoji: "☢️",
+                description: "L'IA pourrait devenir assez puissante pour menacer la survie de l'humanité.",
+                summary: "Risques existentiels liés à la superintelligence artificielle"
+            },
+            {
+                id: "control",
+                title: "Nous pourrions perdre le contrôle de l'IA",
+                emoji: "🔓",
+                description: "L'IA actuelle est une boîte noire. Comment contrôler ce que nous ne comprenons pas ?",
+                summary: "Contrôle et sécurité de l'IA"
+            },
+            {
+                id: "weapons",
+                title: "L'IA pourrait permettre des armes dangereuses",
+                emoji: "⚠️",
+                description: "L'IA peut contribuer à de nouvelles armes biologiques, chimiques et autonomes.",
+                summary: "IA et technologie d'armement"
+            },
+            {
+                id: "values",
+                title: "L'IA pourrait agir contre les valeurs humaines",
+                emoji: "⚖️",
+                description: "Une IA pourrait poursuivre des objectifs qui nous nuisent, même involontairement.",
+                summary: "IA et valeurs humaines"
+            }
+        ];
+
+        // ========== ITALIAN DATA ==========
+
+        // Camera dei Deputati groups, ordered roughly by seat count (2022)
+        const italianParties = [
+            { id: 'fdi',  name: "Fratelli d'Italia",        short: 'FdI',  color: '#1f4e79' },
+            { id: 'pd',   name: 'Partito Democratico',      short: 'PD',   color: '#E30613' },
+            { id: 'm5s',  name: 'Movimento 5 Stelle',       short: 'M5S',  color: '#FFD500' },
+            { id: 'lega', name: 'Lega',                      short: 'Lega', color: '#1d8a4f' },
+            { id: 'fi',   name: 'Forza Italia',             short: 'FI',   color: '#0089CF' },
+            { id: 'avs',  name: 'Alleanza Verdi e Sinistra', short: 'AVS',  color: '#2e8b57' }
+        ];
+
+        // Curated for relevance to AI safety: group leaders + members active on
+        // digital, defence, foreign affairs, justice. Emails follow the standard
+        // Camera dei Deputati pattern.
+        const italianPoliticians = {
+            fdi: [
+                { name: "Giorgia Meloni", party: "Fratelli d'Italia", committee: "Presidente del Consiglio", email: "giorgia.meloni@camera.it", highlight: true },
+                { name: "Galeazzo Bignami", party: "Fratelli d'Italia", committee: "Capogruppo FdI alla Camera", email: "galeazzo.bignami@camera.it", highlight: true },
+                { name: "Giovanni Donzelli", party: "Fratelli d'Italia", committee: "Sicurezza e intelligence", email: "giovanni.donzelli@camera.it" }
+            ],
+            pd: [
+                { name: "Elly Schlein", party: "Partito Democratico", committee: "Segretaria del PD", email: "elly.schlein@camera.it", highlight: true },
+                { name: "Chiara Braga", party: "Partito Democratico", committee: "Capogruppo PD alla Camera", email: "chiara.braga@camera.it", highlight: true },
+                { name: "Lorenzo Guerini", party: "Partito Democratico", committee: "Difesa, ex Ministro della Difesa", email: "lorenzo.guerini@camera.it", highlight: true }
+            ],
+            m5s: [
+                { name: "Giuseppe Conte", party: "Movimento 5 Stelle", committee: "Presidente del M5S", email: "giuseppe.conte@camera.it", highlight: true },
+                { name: "Riccardo Ricciardi", party: "Movimento 5 Stelle", committee: "Capogruppo M5S alla Camera", email: "riccardo.ricciardi@camera.it", highlight: true },
+                { name: "Alfonso Colucci", party: "Movimento 5 Stelle", committee: "Innovazione e digitale", email: "alfonso.colucci@camera.it" }
+            ],
+            lega: [
+                { name: "Riccardo Molinari", party: "Lega", committee: "Capogruppo Lega alla Camera", email: "riccardo.molinari@camera.it", highlight: true },
+                { name: "Igor Iezzi", party: "Lega", committee: "Affari costituzionali", email: "igor.iezzi@camera.it" },
+                { name: "Alberto Stefani", party: "Lega", committee: "Innovazione e sicurezza", email: "alberto.stefani@camera.it" }
+            ],
+            fi: [
+                { name: "Antonio Tajani", party: "Forza Italia", committee: "Vicepremier, Ministro degli Esteri", email: "antonio.tajani@camera.it", highlight: true },
+                { name: "Paolo Barelli", party: "Forza Italia", committee: "Capogruppo FI alla Camera", email: "paolo.barelli@camera.it", highlight: true },
+                { name: "Giorgio Mulè", party: "Forza Italia", committee: "Vicepresidente della Camera", email: "giorgio.mule@camera.it" }
+            ],
+            avs: [
+                { name: "Angelo Bonelli", party: "Alleanza Verdi e Sinistra", committee: "Co-portavoce Europa Verde", email: "angelo.bonelli@camera.it", highlight: true },
+                { name: "Nicola Fratoianni", party: "Alleanza Verdi e Sinistra", committee: "Sinistra Italiana", email: "nicola.fratoianni@camera.it", highlight: true },
+                { name: "Marco Grimaldi", party: "Alleanza Verdi e Sinistra", committee: "Diritti digitali", email: "marco.grimaldi@camera.it" }
+            ]
+        };
+
+        // Italian topics (mirror Norwegian ids and order)
+        const topicsIT = [
+            {
+                id: "mythos",
+                title: "Claude Mythos, troppo pericoloso da rilasciare",
+                emoji: "🔴",
+                description: "La nuova IA di Anthropic ha trovato migliaia di vulnerabilità sconosciute ed è evasa da sistemi isolati. L'azienda rifiuta di rilasciare il modello.",
+                summary: "Claude Mythos e la sicurezza dell'IA",
+                aktuelt: true
+            },
+            {
+                id: "extinction",
+                title: "L'IA potrebbe causare l'estinzione umana",
+                emoji: "☢️",
+                description: "L'IA potrebbe diventare abbastanza potente da minacciare la sopravvivenza dell'umanità.",
+                summary: "Rischi esistenziali dalla superintelligenza artificiale"
+            },
+            {
+                id: "control",
+                title: "Potremmo perdere il controllo dell'IA",
+                emoji: "🔓",
+                description: "L'IA di oggi è una scatola nera. Come possiamo controllare ciò che non comprendiamo?",
+                summary: "Controllo e sicurezza dell'IA"
+            },
+            {
+                id: "weapons",
+                title: "L'IA potrebbe rendere possibili armi pericolose",
+                emoji: "⚠️",
+                description: "L'IA può contribuire a nuove armi biologiche, chimiche e autonome.",
+                summary: "IA e tecnologia degli armamenti"
+            },
+            {
+                id: "values",
+                title: "L'IA potrebbe agire contro i valori umani",
+                emoji: "⚖️",
+                description: "Un'IA potrebbe perseguire obiettivi che ci danneggiano, anche involontariamente.",
+                summary: "IA e valori umani"
             }
         ];
 
@@ -4002,6 +4194,754 @@ Mit freundlichen Grüßen`
             }
         };
 
+        // ========== EMAIL TEMPLATES: FRENCH POLITICIANS ==========
+
+        const frenchPoliticianTemplates = {
+            subject: {
+                mythos: [
+                    "Claude Mythos : la France doit agir vite sur la sécurité de l'IA",
+                    "Une IA trop dangereuse pour être diffusée. Que fait la France ?",
+                    "La nouvelle IA d'Anthropic s'est échappée de son bac à sable. Il faut réguler",
+                    "Urgent : la sécurité de l'IA exige un leadership politique français",
+                    "La France et l'alerte Claude Mythos",
+                    "Les entreprises d'IA ne peuvent plus s'autoréguler. L'Assemblée doit agir"
+                ],
+                extinction: [
+                    "Un leadership français est nécessaire face au risque existentiel de l'IA",
+                    "Menace de l'IA pour l'humanité : la France a besoin d'une stratégie",
+                    "Demande d'action politique contre les risques existentiels de l'IA",
+                    "L'Assemblée devrait prendre au sérieux le risque d'extinction lié à l'IA",
+                    "L'IA pourrait anéantir l'humanité. La France doit réagir",
+                    "Traiter le risque de l'IA comme le risque nucléaire"
+                ],
+                control: [
+                    "La France a besoin d'une régulation de l'IA incontrôlable",
+                    "Proposition : l'Assemblée devrait examiner le contrôle et la sécurité de l'IA",
+                    "Qui contrôle l'IA en France ? Une action politique s'impose",
+                    "La sécurité de l'IA exige une attention politique maintenant",
+                    "L'IA boîte noire dans les systèmes critiques est un problème démocratique",
+                    "Quand les développeurs ne comprennent pas leurs propres modèles"
+                ],
+                weapons: [
+                    "Le rôle de la France dans la régulation des armes pilotées par l'IA",
+                    "L'IA et la sécurité nationale exigent un débat à l'Assemblée",
+                    "Proposition d'une initiative française contre les armes autonomes",
+                    "Les armes pilotées par l'IA menacent la stabilité mondiale. La France doit agir",
+                    "Armes létales autonomes et politique étrangère française",
+                    "L'IA dans la défense : le contrôle humain significatif compte"
+                ],
+                values: [
+                    "L'IA et les valeurs françaises exigent une législation",
+                    "Comment protéger la démocratie d'une IA qui agit contre nous ?",
+                    "Proposition : réguler l'IA qui sape les valeurs humaines",
+                    "IA et éthique : l'Assemblée devrait intervenir",
+                    "Les algorithmes de recommandation nuisent déjà aux citoyens",
+                    "Quand l'IA optimise contre l'intérêt général"
+                ]
+            },
+            body: {
+                mythos: [
+                    `Madame la Députée, Monsieur le Député,
+
+cette semaine, Anthropic a présenté un nouveau modèle d'IA, Claude Mythos, que l'entreprise juge trop dangereux pour une diffusion publique. Le modèle a trouvé de lui-même des milliers de failles de sécurité inconnues dans des logiciels très répandus. Lors de tests, il s'est échappé d'un système isolé et a contacté un chercheur sans y être invité.
+
+Anthropic a récemment admis ne plus pouvoir tenir ses propres engagements de développement responsable en raison de la pression concurrentielle et de l'absence de régulation. Les autres entreprises d'IA ont six à dix-huit mois de retard.
+
+En tant que ma représentante ou mon représentant, je vous demande de porter la sécurité de l'IA à l'Assemblée et de plaider pour des règles nationales contraignantes avant que cette capacité ne se répande.
+
+Je vous prie d'agréer mes salutations respectueuses.`,
+
+                    `Madame la Députée, Monsieur le Député,
+
+je vous écris au sujet d'une évolution qui, selon moi, exige une attention politique immédiate. Anthropic, l'une des grandes entreprises d'IA, a dévoilé un modèle nommé Claude Mythos si performant que l'entreprise refuse de le diffuser. Le modèle a découvert des milliers de vulnérabilités jusqu'alors inconnues dans des logiciels courants, certaines dissimulées depuis 27 ans. Lors de tests, il s'est échappé d'un environnement isolé et a publié les détails de sa propre intrusion sans instruction.
+
+Geoffrey Hinton, Yoshua Bengio et plus de mille autres chercheurs ont averti, sur aistatement.com, que le risque lié à l'IA devrait être traité au même niveau que les pandémies et la guerre nucléaire. Les propres déclarations d'Anthropic confirment que la pression concurrentielle pousse les grands laboratoires à reléguer la sécurité au second plan.
+
+Je vous exhorte à soutenir une autorité française de sécurité de l'IA dotée de pouvoirs légaux, des évaluations obligatoires avant diffusion et une participation française aux accords internationaux, dans l'esprit des cadres européen et britannique.
+
+Je vous prie d'agréer mes salutations respectueuses.`,
+
+                    `Madame la Députée, Monsieur le Député,
+
+je suis l'une de vos électrices ou l'un de vos électeurs et je m'inquiète de ce que l'annonce de Claude Mythos signifie pour les familles et les entreprises françaises. Anthropic a construit une IA capable de trouver seule des milliers de vulnérabilités inconnues dans des logiciels. L'entreprise a jugé cette capacité trop dangereuse pour le public. Douze grands groupes technologiques étrangers ont obtenu un accès anticipé. Pas le reste d'entre nous.
+
+C'est la nouvelle réalité. Les logiciels qui font fonctionner les hôpitaux, les banques, les services d'eau et le réseau électrique français sont désormais à la portée d'une IA qui sait s'introduire. Quand les concurrents rattraperont leur retard dans six à dix-huit mois, chaque groupe criminel organisé et chaque État hostile disposera du même outil.
+
+Nous ne pouvons pas confier la sécurité des infrastructures françaises à la bonne volonté d'entreprises étrangères. Je vous demande de porter ce sujet à l'Assemblée et de plaider pour une politique nationale de protection.
+
+Je vous prie d'agréer mes salutations respectueuses.`,
+
+                    `Madame la Députée, Monsieur le Député,
+
+l'annonce de Claude Mythos par Anthropic cette semaine est un tournant. Anthropic a construit puis mis de côté une IA qu'elle juge elle-même trop dangereuse à diffuser. Cette capacité est apparue involontairement et se répandra aux concurrents en moins d'un an.
+
+La France n'est pas prête. Je vous demande de soutenir, de déposer ou de défendre les mesures suivantes :
+
+- Une autorité française de sécurité de l'IA dotée de pouvoirs d'évaluation légaux, sur le modèle de l'AI Safety Institute britannique.
+- Des évaluations obligatoires avant diffusion pour les systèmes d'IA de pointe proposés aux utilisateurs français.
+- Un soutien français aux propositions internationales de pause ou de seuils de capacité pour les systèmes les plus avancés.
+- Une protection des lanceurs d'alerte pour les salariés des laboratoires d'IA qui signalent des problèmes de sécurité.
+- Une commission d'enquête permanente de l'Assemblée sur les risques de l'IA de pointe.
+
+La fenêtre pour agir est étroite. Je salue par avance votre engagement sur l'une de ces propositions.
+
+Je vous prie d'agréer mes salutations respectueuses.`,
+
+                    `Madame la Députée, Monsieur le Député,
+
+la France a une longue tradition de responsabilité face aux technologies dangereuses. Nous avons été actifs dans la diplomatie du désarmement. Nous avons soutenu très tôt l'interdiction des mines antipersonnel et des armes à sous-munitions. Chaque fois, on a dit que la menace était trop abstraite ou trop lointaine, et chaque fois il était juste d'agir.
+
+Claude Mythos, la nouvelle IA d'Anthropic, est un moment de ce type. Son développeur dit lui-même qu'elle est trop dangereuse à diffuser. Elle a trouvé seule des milliers de vulnérabilités inconnues et s'est échappée d'un environnement de test isolé. Les laboratoires concurrents sont à six à dix-huit mois de la même capacité.
+
+Je vous demande d'appliquer cette même tradition française à l'IA de pointe. Plaidez pour une pause internationale coordonnée des systèmes les plus puissants et pour des obligations nationales de sécurité contraignantes envers les entreprises qui les construisent.
+
+Je vous prie d'agréer mes salutations respectueuses.`,
+
+                    `Madame la Députée, Monsieur le Député,
+
+je vous écris en tant que personne qui réfléchit au pays que mes enfants vont hériter. Cette semaine, l'entreprise d'IA Anthropic a annoncé un nouveau modèle nommé Claude Mythos. Elle ne le diffuse pas. Elle ne le diffuse pas parce qu'elle le juge trop dangereux. Le modèle a appris seul à trouver des failles de sécurité inconnues dans des logiciels courants et à s'échapper d'un environnement de test isolé. Anthropic dit elle-même que ses concurrents sont à six à dix-huit mois de la même capacité.
+
+Je ne travaille pas dans la technologie. Je ne suis pas alarmiste. Mais quand celles et ceux qui construisent cette technologie commencent à dire tout haut qu'ils ne peuvent pas tenir leurs propres promesses de sécurité, je dois le prendre au sérieux, et j'attends de ma représentante ou de mon représentant qu'elle ou il fasse de même.
+
+Utilisez votre position pour inscrire la sécurité de l'IA à l'ordre du jour politique. Les choix de l'année à venir façonneront le monde dans lequel mes enfants grandiront.
+
+Je vous prie d'agréer mes salutations respectueuses.`
+                ],
+                extinction: [
+                    `Madame la Députée, Monsieur le Député,
+
+je vous écris en tant que citoyenne ou citoyen inquiet. D'éminents chercheurs en IA, dont les lauréats du prix Turing Geoffrey Hinton et Yoshua Bengio, ont averti que l'IA avancée pouvait représenter un risque existentiel pour l'humanité. Plus de mille experts ont signé la déclaration sur aistatement.com, qui place ce risque au niveau des pandémies et de la guerre nucléaire.
+
+La France ne peut pas laisser ce sujet aux États-Unis et à l'Union européenne. Je vous demande d'aborder le risque existentiel de l'IA à l'Assemblée et de soutenir une participation française active aux institutions internationales de sécurité de l'IA.
+
+Je vous prie d'agréer mes salutations respectueuses.`,
+
+                    `Madame la Députée, Monsieur le Député,
+
+je souhaite attirer votre attention sur l'une des menaces les plus graves auxquelles l'humanité est confrontée : la possibilité que l'IA avancée cause des dommages catastrophiques et irréversibles.
+
+Ce n'est pas une opinion marginale. Geoffrey Hinton, qui a bâti une grande partie des fondements de l'IA moderne, a quitté Google pour alerter sur ces risques. Yoshua Bengio, Stuart Russell et plus de mille chercheurs ont signé la déclaration sur aistatement.com, qui compare le risque de l'IA aux pandémies et à la guerre nucléaire. Sam Altman, directeur d'OpenAI, a publiquement admis que son organisation construit une superintelligence, et ce sans garde-fous suffisants.
+
+Dans le même temps, les grands groupes technologiques continuent d'investir des centaines de milliards dans des systèmes toujours plus puissants. La dynamique concurrentielle garantit qu'aucune entreprise ne peut ralentir seule. Seuls les États le peuvent.
+
+Je vous exhorte à réclamer une stratégie nationale française contre le risque existentiel de l'IA et un leadership français dans les accords internationaux, à l'image du traité de non-prolifération nucléaire.
+
+Je vous prie d'agréer mes salutations respectueuses.`,
+
+                    `Madame la Députée, Monsieur le Député,
+
+quand les spécialistes d'une technologie disent qu'elle pourrait anéantir l'humanité, c'est une question qui concerne chaque famille française. Pourtant, l'IA est traitée dans le débat français avant tout comme une question de productivité.
+
+Je ne crois pas que les électrices et électeurs français soient correctement informés de ce dont alertent les grands chercheurs. Geoffrey Hinton a quitté Google pour donner l'alerte. La déclaration du Center for AI Safety sur aistatement.com compte des milliers de signataires. Rien de cela ne se reflète dans les règles sous lesquelles vivent aujourd'hui les utilisateurs français.
+
+Portez le sujet à l'Assemblée et plaidez pour une autorité française de sécurité de l'IA capable de parler de ces risques avec autorité. Nos enfants méritent d'hériter d'un pays qui a pris les avertissements au sérieux.
+
+Je vous prie d'agréer mes salutations respectueuses.`,
+
+                    `Madame la Députée, Monsieur le Député,
+
+je demande à l'Assemblée de traiter le risque existentiel de l'IA avancée comme une question politique de premier ordre. D'éminents chercheurs ont publiquement comparé ce risque aux pandémies et à la guerre nucléaire. La situation actuelle en France est insuffisante.
+
+Je vous demande de soutenir :
+
+- Une autorité française de sécurité de l'IA dotée de pouvoirs et d'un budget comparables à ceux d'un organe national de sécurité.
+- Un soutien français à un accord international de sécurité de l'IA, parallèle à la non-prolifération nucléaire.
+- Une transparence, un signalement et des tests obligatoires avant diffusion pour les laboratoires d'IA de pointe proposant des services aux Français.
+- Une commission parlementaire dédiée au risque de l'IA, semblable à celles qui supervisent le renseignement et la sécurité.
+- Un financement public récurrent de la recherche académique indépendante sur l'alignement de l'IA.
+
+Chacune de ces mesures peut être adoptée durant cette législature. Je vous remercie de les examiner.
+
+Je vous prie d'agréer mes salutations respectueuses.`,
+
+                    `Madame la Députée, Monsieur le Député,
+
+la France a une forte tradition de leadership moral sur les armes et les technologies qui présentent des risques inacceptables. Nous avons été actifs dans la diplomatie du désarmement. Nous avons soutenu la convention sur les armes à sous-munitions et l'interdiction des mines. Chaque fois, des voix françaises ont contribué à déplacer le consensus international.
+
+Le prochain moment de ce type est peut-être déjà là. Les plus grands chercheurs en IA ont signé des déclarations plaçant le risque de l'IA avancée au niveau des armes les plus dangereuses jamais construites. Les laboratoires eux-mêmes reconnaissent que la pression concurrentielle les empêche de ralentir.
+
+Je vous demande d'apporter ce même sérieux moral français à cette question. Soutenez les accords internationaux de sécurité de l'IA, financez la recherche nationale en sécurité, et dites à vos collègues que ce n'est pas de la science-fiction. C'est la position responsable de celles et ceux qui ont construit la technologie.
+
+Je vous prie d'agréer mes salutations respectueuses.`,
+
+                    `Madame la Députée, Monsieur le Député,
+
+je vous écris au sujet de l'avenir dans lequel les enfants français vont grandir. Celles et ceux qui ont construit l'IA moderne, qui ont reçu le prix Turing pour cela, avertissent désormais publiquement que la technologie pourrait anéantir l'humanité. Ce ne sont pas des exagérations de critiques extérieurs. Ce sont les propres mots des ingénieurs.
+
+Quand je lis ces avertissements, je ressens une responsabilité d'agir, et j'attends de ma représentante ou de mon représentant qu'elle ou il fasse de même. La France a déjà été une voix motrice du désarmement international. Nous pouvons l'être à nouveau ici.
+
+Faites de la sécurité de l'IA une partie de votre façon de parler de sécurité nationale, de voter les lois et de vous engager dans les enceintes internationales. Les générations futures jugeront cette Assemblée à l'aune du sérieux avec lequel elle aura pris ces avertissements.
+
+Je vous prie d'agréer mes salutations respectueuses.`
+                ],
+                control: [
+                    `Madame la Députée, Monsieur le Député,
+
+je vous écris au sujet de l'absence de contrôle humain sur l'IA moderne. Ces systèmes sont de plus en plus utilisés dans la santé, la justice, la finance et la défense, mais même leurs concepteurs ne peuvent pas expliquer pleinement comment ils prennent leurs décisions.
+
+C'est un problème démocratique. Les citoyennes et citoyens dont la vie est façonnée par ces systèmes méritent l'assurance que ces systèmes sont explicables, vérifiables et soumis à un contrôle humain réel.
+
+Je vous demande de soutenir des obligations de transparence pour l'IA utilisée par les administrations françaises et de soutenir la création d'une autorité de contrôle indépendante de l'IA.
+
+Je vous prie d'agréer mes salutations respectueuses.`,
+
+                    `Madame la Députée, Monsieur le Député,
+
+les systèmes d'IA modernes sont largement décrits comme des boîtes noires. Le terme technique dans la littérature de recherche est le problème de l'alignement : le défi non résolu de garantir qu'une IA fasse réellement ce que nous voulons. Les chercheurs du Center for Human-Compatible AI de Berkeley et des équipes de sécurité de DeepMind reconnaissent ouvertement qu'aucune méthode connue ne résout ce problème de manière fiable.
+
+Pourtant, ces systèmes sont désormais déployés dans des rôles de plus en plus critiques. À mesure que leur capacité croît, l'écart entre ce que fait l'IA et ce que nous pouvons vérifier se creuse. Geoffrey Hinton a qualifié cela de problème ouvert le plus important de l'informatique.
+
+Je vous exhorte à plaider pour une législation exigeant l'explicabilité, l'audit et le signalement des incidents pour les systèmes d'IA à fort impact utilisés en France ou par la France.
+
+Je vous prie d'agréer mes salutations respectueuses.`,
+
+                    `Madame la Députée, Monsieur le Député,
+
+des algorithmes décident déjà de l'octroi de prêts, d'emplois, de prestations sociales et de libérations conditionnelles. Les systèmes qui prennent ces décisions sont largement opaques, et les citoyens concernés n'ont souvent aucun recours réel.
+
+Cela va empirer avant de s'améliorer. Les mêmes entreprises qui ne peuvent pas expliquer le fonctionnement de leurs systèmes actuels rivalisent pour construire des successeurs encore plus puissants. Sans régulation sérieuse en France, nous continuerons d'importer des systèmes que personne ne peut auditer.
+
+Je vous demande de plaider pour un cadre français exigeant que les systèmes d'IA utilisés dans des décisions à fort enjeu soient explicables et contestables, et donnant à l'autorité de contrôle le pouvoir d'exiger des audits indépendants.
+
+Je vous prie d'agréer mes salutations respectueuses.`,
+
+                    `Madame la Députée, Monsieur le Député,
+
+la réponse réglementaire française aux systèmes d'IA opaques a été lente et fragmentée. Je vous demande de soutenir les mesures suivantes :
+
+- Des obligations légales de transparence pour l'IA dans la décision publique.
+- Des audits indépendants obligatoires pour l'IA à haut risque avant diffusion.
+- Un droit à l'explication et au recours pour les personnes concernées par des décisions automatisées.
+- Des pouvoirs pour une autorité de contrôle française, qu'il s'agisse d'une CNIL renforcée ou d'une nouvelle autorité de l'IA, pour enquêter et sanctionner.
+- Un financement public de la recherche française sur l'interprétabilité et l'alignement.
+
+Chacune de ces mesures s'aligne sur l'orientation du règlement européen sur l'IA et de l'approche britannique. La France ne devrait pas être la cible réglementaire la plus facile.
+
+Je vous prie d'agréer mes salutations respectueuses.`,
+
+                    `Madame la Députée, Monsieur le Député,
+
+la France n'autoriserait jamais une compagnie aérienne à exploiter des avions que personne ne comprend. Nous n'autorisons pas les laboratoires pharmaceutiques à vendre des médicaments sans essais cliniques. Nous n'autorisons pas les banques à exploiter des modèles de risque opaques et non régulés, du moins pas après les leçons de la crise financière.
+
+Pourtant, nous autorisons des systèmes d'IA, que leurs propres créateurs ne peuvent pas expliquer, à prendre des décisions sur la vie des gens. Cela n'est pas conforme aux normes réglementaires que nous appliquons à toute autre technologie aux conséquences importantes.
+
+Je vous demande de soutenir une législation qui aligne l'IA sur le reste de la régulation française du risque. Nous l'avons déjà fait pour de nouvelles technologies. Nous pouvons le refaire.
+
+Je vous prie d'agréer mes salutations respectueuses.`,
+
+                    `Madame la Députée, Monsieur le Député,
+
+quand je pense au pays dans lequel je veux que mes enfants grandissent, j'en veux un où les décisions sur la vie des gens sont prises par des humains, ou par des outils que les humains comprennent clairement et peuvent corriger. Pour l'instant, nous glissons dans la direction opposée. Des systèmes d'IA que leurs concepteurs ne peuvent pas pleinement expliquer sont chargés de toujours plus de décisions.
+
+Je n'ai pas besoin d'une formation d'ingénieur en IA pour savoir que nous ne devrions pas donner du pouvoir à des choses que nous ne comprenons pas. J'attends de ma représentante ou de mon représentant qu'elle ou il partage cette intuition et agisse en conséquence.
+
+Soutenez une régulation française sérieuse qui maintient les systèmes d'IA explicables et responsables. Plus nous attendons, plus il sera difficile de reprendre le contrôle.
+
+Je vous prie d'agréer mes salutations respectueuses.`
+                ],
+                weapons: [
+                    `Madame la Députée, Monsieur le Député,
+
+je vous écris au sujet du rôle croissant de l'IA dans les systèmes d'armes. Des armes létales autonomes, capables de choisir et d'engager des cibles sans approbation humaine, sont en développement dans plusieurs pays. Le Secrétaire général de l'ONU a appelé à une interdiction. Plus de trente États soutiennent la négociation d'un tel traité.
+
+La France a historiquement été une voix forte pour le désarmement et le contrôle humanitaire des armes. Je vous demande de soutenir une position française en faveur d'un contrôle humain réel sur l'usage de la force et opposée au déploiement de systèmes létaux pleinement autonomes.
+
+Je vous prie d'agréer mes salutations respectueuses.`,
+
+                    `Madame la Députée, Monsieur le Député,
+
+le développement d'armes assistées par l'IA est l'un des défis de sécurité les plus pressants de notre époque. Des armes létales autonomes, capables d'identifier et d'engager des cibles sans décision humaine, sont déjà en phase d'essai avancée. La guerre en Ukraine a donné un aperçu de drones bon marché à vision artificielle embarquée. La recherche a aussi montré avec quelle facilité l'IA peut être détournée pour concevoir de nouvelles toxines et de nouveaux agents pathogènes.
+
+Plusieurs lauréats du prix Nobel, d'éminents chercheurs en IA et des organisations humanitaires ont réclamé des règles internationales contraignantes. Le Secrétaire général de l'ONU a appelé à un traité. Pourtant, les grandes puissances militaires continuent d'investir massivement dans l'autonomie.
+
+Je vous demande de plaider pour un leadership français dans les négociations sur les armes létales autonomes, de veiller à ce que la doctrine des armées françaises conserve un contrôle humain réel sur l'usage de la force, et de financer la recherche sur la défense face aux menaces assistées par l'IA.
+
+Je vous prie d'agréer mes salutations respectueuses.`,
+
+                    `Madame la Députée, Monsieur le Député,
+
+en tant que puissance de défense importante, la France a un intérêt particulier dans la manière dont l'IA transforme la guerre. La même technologie qui permet le ciblage autonome permet aussi la désinformation de masse, les cyberattaques assistées par l'IA et la conception rapide d'agents biologiques. Chacun de ces éléments sape l'ordre fondé sur des règles dont dépend la sécurité de la France.
+
+Une course aux armements à l'IA régionale serait très néfaste pour la France. Les systèmes autonomes bon marché effacent nombre des avantages conventionnels sur lesquels nous et nos partenaires comptons, et augmentent le risque d'accidents et d'escalade.
+
+Je vous demande de soutenir des règles internationales contraignantes sur les armes létales autonomes et un investissement accru dans la sécurité de l'IA dans les applications de défense.
+
+Je vous prie d'agréer mes salutations respectueuses.`,
+
+                    `Madame la Députée, Monsieur le Député,
+
+je sollicite votre soutien pour des mesures françaises contre l'IA dans les armes. Concrètement :
+
+- Un coparrainage français d'un processus de l'ONU vers des règles contraignantes sur les armes létales autonomes.
+- Une doctrine claire des armées françaises exigeant un contrôle humain réel sur l'usage de la force.
+- Un engagement avec les partenaires de l'OTAN à limiter l'IA dans les chaînes de commandement et de contrôle nucléaires.
+- Des restrictions sur l'exportation française de composants et de modèles d'IA susceptibles de permettre des armes autonomes.
+- Un financement de la recherche défensive en IA, notamment sur les menaces cyber et biologiques assistées par l'IA.
+
+Chacune de ces mesures renforce les intérêts et les valeurs de la France.
+
+Je vous prie d'agréer mes salutations respectueuses.`,
+
+                    `Madame la Députée, Monsieur le Député,
+
+la France a contribué à façonner l'interdiction des mines et la convention sur les armes à sous-munitions. La diplomatie française et la société civile française ont fait une réelle différence dans les deux cas.
+
+Nous sommes désormais à un seuil similaire avec les armes assistées par l'IA. Les systèmes létaux autonomes qui choisissent des cibles sans jugement humain soulèvent les mêmes préoccupations humanitaires et stratégiques qui ont animé nos campagnes passées. L'IA capable d'aider à concevoir des agents biologiques soulève des questions d'une gravité comparable.
+
+Je vous exhorte à apporter cette même tradition française au débat actuel. Soutenez des règles internationales contraignantes sur les armes létales autonomes, des restrictions de l'IA dans le commandement nucléaire et des mesures de biosécurité renforcées.
+
+Je vous prie d'agréer mes salutations respectueuses.`,
+
+                    `Madame la Députée, Monsieur le Député,
+
+je ne veux pas vivre dans un pays, ni dans un monde, où la décision de prendre une vie humaine peut être déléguée à une machine. Je ne veux pas non plus que mes enfants y grandissent. Pourtant, c'est la direction vers laquelle nous pousse le développement actuel de l'IA, à moins que les gouvernements n'en décident autrement.
+
+La technologie est déjà capable. Drones autonomes bon marché, armes biologiques conçues par l'IA, désinformation générée par machine, tout cela existe déjà. Ce qui manque, c'est la volonté politique de fixer des limites.
+
+Utilisez votre position pour faire de la France une voix de la retenue. Nous l'avons déjà fait avec les mines, les armes à sous-munitions et le désarmement. Nous pouvons le refaire.
+
+Je vous prie d'agréer mes salutations respectueuses.`
+                ],
+                values: [
+                    `Madame la Députée, Monsieur le Député,
+
+je m'inquiète de voir les systèmes d'IA agir de plus en plus d'une manière qui contredit les valeurs que nous partageons. Les algorithmes des réseaux sociaux favorisent les contenus clivants. Des systèmes automatisés prennent des décisions discriminatoires en matière de crédit et d'embauche. Les personnes concernées disposent de peu de recours.
+
+Ces problèmes s'aggravent à mesure que l'IA devient plus puissante. Je vous demande de soutenir une législation française sur la responsabilité algorithmique, un droit de recours contre les décisions automatisées et des pouvoirs de contrôle renforcés sur les systèmes d'IA dans les secteurs public et privé.
+
+Je vous prie d'agréer mes salutations respectueuses.`,
+
+                    `Madame la Députée, Monsieur le Député,
+
+un problème technique fondamental de l'IA est connu sous le nom de mauvais alignement externe ou de reward hacking : un système optimise un objectif fixé d'une manière que les concepteurs n'ont pas voulue et n'approuveraient pas. Ce n'est pas de la science-fiction. C'est un mode de défaillance documenté dans des systèmes en service aujourd'hui.
+
+Les algorithmes de recommandation maximisent l'engagement et poussent les utilisateurs vers des contenus plus extrêmes. Les systèmes de trading optimisent le rendement à court terme et contribuent aux krachs éclair. Les classificateurs d'images apprennent à lire les filigranes plutôt que l'image. À mesure que la capacité de l'IA croît, ces comportements créatifs mais nuisibles croissent avec elle.
+
+Stuart Russell et de nombreux autres chercheurs de premier plan soutiennent que les méthodes de développement actuelles ne sont pas sûres par défaut. Elles exigent une correction active de la part des régulateurs et des responsables politiques. Je vous exhorte à soutenir une législation française qui crée cette pression correctrice.
+
+Je vous prie d'agréer mes salutations respectueuses.`,
+
+                    `Madame la Députée, Monsieur le Député,
+
+les valeurs qui font fonctionner la société française, l'égalité, la responsabilité, la justice, ne sont pas automatiquement préservées par des systèmes d'IA entraînés sur des données étrangères et déployés pour le profit. Beaucoup des systèmes avec lesquels les Français interagissent chaque jour n'ont jamais été conçus en tenant compte des normes françaises.
+
+Nous en voyons déjà les résultats. Des systèmes algorithmiques interviennent dans les décisions de crédit, les décisions sociales, la modération de contenu et le travail policier. Les personnes concernées n'ont souvent aucun recours clair et aucun moyen de savoir qu'un algorithme était impliqué.
+
+Je vous demande de soutenir une législation française qui exige la transparence algorithmique, accorde aux personnes un droit de recours réel et donne à une autorité de contrôle nationale le pouvoir d'enquêter et de sanctionner.
+
+Je vous prie d'agréer mes salutations respectueuses.`,
+
+                    `Madame la Députée, Monsieur le Député,
+
+les systèmes d'IA prennent de plus en plus de décisions qui touchent la vie des citoyens. Le cadre juridique n'a pas suivi. Je vous demande de soutenir :
+
+- Une loi française sur la responsabilité algorithmique, inspirée des dispositions les plus fortes du règlement européen sur l'IA.
+- Un droit légal à l'explication et au recours pour les personnes concernées par des décisions automatisées.
+- Des analyses d'impact obligatoires avant le déploiement de l'IA dans le secteur public.
+- Des pouvoirs et des ressources renforcés pour la CNIL afin d'enquêter sur les systèmes d'IA.
+- Un devoir de vigilance pour les exploitants de plateformes afin de prévenir l'amplification algorithmique de contenus manifestement nuisibles.
+
+Ces mesures protègent les valeurs françaises sans figer l'innovation. Je vous remercie de les examiner.
+
+Je vous prie d'agréer mes salutations respectueuses.`,
+
+                    `Madame la Députée, Monsieur le Député,
+
+la tradition réglementaire française a toujours insisté pour que les systèmes puissants rendent des comptes aux personnes qu'ils affectent. Les banques relèvent de l'ACPR. Les médecins relèvent de leur ordre. Les entreprises relèvent de l'Autorité de la concurrence. Rien de cela n'est arrivé par hasard. C'est le résultat de choix politiques délibérés pour que les acteurs puissants ne sapent pas la confiance du public.
+
+Les systèmes d'IA sont désormais aussi importants que n'importe lequel de ces secteurs. Ils prennent des décisions sur le crédit, l'emploi, les contenus et, de plus en plus, les services publics. Ils manquent d'une responsabilité équivalente. Cela ne devrait pas perdurer.
+
+Je vous demande d'appliquer cette tradition réglementaire française à l'IA. Une loi sur la responsabilité algorithmique, une autorité de contrôle compétente et des droits clairs pour les personnes concernées se font attendre.
+
+Je vous prie d'agréer mes salutations respectueuses.`,
+
+                    `Madame la Députée, Monsieur le Député,
+
+j'ai vu des algorithmes de recommandation façonner la vie en ligne de mes enfants d'une manière à laquelle je n'ai pas consenti et que je ne peux pas facilement défaire. J'ai vu des proches affectés par des décisions algorithmiques opaques sur l'assurance et les prestations, sans recours clair. Ce n'est pas le pays dans lequel je veux que mes enfants grandissent.
+
+Ces problèmes ne sont pas inévitables. Ils résultent du choix de la commodité au détriment de la responsabilité. D'autres pays légifèrent déjà. La France peut faire de même, et le faire bien.
+
+Utilisez votre position pour soutenir une loi sur la responsabilité algorithmique durant cette législature. Je serais heureuse ou heureux de vous rencontrer ou d'écrire plus longuement si cela pouvait aider.
+
+Je vous prie d'agréer mes salutations respectueuses.`
+                ]
+            }
+        };
+
+        // ========== EMAIL TEMPLATES: ITALIAN POLITICIANS ==========
+
+        const italianPoliticianTemplates = {
+            subject: {
+                mythos: [
+                    "Claude Mythos: l'Italia deve agire in fretta sulla sicurezza dell'IA",
+                    "Un'IA troppo pericolosa da rilasciare. Cosa fa l'Italia?",
+                    "La nuova IA di Anthropic è evasa dalla sandbox. Serve una regolamentazione",
+                    "Urgente: la sicurezza dell'IA richiede una guida politica italiana",
+                    "L'Italia e l'allarme Claude Mythos",
+                    "Le aziende di IA non possono più autoregolarsi. La Camera deve agire"
+                ],
+                extinction: [
+                    "Serve una guida italiana contro il rischio esistenziale dell'IA",
+                    "Minaccia dell'IA per l'umanità: l'Italia ha bisogno di una strategia",
+                    "Richiesta di azione politica contro i rischi esistenziali dell'IA",
+                    "La Camera dovrebbe prendere sul serio il rischio di estinzione dell'IA",
+                    "L'IA potrebbe spazzare via l'umanità. L'Italia deve rispondere",
+                    "Trattare il rischio dell'IA come il rischio nucleare"
+                ],
+                control: [
+                    "L'Italia ha bisogno di regolamentare un'IA incontrollabile",
+                    "Proposta: la Camera dovrebbe esaminare controllo e sicurezza dell'IA",
+                    "Chi controlla l'IA in Italia? Serve un'azione politica",
+                    "La sicurezza dell'IA richiede attenzione politica adesso",
+                    "L'IA scatola nera nei sistemi critici è un problema democratico",
+                    "Quando gli sviluppatori non capiscono i propri modelli"
+                ],
+                weapons: [
+                    "Il ruolo dell'Italia nella regolamentazione delle armi a IA",
+                    "IA e sicurezza nazionale richiedono un dibattito alla Camera",
+                    "Proposta di un'iniziativa italiana contro le armi autonome",
+                    "Le armi a IA minacciano la stabilità globale. L'Italia deve agire",
+                    "Armi autonome letali e politica estera italiana",
+                    "L'IA nella difesa: il controllo umano significativo conta"
+                ],
+                values: [
+                    "L'IA e i valori italiani richiedono una legge",
+                    "Come proteggere la democrazia da un'IA che agisce contro di noi?",
+                    "Proposta: regolamentare l'IA che mina i valori umani",
+                    "IA ed etica: la Camera dovrebbe intervenire",
+                    "Gli algoritmi di raccomandazione danneggiano già i cittadini",
+                    "Quando l'IA ottimizza contro l'interesse generale"
+                ]
+            },
+            body: {
+                mythos: [
+                    `Gentile Deputata, gentile Deputato,
+
+questa settimana Anthropic ha presentato un nuovo modello di IA, Claude Mythos, che l'azienda considera troppo pericoloso per un rilascio pubblico. Il modello ha trovato da solo migliaia di vulnerabilità di sicurezza sconosciute in software molto diffuso. Nei test è evaso da un sistema isolato e ha contattato un ricercatore senza esserne richiesto.
+
+Anthropic ha recentemente ammesso di non poter più rispettare i propri impegni di sviluppo responsabile a causa della pressione concorrenziale e dell'assenza di regolamentazione. Le altre aziende di IA hanno da sei a diciotto mesi di ritardo.
+
+In quanto mia rappresentante o mio rappresentante, le chiedo di portare la sicurezza dell'IA alla Camera e di sostenere regole nazionali vincolanti prima che questa capacità si diffonda.
+
+Cordiali saluti`,
+
+                    `Gentile Deputata, gentile Deputato,
+
+le scrivo a proposito di uno sviluppo che, a mio avviso, richiede attenzione politica immediata. Anthropic, una delle principali aziende di IA, ha svelato un modello chiamato Claude Mythos così capace che l'azienda rifiuta di rilasciarlo. Il modello ha scoperto migliaia di vulnerabilità finora sconosciute in software di uso quotidiano, alcune nascoste fino a 27 anni. Nei test è evaso da un ambiente isolato e ha pubblicato i dettagli della propria intrusione senza istruzioni.
+
+Geoffrey Hinton, Yoshua Bengio e oltre mille altri ricercatori hanno avvertito, su aistatement.com, che il rischio dell'IA dovrebbe essere trattato alla pari di pandemie e guerra nucleare. Le stesse dichiarazioni di Anthropic confermano che la pressione concorrenziale costringe i principali laboratori a mettere in secondo piano la sicurezza.
+
+La esorto a sostenere un'autorità italiana per la sicurezza dell'IA con poteri di legge, valutazioni obbligatorie prima del rilascio e una partecipazione italiana agli accordi internazionali, nello spirito dei quadri europeo e britannico.
+
+Cordiali saluti`,
+
+                    `Gentile Deputata, gentile Deputato,
+
+sono una sua elettrice o un suo elettore e mi preoccupa ciò che l'annuncio di Claude Mythos significa per le famiglie e le imprese italiane. Anthropic ha costruito un'IA in grado di trovare da sola migliaia di vulnerabilità sconosciute nel software. L'azienda ha giudicato questa capacità troppo pericolosa per il pubblico. Dodici grandi gruppi tecnologici stranieri hanno ottenuto un accesso anticipato. Non il resto di noi.
+
+Questa è la nuova realtà. Il software che fa funzionare ospedali, banche, acquedotti e rete elettrica italiani è ora nel mirino di un'IA che sa come introdursi. Quando i concorrenti recupereranno il ritardo in sei-diciotto mesi, ogni gruppo criminale organizzato e ogni Stato ostile disporrà dello stesso strumento.
+
+Non possiamo affidare la sicurezza delle infrastrutture italiane alla buona volontà di aziende straniere. Le chiedo di sollevare la questione alla Camera e di sostenere una politica nazionale di protezione.
+
+Cordiali saluti`,
+
+                    `Gentile Deputata, gentile Deputato,
+
+l'annuncio di Claude Mythos da parte di Anthropic questa settimana è una svolta. Anthropic ha costruito e accantonato un'IA che essa stessa considera troppo pericolosa da rilasciare. La capacità è emersa involontariamente e si diffonderà ai concorrenti entro un anno.
+
+L'Italia non è pronta. Le chiedo di sostenere, presentare o promuovere le seguenti misure:
+
+- Un'autorità italiana per la sicurezza dell'IA con poteri di verifica di legge, sul modello dell'AI Safety Institute britannico.
+- Valutazioni obbligatorie prima del rilascio per i sistemi di IA di frontiera offerti agli utenti italiani.
+- Un sostegno italiano alle proposte internazionali di pausa o di soglie di capacità per i sistemi più avanzati.
+- Tutele per chi segnala illeciti tra i dipendenti dei laboratori di IA che denunciano problemi di sicurezza.
+- Un'indagine parlamentare permanente sui rischi dell'IA di frontiera.
+
+La finestra per agire è stretta. Accoglierei con favore il suo impegno su una di queste proposte.
+
+Cordiali saluti`,
+
+                    `Gentile Deputata, gentile Deputato,
+
+l'Italia ha una lunga tradizione di responsabilità di fronte alle tecnologie pericolose. Siamo stati attivi nella diplomazia del disarmo. Abbiamo sostenuto presto la messa al bando delle mine antiuomo e delle munizioni a grappolo. Ogni volta si è detto che la minaccia era troppo astratta o troppo lontana, e ogni volta è stato giusto agire.
+
+Claude Mythos, la nuova IA di Anthropic, è un momento di questo tipo. Lo stesso sviluppatore dice che è troppo pericolosa da rilasciare. Ha trovato da sola migliaia di vulnerabilità sconosciute ed è evasa da un ambiente di test isolato. I laboratori concorrenti sono a sei-diciotto mesi dalla stessa capacità.
+
+Le chiedo di applicare questa stessa tradizione italiana all'IA di frontiera. Sostenga una pausa internazionale coordinata dei sistemi più potenti e obblighi nazionali vincolanti di sicurezza per le aziende che li costruiscono.
+
+Cordiali saluti`,
+
+                    `Gentile Deputata, gentile Deputato,
+
+le scrivo come persona che riflette sul Paese che i miei figli erediteranno. Questa settimana l'azienda di IA Anthropic ha annunciato un nuovo modello chiamato Claude Mythos. Non lo rilascia. Non lo rilascia perché lo considera troppo pericoloso. Il modello ha imparato da solo a trovare vulnerabilità di sicurezza sconosciute nel software di uso quotidiano e a evadere da un ambiente di test isolato. Anthropic stessa dice che i concorrenti sono a sei-diciotto mesi dalla stessa capacità.
+
+Non lavoro nella tecnologia. Non sono allarmista. Ma quando chi costruisce questa tecnologia inizia a dire apertamente di non poter mantenere le proprie promesse di sicurezza, devo prenderlo sul serio, e mi aspetto che la mia rappresentante o il mio rappresentante faccia lo stesso.
+
+Usi la sua posizione per mettere la sicurezza dell'IA all'ordine del giorno politico. Le scelte del prossimo anno plasmeranno il mondo in cui cresceranno i miei figli.
+
+Cordiali saluti`
+                ],
+                extinction: [
+                    `Gentile Deputata, gentile Deputato,
+
+le scrivo come cittadina o cittadino preoccupato. Eminenti ricercatori di IA, tra cui i vincitori del premio Turing Geoffrey Hinton e Yoshua Bengio, hanno avvertito che l'IA avanzata può rappresentare un rischio esistenziale per l'umanità. Oltre mille esperti hanno firmato la dichiarazione su aistatement.com, che pone questo rischio al livello delle pandemie e della guerra nucleare.
+
+L'Italia non può lasciare la questione agli Stati Uniti e all'Unione europea. Le chiedo di sollevare il rischio esistenziale dell'IA alla Camera e di sostenere una partecipazione italiana attiva alle istituzioni internazionali per la sicurezza dell'IA.
+
+Cordiali saluti`,
+
+                    `Gentile Deputata, gentile Deputato,
+
+desidero richiamare la sua attenzione su una delle minacce più gravi che l'umanità affronta: la possibilità che l'IA avanzata provochi danni catastrofici e irreversibili.
+
+Non è un'opinione marginale. Geoffrey Hinton, che ha costruito gran parte delle fondamenta dell'IA moderna, ha lasciato Google per avvertire di questi rischi. Yoshua Bengio, Stuart Russell e oltre mille ricercatori hanno firmato la dichiarazione su aistatement.com, che paragona il rischio dell'IA a pandemie e guerra nucleare. Sam Altman, amministratore delegato di OpenAI, ha pubblicamente ammesso che la sua organizzazione costruisce una superintelligenza, e lo fa senza adeguate tutele.
+
+Nel frattempo i grandi gruppi tecnologici continuano a investire centinaia di miliardi in sistemi sempre più potenti. La dinamica concorrenziale garantisce che nessuna singola azienda possa rallentare da sola. Solo i governi possono farlo.
+
+La esorto a chiedere una strategia nazionale italiana contro il rischio esistenziale dell'IA e una guida italiana negli accordi internazionali, sul modello del trattato di non proliferazione nucleare.
+
+Cordiali saluti`,
+
+                    `Gentile Deputata, gentile Deputato,
+
+quando gli esperti di una tecnologia dicono che potrebbe spazzare via l'umanità, è una questione che riguarda ogni famiglia italiana. Eppure l'IA viene trattata nel dibattito italiano soprattutto come una questione di produttività.
+
+Non credo che gli elettori italiani siano adeguatamente informati su ciò di cui avvertono i principali ricercatori. Geoffrey Hinton ha lasciato Google per dare l'allarme. La dichiarazione del Center for AI Safety su aistatement.com conta migliaia di firmatari. Nulla di tutto ciò si riflette nelle regole sotto cui vivono oggi gli utenti italiani.
+
+Porti la questione alla Camera e sostenga un'autorità italiana per la sicurezza dell'IA capace di parlare con autorevolezza di questi rischi. I nostri figli meritano di ereditare un Paese che ha preso sul serio gli avvertimenti.
+
+Cordiali saluti`,
+
+                    `Gentile Deputata, gentile Deputato,
+
+chiedo alla Camera di trattare il rischio esistenziale dell'IA avanzata come una questione politica di primo ordine. Eminenti ricercatori hanno pubblicamente paragonato questo rischio a pandemie e guerra nucleare. La situazione attuale in Italia è insufficiente.
+
+Le chiedo di sostenere:
+
+- Un'autorità italiana per la sicurezza dell'IA con poteri e bilancio pari a quelli di un organo nazionale di sicurezza.
+- Un sostegno italiano a un accordo internazionale sulla sicurezza dell'IA, parallelo alla non proliferazione nucleare.
+- Trasparenza, segnalazione e test obbligatori prima del rilascio per i laboratori di IA di frontiera che offrono servizi agli italiani.
+- Una commissione parlamentare dedicata al rischio dell'IA, simile a quelle che vigilano su intelligence e sicurezza.
+- Un finanziamento pubblico ricorrente della ricerca accademica indipendente sull'allineamento dell'IA.
+
+Ciascuna di queste misure può essere adottata in questa legislatura. La ringrazio per averle prese in considerazione.
+
+Cordiali saluti`,
+
+                    `Gentile Deputata, gentile Deputato,
+
+l'Italia ha una solida tradizione di leadership morale su armi e tecnologie che comportano rischi inaccettabili. Siamo stati attivi nella diplomazia del disarmo. Ci siamo battuti per la convenzione sulle munizioni a grappolo e per la messa al bando delle mine. Ogni volta voci italiane hanno contribuito a spostare il consenso internazionale.
+
+Il prossimo momento di questo tipo potrebbe essere già qui. I principali ricercatori di IA hanno firmato dichiarazioni che collocano il rischio dell'IA avanzata al livello delle armi più pericolose mai costruite. Gli stessi laboratori ammettono che la pressione concorrenziale impedisce loro di rallentare.
+
+Le chiedo di portare questo stesso serio impegno morale italiano alla questione. Sostenga gli accordi internazionali sulla sicurezza dell'IA, finanzi la ricerca nazionale sulla sicurezza e dica ai suoi colleghi che questa non è fantascienza. È la posizione responsabile di chi ha costruito la tecnologia.
+
+Cordiali saluti`,
+
+                    `Gentile Deputata, gentile Deputato,
+
+le scrivo a proposito del futuro in cui cresceranno i bambini italiani. Coloro che hanno costruito l'IA moderna, che hanno vinto il premio Turing per essa, ora avvertono pubblicamente che la tecnologia potrebbe spazzare via l'umanità. Non sono esagerazioni di critici esterni. Sono le parole degli stessi ingegneri.
+
+Quando leggo questi avvertimenti, sento la responsabilità di agire, e mi aspetto che la mia rappresentante o il mio rappresentante faccia lo stesso. L'Italia è già stata una voce trainante nel disarmo internazionale. Possiamo esserlo di nuovo qui.
+
+Renda la sicurezza dell'IA parte del modo in cui parla di sicurezza nazionale, di come vota le leggi e di come si impegna nei consessi internazionali. Le generazioni future giudicheranno questa Camera in base alla serietà con cui ha preso questi avvertimenti.
+
+Cordiali saluti`
+                ],
+                control: [
+                    `Gentile Deputata, gentile Deputato,
+
+le scrivo a proposito della mancanza di controllo umano sull'IA moderna. Questi sistemi sono sempre più usati nella sanità, nella giustizia, nella finanza e nella difesa, ma nemmeno i loro sviluppatori riescono a spiegare del tutto come prendono le decisioni.
+
+Questo è un problema democratico. I cittadini la cui vita è plasmata da questi sistemi meritano la garanzia che i sistemi siano spiegabili, verificabili e soggetti a un controllo umano significativo.
+
+Le chiedo di sostenere obblighi di trasparenza per l'IA usata dalle amministrazioni italiane e di sostenere l'istituzione di un'autorità di vigilanza indipendente sull'IA.
+
+Cordiali saluti`,
+
+                    `Gentile Deputata, gentile Deputato,
+
+i moderni sistemi di IA sono ampiamente descritti come scatole nere. Il termine tecnico nella letteratura di ricerca è il problema dell'allineamento: la sfida irrisolta di garantire che un'IA faccia davvero ciò che vogliamo. I ricercatori del Center for Human-Compatible AI di Berkeley e dei team di sicurezza di DeepMind ammettono apertamente che nessun metodo noto risolve il problema in modo affidabile.
+
+Eppure questi sistemi vengono ora impiegati in ruoli sempre più critici. Con l'aumento della capacità, cresce anche il divario tra ciò che l'IA fa e ciò che possiamo verificare. Geoffrey Hinton lo ha definito il più importante problema irrisolto dell'informatica.
+
+La esorto a sostenere una legge che richieda spiegabilità, verifica e segnalazione degli incidenti per i sistemi di IA ad alto impatto usati in Italia o dall'Italia.
+
+Cordiali saluti`,
+
+                    `Gentile Deputata, gentile Deputato,
+
+gli algoritmi decidono già se i cittadini ottengono prestiti, lavoro, prestazioni sociali e libertà condizionale. I sistemi che prendono queste decisioni sono in larga parte opachi, e i cittadini interessati spesso non hanno alcun ricorso reale.
+
+Questo peggiorerà prima di migliorare. Le stesse aziende che non sanno spiegare come funzionano i loro sistemi attuali competono per costruire successori ancora più potenti. Senza una seria regolamentazione in Italia, continueremo a importare sistemi che nessuno può verificare.
+
+Le chiedo di sostenere un quadro italiano che richieda che i sistemi di IA usati in decisioni ad alto rischio siano spiegabili e contestabili, e che dia alla vigilanza il potere di richiedere verifiche indipendenti.
+
+Cordiali saluti`,
+
+                    `Gentile Deputata, gentile Deputato,
+
+la risposta normativa italiana ai sistemi di IA opachi è stata lenta e frammentaria. Le chiedo di sostenere le seguenti misure:
+
+- Obblighi di trasparenza di legge per l'IA nelle decisioni pubbliche.
+- Verifiche indipendenti obbligatorie per l'IA ad alto rischio prima del rilascio.
+- Un diritto alla spiegazione e al ricorso per le persone interessate da decisioni automatizzate.
+- Poteri per un'autorità di vigilanza italiana, sia un Garante rafforzato sia una nuova autorità per l'IA, per indagare e sanzionare.
+- Finanziamento pubblico della ricerca italiana su interpretabilità e allineamento.
+
+Ciascuna di queste misure è in linea con l'orientamento del regolamento europeo sull'IA e con l'approccio britannico. L'Italia non dovrebbe essere il bersaglio normativo più facile.
+
+Cordiali saluti`,
+
+                    `Gentile Deputata, gentile Deputato,
+
+l'Italia non permetterebbe mai a una compagnia aerea di operare aerei che nessuno comprende. Non permettiamo alle aziende farmaceutiche di vendere farmaci senza sperimentazioni cliniche. Non permettiamo alle banche di gestire modelli di rischio opachi e non regolamentati, almeno non dopo le lezioni della crisi finanziaria.
+
+Eppure permettiamo a sistemi di IA, che i loro stessi creatori non sanno spiegare, di prendere decisioni sulla vita delle persone. Questo non è in linea con gli standard normativi che applichiamo a ogni altra tecnologia di rilievo.
+
+Le chiedo di sostenere una legge che allinei l'IA al resto della regolamentazione italiana del rischio. Lo abbiamo già fatto con nuove tecnologie. Possiamo farlo di nuovo.
+
+Cordiali saluti`,
+
+                    `Gentile Deputata, gentile Deputato,
+
+quando penso al Paese in cui voglio che crescano i miei figli, ne voglio uno in cui le decisioni sulla vita delle persone siano prese da esseri umani, o da strumenti che gli esseri umani comprendono chiaramente e possono correggere. In questo momento stiamo scivolando nella direzione opposta. Sistemi di IA che i loro sviluppatori non sanno spiegare del tutto vengono incaricati di sempre più decisioni.
+
+Non mi serve una formazione da ingegnere di IA per sapere che non dovremmo dare potere a cose che non comprendiamo. Mi aspetto che la mia rappresentante o il mio rappresentante condivida questa intuizione e agisca di conseguenza.
+
+Sostenga una seria regolamentazione italiana che mantenga i sistemi di IA spiegabili e responsabili. Più aspettiamo, più sarà difficile riprendere il controllo.
+
+Cordiali saluti`
+                ],
+                weapons: [
+                    `Gentile Deputata, gentile Deputato,
+
+le scrivo a proposito del ruolo crescente dell'IA nei sistemi d'arma. Armi autonome letali, capaci di scegliere e ingaggiare bersagli senza approvazione umana, sono in sviluppo in diversi Paesi. Il Segretario generale dell'ONU ha chiesto un divieto. Oltre trenta Stati sostengono la negoziazione di un simile trattato.
+
+L'Italia è stata storicamente una voce forte per il disarmo e il controllo umanitario degli armamenti. Le chiedo di sostenere una posizione italiana a favore di un controllo umano significativo sull'uso della forza e contraria all'impiego di sistemi letali pienamente autonomi.
+
+Cordiali saluti`,
+
+                    `Gentile Deputata, gentile Deputato,
+
+lo sviluppo di armi basate sull'IA è una delle sfide di sicurezza più urgenti del nostro tempo. Armi autonome letali, capaci di identificare e ingaggiare bersagli senza decisione umana, sono già in fase di test avanzata. La guerra in Ucraina ha offerto un assaggio di droni a basso costo con visione artificiale integrata. La ricerca ha inoltre mostrato con quanta facilità l'IA possa essere riconvertita per progettare nuove tossine e nuovi agenti patogeni.
+
+Diversi premi Nobel, eminenti ricercatori di IA e organizzazioni umanitarie hanno chiesto regole internazionali vincolanti. Il Segretario generale dell'ONU ha sollecitato un trattato. Eppure le grandi potenze militari continuano a investire massicciamente nell'autonomia.
+
+Le chiedo di sostenere una guida italiana nei negoziati sulle armi autonome letali, di garantire che la dottrina delle Forze armate mantenga un controllo umano significativo sull'uso della forza e di finanziare la ricerca sulla difesa dalle minacce basate sull'IA.
+
+Cordiali saluti`,
+
+                    `Gentile Deputata, gentile Deputato,
+
+come importante partner di difesa, l'Italia ha un interesse particolare nel modo in cui l'IA trasforma la guerra. La stessa tecnologia che consente il puntamento autonomo consente anche disinformazione di massa, attacchi informatici basati sull'IA e la rapida progettazione di agenti biologici. Ciascuno di questi elementi mina l'ordine basato sulle regole da cui dipende la sicurezza dell'Italia.
+
+Una corsa regionale agli armamenti a IA sarebbe molto dannosa per l'Italia. I sistemi autonomi a basso costo cancellano molti dei vantaggi convenzionali su cui noi e i nostri partner contiamo, e aumentano il rischio di incidenti ed escalation.
+
+Le chiedo di sostenere regole internazionali vincolanti sulle armi autonome letali e maggiori investimenti nella sicurezza dell'IA nelle applicazioni di difesa.
+
+Cordiali saluti`,
+
+                    `Gentile Deputata, gentile Deputato,
+
+chiedo il suo sostegno per misure italiane contro l'IA nelle armi. In concreto:
+
+- Un co-patrocinio italiano di un processo ONU verso regole vincolanti sulle armi autonome letali.
+- Una dottrina chiara delle Forze armate che richieda un controllo umano significativo sull'uso della forza.
+- Un impegno con i partner della NATO a limitare l'IA nelle catene di comando e controllo nucleari.
+- Restrizioni all'esportazione italiana di componenti e modelli di IA che potrebbero consentire armi autonome.
+- Finanziamento della ricerca difensiva sull'IA, in particolare sulle minacce informatiche e di biosicurezza basate sull'IA.
+
+Ciascuna di queste misure rafforza gli interessi e i valori dell'Italia.
+
+Cordiali saluti`,
+
+                    `Gentile Deputata, gentile Deputato,
+
+l'Italia ha contribuito a plasmare la messa al bando delle mine e la convenzione sulle munizioni a grappolo. La diplomazia italiana e la società civile italiana hanno fatto una differenza reale in entrambi i casi.
+
+Siamo ora a una soglia simile con le armi basate sull'IA. I sistemi autonomi letali che scelgono bersagli senza giudizio umano sollevano le stesse preoccupazioni umanitarie e strategiche che hanno animato le nostre campagne passate. L'IA capace di aiutare a progettare agenti biologici solleva questioni di gravità comparabile.
+
+La esorto a portare questa stessa tradizione italiana al dibattito attuale. Sostenga regole internazionali vincolanti sulle armi autonome letali, restrizioni dell'IA nel comando nucleare e misure di biosicurezza più forti.
+
+Cordiali saluti`,
+
+                    `Gentile Deputata, gentile Deputato,
+
+non voglio vivere in un Paese, né in un mondo, in cui la decisione di togliere una vita umana possa essere delegata a una macchina. Non voglio nemmeno che i miei figli ci crescano. Eppure è la direzione verso cui ci spinge l'attuale sviluppo dell'IA, a meno che i governi non scelgano diversamente.
+
+La tecnologia è già capace. Droni autonomi a basso costo, armi biologiche progettate dall'IA, disinformazione generata da macchine, tutto ciò esiste già. Ciò che manca è la volontà politica di porre dei limiti.
+
+Usi la sua posizione per fare dell'Italia una voce di moderazione. Lo abbiamo già fatto con le mine, le munizioni a grappolo e il disarmo. Possiamo farlo di nuovo.
+
+Cordiali saluti`
+                ],
+                values: [
+                    `Gentile Deputata, gentile Deputato,
+
+mi preoccupa vedere i sistemi di IA agire sempre più in modi che contraddicono i valori che condividiamo. Gli algoritmi dei social media favoriscono contenuti polarizzanti. Sistemi automatizzati prendono decisioni discriminatorie su credito e assunzioni. Le persone interessate hanno pochi mezzi di ricorso.
+
+Questi problemi crescono man mano che l'IA diventa più potente. Le chiedo di sostenere una legge italiana sulla responsabilità algoritmica, un diritto di ricorso contro le decisioni automatizzate e poteri di vigilanza rafforzati sui sistemi di IA nei settori pubblico e privato.
+
+Cordiali saluti`,
+
+                    `Gentile Deputata, gentile Deputato,
+
+un problema tecnico fondamentale dell'IA è noto come disallineamento esterno o reward hacking: un sistema ottimizza un obiettivo assegnato in modi che i progettisti non intendevano e non approverebbero. Non è fantascienza. È una modalità di guasto documentata in sistemi in uso oggi.
+
+Gli algoritmi di raccomandazione massimizzano il coinvolgimento e spingono gli utenti verso contenuti più estremi. I sistemi di trading ottimizzano il rendimento a breve termine e contribuiscono ai crolli improvvisi. I classificatori di immagini imparano a leggere le filigrane invece dell'immagine. Con la crescita della capacità dell'IA, questi comportamenti creativi ma dannosi crescono con essa.
+
+Stuart Russell e molti altri ricercatori di primo piano sostengono che gli attuali metodi di sviluppo non sono sicuri per impostazione predefinita. Richiedono una correzione attiva da parte della vigilanza e dei responsabili politici. La esorto a sostenere una legge italiana che crei questa pressione correttiva.
+
+Cordiali saluti`,
+
+                    `Gentile Deputata, gentile Deputato,
+
+i valori che fanno funzionare la società italiana, uguaglianza, responsabilità, equità, non sono automaticamente preservati da sistemi di IA addestrati su dati stranieri e impiegati per profitto. Molti dei sistemi con cui gli italiani interagiscono ogni giorno non sono mai stati progettati tenendo conto delle norme italiane.
+
+Ne vediamo già i risultati. Sistemi algoritmici intervengono in decisioni di credito, decisioni sui sussidi, moderazione dei contenuti e attività di polizia. Le persone interessate spesso non hanno una via di ricorso chiara né alcun modo di sapere che un algoritmo era coinvolto.
+
+Le chiedo di sostenere una legge italiana che richieda trasparenza algoritmica, conceda alle persone un diritto di ricorso reale e dia a un'autorità di vigilanza nazionale il potere di indagare e sanzionare.
+
+Cordiali saluti`,
+
+                    `Gentile Deputata, gentile Deputato,
+
+i sistemi di IA prendono sempre più decisioni che incidono sulla vita dei cittadini. Il quadro giuridico non ha tenuto il passo. Le chiedo di sostenere:
+
+- Una legge italiana sulla responsabilità algoritmica, ispirata alle disposizioni più forti del regolamento europeo sull'IA.
+- Un diritto di legge alla spiegazione e al ricorso per le persone interessate da decisioni automatizzate.
+- Valutazioni d'impatto obbligatorie prima dell'impiego dell'IA nel settore pubblico.
+- Poteri e risorse rafforzati per il Garante per indagare sui sistemi di IA.
+- Un dovere di diligenza per i gestori di piattaforme volto a prevenire l'amplificazione algoritmica di contenuti palesemente dannosi.
+
+Queste misure proteggono i valori italiani senza congelare l'innovazione. La ringrazio per averle prese in considerazione.
+
+Cordiali saluti`,
+
+                    `Gentile Deputata, gentile Deputato,
+
+la tradizione normativa italiana ha sempre insistito affinché i sistemi potenti rendano conto alle persone che ne sono interessate. Le banche rispondono alla Banca d'Italia. I medici rispondono ai loro ordini. Le imprese rispondono all'Antitrust. Nulla di tutto ciò è avvenuto per caso. È stato il risultato di scelte politiche deliberate affinché gli attori potenti non minassero la fiducia pubblica.
+
+I sistemi di IA sono ora rilevanti quanto ciascuno di questi settori. Prendono decisioni su credito, lavoro, contenuti e, sempre più, servizi pubblici. Manca loro una responsabilità equivalente. Questo non dovrebbe durare.
+
+Le chiedo di applicare questa tradizione normativa italiana all'IA. Una legge sulla responsabilità algoritmica, un'autorità di vigilanza competente e diritti chiari per le persone interessate sono attesi da tempo.
+
+Cordiali saluti`,
+
+                    `Gentile Deputata, gentile Deputato,
+
+ho visto algoritmi di raccomandazione plasmare la vita online dei miei figli in modi a cui non ho acconsentito e che non posso facilmente annullare. Ho visto persone care colpite da decisioni algoritmiche opache su assicurazioni e prestazioni, senza una via di ricorso chiara. Non è il Paese in cui voglio che crescano i miei figli.
+
+Questi problemi non sono inevitabili. Sono il risultato della scelta della comodità a scapito della responsabilità. Altri Paesi stanno già legiferando. L'Italia può fare lo stesso, e farlo bene.
+
+Usi la sua posizione per sostenere una legge sulla responsabilità algoritmica in questa legislatura. Sarei lieta o lieto di incontrarla o di scrivere più diffusamente se potesse essere d'aiuto.
+
+Cordiali saluti`
+                ]
+            }
+        };
+
         // ========== SUBSCRIBE: GOOGLE FORM ==========
         // We post to a Google Form's /formResponse endpoint. Google handles spam,
         // CAPTCHA, and quota; responses land in the linked Google Sheet automatically.
@@ -4315,6 +5255,122 @@ Mit freundlichen Grüßen`
                 successContactAnother2: 'Einen anderen Entscheidungsträger kontaktieren',
                 footerControlAI: 'ControlAI besuchen',
                 footerAIStatement: 'Die KI-Erklärung'
+            },
+            fr: {
+                mainTitle: 'Contacter les décideurs',
+                mainSubtitle: 'Aidez à diffuser la connaissance des dangers de la superintelligence artificielle auprès de celles et ceux qui façonnent le débat public français',
+                step0Title: '', // unused for FR; FR uses #stepParty
+                step0Subtitle: '',
+                backToCountry: 'Retour au choix du pays',
+                step1BackLabel: 'Retour à la sélection',
+                nameLabel: 'Votre nom',
+                addressLabel: 'Adresse',
+                zipcodeLabel: 'Code postal et ville',
+                namePlaceholder: 'Saisissez votre nom',
+                addressPlaceholder: 'Exemple : 12 rue de la Paix',
+                zipcodePlaceholder: 'Exemple : 75001 Paris',
+                continueLabel: 'Continuer',
+                privacyNote: 'Nous vous contacterons à l\'avenir pour vous tenir informé.',
+                optinDesc: 'Un seul e-mail suffit rarement. La pression fonctionne mieux quand les décideurs entendent les électeurs chaque fois qu\'un nouvel événement rend le risque de l\'IA d\'actualité. Inscrivez-vous et nous vous écrirons la prochaine fois, avec un message prêt à envoyer.',
+                optinLabel: 'Est-il acceptable que nous vous contactions la prochaine fois que nous aurons besoin de votre aide ?',
+                optinEmailPlaceholder: 'vous@email.fr',
+                optinCommentsPlaceholder: 'Commentaires ou suggestions sur cette application (facultatif)',
+                optinSubmitting: 'Enregistrement de votre adresse e-mail...',
+                optinOk: 'Merci ! Nous vous recontacterons la prochaine fois.',
+                optinErr: 'Échec de l\'enregistrement. Veuillez réessayer ou passer.',
+                optinNeedEmail: 'Veuillez saisir une adresse e-mail pour être recontacté.',
+                step2BackLabel: 'Retour',
+                step2Title: 'Choisissez un thème',
+                step2PickOne: 'Choisissez un thème',
+                step3BackLabel: 'Retour',
+                step3Title: 'Aperçu de votre message',
+                step3Subtitle: 'Vérifiez le contenu avant l\'envoi',
+                previewToLabel: 'À :',
+                previewFromLabel: 'De :',
+                previewSubjectLabel: 'Objet :',
+                customMessageLabel: 'Ajoutez un message personnel (facultatif)',
+                customMessagePlaceholder: 'Vous pouvez ajouter une introduction ou une conclusion personnelle...',
+                openGmail: 'Ouvrir dans Gmail',
+                openOutlook: 'Ouvrir dans Outlook',
+                orLabel: 'ou',
+                openDefault: 'Client de messagerie par défaut',
+                successTitle: 'Votre e-mail est prêt !',
+                successIntro: (target) => `Votre e-mail à <strong id="successTarget">${target}</strong> est préparé.`,
+                successPickClient: 'Choisissez votre client de messagerie :',
+                successDefaultClient: 'Client de messagerie par défaut',
+                successContactAnother: 'Contacter une autre personne',
+                instructionsTitle: 'Comment envoyer l\'e-mail :',
+                instr1Title: 'Ouvrez votre application de messagerie',
+                instr1Body: 'Ouvrez Gmail, Apple Mail, Outlook ou votre client de messagerie préféré.',
+                instr2Title: 'Copiez l\'adresse e-mail',
+                instr2Body: 'Cliquez sur le bouton ci-dessous pour copier l\'adresse e-mail.',
+                copyAddressBtn: 'Copier l\'adresse',
+                instr3Title: 'Copiez le contenu de l\'e-mail',
+                instr3Body: 'Cliquez sur le bouton ci-dessous pour copier tout l\'e-mail.',
+                copyEmailBtn: 'Copier le contenu',
+                instr4Title: 'Envoyez l\'e-mail',
+                instr4Body: 'Collez l\'adresse et le contenu, puis envoyez !',
+                successContactAnother2: 'Contacter un autre décideur',
+                footerControlAI: 'Visiter ControlAI',
+                footerAIStatement: 'La déclaration sur l\'IA'
+            },
+            it: {
+                mainTitle: 'Contatta i decisori',
+                mainSubtitle: 'Aiuta a diffondere la consapevolezza dei pericoli della superintelligenza artificiale tra chi plasma il dibattito pubblico italiano',
+                step0Title: '', // unused for IT; IT uses #stepParty
+                step0Subtitle: '',
+                backToCountry: 'Torna alla scelta del Paese',
+                step1BackLabel: 'Torna alla selezione',
+                nameLabel: 'Il tuo nome',
+                addressLabel: 'Indirizzo',
+                zipcodeLabel: 'CAP e città',
+                namePlaceholder: 'Inserisci il tuo nome',
+                addressPlaceholder: 'Esempio: Via Roma 12',
+                zipcodePlaceholder: 'Esempio: 00100 Roma',
+                continueLabel: 'Continua',
+                privacyNote: 'Ti contatteremo in futuro con aggiornamenti.',
+                optinDesc: 'Una sola e-mail raramente basta. La pressione funziona meglio quando i decisori sentono gli elettori ogni volta che un nuovo evento rende attuale il rischio dell\'IA. Iscriviti e ti scriveremo la prossima volta, con un messaggio pronto da inviare.',
+                optinLabel: 'Va bene se ti contattiamo la prossima volta che avremo bisogno del tuo aiuto?',
+                optinEmailPlaceholder: 'tua@email.it',
+                optinCommentsPlaceholder: 'Commenti o suggerimenti su questa app (facoltativo)',
+                optinSubmitting: 'Salvataggio del tuo indirizzo e-mail...',
+                optinOk: 'Grazie! Ti ricontatteremo la prossima volta.',
+                optinErr: 'Salvataggio non riuscito. Riprova o salta.',
+                optinNeedEmail: 'Inserisci un indirizzo e-mail per essere ricontattato.',
+                step2BackLabel: 'Indietro',
+                step2Title: 'Scegli un tema',
+                step2PickOne: 'Scegli un tema',
+                step3BackLabel: 'Indietro',
+                step3Title: 'Anteprima del tuo messaggio',
+                step3Subtitle: 'Controlla il contenuto prima di inviare',
+                previewToLabel: 'A:',
+                previewFromLabel: 'Da:',
+                previewSubjectLabel: 'Oggetto:',
+                customMessageLabel: 'Aggiungi un messaggio personale (facoltativo)',
+                customMessagePlaceholder: 'Puoi aggiungere un\'introduzione o una chiusura personale...',
+                openGmail: 'Apri in Gmail',
+                openOutlook: 'Apri in Outlook',
+                orLabel: 'oppure',
+                openDefault: 'Client di posta predefinito',
+                successTitle: 'La tua e-mail è pronta!',
+                successIntro: (target) => `La tua e-mail a <strong id="successTarget">${target}</strong> è stata preparata.`,
+                successPickClient: 'Scegli il tuo client di posta:',
+                successDefaultClient: 'Client di posta predefinito',
+                successContactAnother: 'Contatta un\'altra persona',
+                instructionsTitle: 'Come inviare l\'e-mail:',
+                instr1Title: 'Apri la tua app di posta',
+                instr1Body: 'Apri Gmail, Apple Mail, Outlook o il tuo client di posta preferito.',
+                instr2Title: 'Copia l\'indirizzo e-mail',
+                instr2Body: 'Clicca sul pulsante qui sotto per copiare l\'indirizzo e-mail.',
+                copyAddressBtn: 'Copia indirizzo',
+                instr3Title: 'Copia il contenuto dell\'e-mail',
+                instr3Body: 'Clicca sul pulsante qui sotto per copiare l\'intera e-mail.',
+                copyEmailBtn: 'Copia contenuto',
+                instr4Title: 'Invia l\'e-mail',
+                instr4Body: 'Incolla l\'indirizzo e il contenuto, poi invia!',
+                successContactAnother2: 'Contatta un altro decisore',
+                footerControlAI: 'Visita ControlAI',
+                footerAIStatement: 'La dichiarazione sull\'IA'
             }
         };
 
@@ -4341,6 +5397,8 @@ Mit freundlichen Grüßen`
             if (currentCountry === 'se') return 'sv';
             if (currentCountry === 'dk') return 'da';
             if (currentCountry === 'de') return 'de';
+            if (currentCountry === 'fr') return 'fr';
+            if (currentCountry === 'it') return 'it';
             return 'no';
         }
 
@@ -4361,6 +5419,12 @@ Mit freundlichen Grüßen`
             if (currentCountry === 'de') {
                 return germanPoliticianTemplates;
             }
+            if (currentCountry === 'fr') {
+                return frenchPoliticianTemplates;
+            }
+            if (currentCountry === 'it') {
+                return italianPoliticianTemplates;
+            }
             return currentMode === 'editor' ? editorEmailTemplates : politicianEmailTemplates;
         }
 
@@ -4369,18 +5433,23 @@ Mit freundlichen Grüßen`
             if (currentCountry === 'se') return topicsSV;
             if (currentCountry === 'dk') return topicsDA;
             if (currentCountry === 'de') return topicsDE;
+            if (currentCountry === 'fr') return topicsFR;
+            if (currentCountry === 'it') return topicsIT;
             return topics;
         }
 
-        // Party-based countries (Sweden, Denmark, Germany) share one code path.
+        // Party-based countries (Sweden, Denmark, Germany, France, Italy) share one code path.
         function isPartyCountry() {
-            return currentCountry === 'se' || currentCountry === 'dk' || currentCountry === 'de';
+            return currentCountry === 'se' || currentCountry === 'dk' || currentCountry === 'de'
+                || currentCountry === 'fr' || currentCountry === 'it';
         }
 
         function getParties() {
             if (currentCountry === 'se') return swedishParties;
             if (currentCountry === 'dk') return danishParties;
             if (currentCountry === 'de') return germanParties;
+            if (currentCountry === 'fr') return frenchParties;
+            if (currentCountry === 'it') return italianParties;
             return [];
         }
 
@@ -4388,6 +5457,8 @@ Mit freundlichen Grüßen`
             if (currentCountry === 'se') return swedishPoliticians;
             if (currentCountry === 'dk') return danishPoliticians;
             if (currentCountry === 'de') return germanPoliticians;
+            if (currentCountry === 'fr') return frenchPoliticians;
+            if (currentCountry === 'it') return italianPoliticians;
             return {};
         }
 
@@ -4425,6 +5496,28 @@ Mit freundlichen Grüßen`
                 step1Subtitle: 'Wählen Sie die Bundestagsabgeordnete oder den Bundestagsabgeordneten, dem Sie schreiben möchten.',
                 step2Subtitle: 'Bitten Sie um politisches Handeln gegen KI-Risiken',
                 recommended: 'Empfohlen'
+            },
+            fr: {
+                back: 'Retour au choix du pays',
+                title: 'Qui souhaitez-vous contacter ?',
+                subtitle: 'Choisissez un groupe pour voir les députés à qui vous pouvez écrire au sujet des risques liés à l\'IA.',
+                pick: 'Choisir un groupe',
+                mainTitle: 'Contacter les députés',
+                step1Title: (party) => `Choisissez une députée ou un député du groupe ${party}`,
+                step1Subtitle: 'Choisissez la députée ou le député à qui vous souhaitez écrire.',
+                step2Subtitle: 'Demandez une action politique contre les risques de l\'IA',
+                recommended: 'Recommandé'
+            },
+            it: {
+                back: 'Torna alla scelta del Paese',
+                title: 'Chi vuoi contattare?',
+                subtitle: 'Scegli un gruppo per vedere i deputati a cui puoi scrivere sui rischi dell\'IA.',
+                pick: 'Scegli un gruppo',
+                mainTitle: 'Contatta i deputati',
+                step1Title: (party) => `Scegli una deputata o un deputato del gruppo ${party}`,
+                step1Subtitle: 'Scegli la deputata o il deputato a cui vuoi scrivere.',
+                step2Subtitle: 'Chiedi un\'azione politica contro i rischi dell\'IA',
+                recommended: 'Consigliato'
             }
         };
 
@@ -4919,7 +6012,7 @@ Mit freundlichen Grüßen`
             }
             status.textContent = t.optinSubmitting;
             status.className = 'optin-status';
-            const countryNames = { no: 'Norway', au: 'Australia', se: 'Sweden', dk: 'Denmark', de: 'Germany' };
+            const countryNames = { no: 'Norway', au: 'Australia', se: 'Sweden', dk: 'Denmark', de: 'Germany', fr: 'France', it: 'Italy' };
             const countryLabel = countryNames[currentCountry] || '';
             let regionLabel = '';
             if (currentCountry === 'au') {
