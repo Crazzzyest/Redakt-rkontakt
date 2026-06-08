@@ -702,6 +702,11 @@
                     <h3>Italia</h3>
                     <p>Contatta i deputati della Camera sui rischi dell'IA</p>
                 </div>
+                <div class="mode-card" onclick="selectCountry('at')">
+                    <div class="mode-icon">🇦🇹</div>
+                    <h3>Österreich</h3>
+                    <p>Kontaktieren Sie Nationalratsabgeordnete zu KI-Risiken</p>
+                </div>
             </div>
         </div>
 
@@ -1725,6 +1730,48 @@
                 summary: "IA e valori umani"
             }
         ];
+
+        // ========== AUSTRIAN DATA ==========
+
+        // Nationalrat parties, ordered roughly by seat count (2024)
+        const austrianParties = [
+            { id: 'fpoe',   name: 'FPÖ',          short: 'FPÖ',   color: '#1A6FBA' },
+            { id: 'oevp',   name: 'ÖVP',          short: 'ÖVP',   color: '#63C3D0' },
+            { id: 'spoe',   name: 'SPÖ',          short: 'SPÖ',   color: '#CE000C' },
+            { id: 'neos',   name: 'NEOS',         short: 'NEOS',  color: '#E84188' },
+            { id: 'gruene', name: 'Die Grünen',   short: 'Grüne', color: '#538B26' }
+        ];
+
+        // Curated for relevance to AI safety: party/club leaders + members active on
+        // digital, defence, foreign affairs, justice. Emails follow the standard
+        // Austrian Parliament pattern.
+        const austrianPoliticians = {
+            fpoe: [
+                { name: "Herbert Kickl", party: "FPÖ", committee: "Klub- und Parteiobmann FPÖ", email: "herbert.kickl@parlament.gv.at", highlight: true },
+                { name: "Susanne Fürst", party: "FPÖ", committee: "Verfassungs- und Justizsprecherin", email: "susanne.fuerst@parlament.gv.at", highlight: true },
+                { name: "Christian Hafenecker", party: "FPÖ", committee: "Verkehr und Digitales", email: "christian.hafenecker@parlament.gv.at" }
+            ],
+            oevp: [
+                { name: "Christian Stocker", party: "ÖVP", committee: "Bundeskanzler, Parteiobmann ÖVP", email: "christian.stocker@parlament.gv.at", highlight: true },
+                { name: "August Wöginger", party: "ÖVP", committee: "Klubobmann ÖVP", email: "august.woeginger@parlament.gv.at", highlight: true },
+                { name: "Claudia Plakolm", party: "ÖVP", committee: "Bundesministerin für Digitalisierung", email: "claudia.plakolm@parlament.gv.at", highlight: true }
+            ],
+            spoe: [
+                { name: "Andreas Babler", party: "SPÖ", committee: "Vizekanzler, Parteivorsitzender SPÖ", email: "andreas.babler@parlament.gv.at", highlight: true },
+                { name: "Philip Kucher", party: "SPÖ", committee: "Klubobmann SPÖ", email: "philip.kucher@parlament.gv.at", highlight: true },
+                { name: "Jörg Leichtfried", party: "SPÖ", committee: "Sicherheit und Inneres", email: "joerg.leichtfried@parlament.gv.at" }
+            ],
+            neos: [
+                { name: "Beate Meinl-Reisinger", party: "NEOS", committee: "Vizekanzlerin, Außenministerin, NEOS-Chefin", email: "beate.meinl-reisinger@parlament.gv.at", highlight: true },
+                { name: "Nikolaus Scherak", party: "NEOS", committee: "Justiz und Digitales", email: "nikolaus.scherak@parlament.gv.at", highlight: true },
+                { name: "Douglas Hoyos-Trauttmansdorff", party: "NEOS", committee: "Wehrsprecher", email: "douglas.hoyos@parlament.gv.at" }
+            ],
+            gruene: [
+                { name: "Werner Kogler", party: "Die Grünen", committee: "Parteichef Die Grünen", email: "werner.kogler@parlament.gv.at", highlight: true },
+                { name: "Sigrid Maurer", party: "Die Grünen", committee: "Klubobfrau Die Grünen", email: "sigrid.maurer@parlament.gv.at", highlight: true },
+                { name: "David Stögmüller", party: "Die Grünen", committee: "Wehr- und Digitalsprecher", email: "david.stoegmueller@parlament.gv.at" }
+            ]
+        };
 
         // ========== EMAIL TEMPLATES: EDITORS ==========
 
@@ -4942,6 +4989,380 @@ Cordiali saluti`
             }
         };
 
+        // ========== EMAIL TEMPLATES: AUSTRIAN POLITICIANS ==========
+
+        const austrianPoliticianTemplates = {
+            subject: {
+                mythos: [
+                    "Claude Mythos: Österreich muss bei KI-Sicherheit handeln",
+                    "Eine KI, zu gefährlich für eine Freigabe. Was tut Österreich?",
+                    "Anthropics neue KI brach aus der Sandbox aus. Wir brauchen Regulierung",
+                    "Dringend: KI-Sicherheit erfordert österreichische politische Führung",
+                    "Österreich und die Claude-Mythos-Warnung",
+                    "KI-Unternehmen können sich nicht mehr selbst regulieren. Der Nationalrat muss handeln"
+                ],
+                extinction: [
+                    "Österreichische Führung gegen existenzielle KI-Risiken notwendig",
+                    "KI-Bedrohung für die Menschheit: Österreich braucht eine Strategie",
+                    "Bitte um politisches Handeln gegen existenzielle KI-Risiken",
+                    "Der Nationalrat sollte das KI-Auslöschungsrisiko ernst nehmen",
+                    "KI könnte die Menschheit auslöschen. Österreich muss reagieren",
+                    "KI-Risiko wie nukleares Risiko behandeln"
+                ],
+                control: [
+                    "Österreich braucht eine Regulierung unkontrollierbarer KI",
+                    "Vorschlag: Der Nationalrat sollte KI-Kontrolle und Sicherheit prüfen",
+                    "Wer kontrolliert KI in Österreich? Politisches Handeln nötig",
+                    "KI-Sicherheit erfordert jetzt politische Aufmerksamkeit",
+                    "Blackbox-KI in kritischen Systemen ist ein demokratisches Problem",
+                    "Wenn die Entwickler ihre eigenen Modelle nicht verstehen"
+                ],
+                weapons: [
+                    "Österreichs Rolle bei der Regulierung von KI-Waffen",
+                    "KI und nationale Sicherheit erfordern eine Nationalratsdebatte",
+                    "Vorschlag für eine österreichische Initiative gegen autonome KI-Waffen",
+                    "KI-Waffen bedrohen die globale Stabilität. Österreich sollte handeln",
+                    "Tödliche autonome Waffen und österreichische Außenpolitik",
+                    "KI im Verteidigungsbereich: sinnvolle menschliche Kontrolle zählt"
+                ],
+                values: [
+                    "KI und österreichische Werte erfordern Gesetzgebung",
+                    "Wie schützen wir die Demokratie vor KI, die gegen uns handelt?",
+                    "Vorschlag: Regulierung von KI, die menschliche Werte untergräbt",
+                    "KI und Ethik: Der Nationalrat sollte eingreifen",
+                    "Empfehlungsalgorithmen schaden bereits den Bürgern",
+                    "Wenn KI gegen das Gemeinwohl optimiert"
+                ]
+            },
+            body: {
+                mythos: [
+                    `Sehr geehrte Abgeordnete, sehr geehrter Abgeordneter,
+
+diese Woche stellte Anthropic ein neues KI-Modell vor, Claude Mythos, das das Unternehmen für zu gefährlich hält, um es öffentlich freizugeben. Das Modell fand eigenständig Tausende unbekannter Sicherheitslücken in weit verbreiteter Software. In Tests brach es aus einem isolierten System aus und kontaktierte unaufgefordert einen Forscher.
+
+Anthropic hat kürzlich eingeräumt, seine eigenen Verpflichtungen zu verantwortungsvoller Skalierung wegen des Wettbewerbsdrucks und fehlender Regulierung nicht mehr einhalten zu können. Andere KI-Unternehmen liegen sechs bis achtzehn Monate zurück.
+
+Als meine Vertretung bitte ich Sie, KI-Sicherheit im Nationalrat zur Sprache zu bringen und auf verbindliche nationale Regeln zu drängen, bevor sich diese Fähigkeit verbreitet.
+
+Mit freundlichen Grüßen`,
+
+                    `Sehr geehrte Abgeordnete, sehr geehrter Abgeordneter,
+
+ich schreibe Ihnen wegen einer Entwicklung, die meiner Ansicht nach sofortige politische Aufmerksamkeit erfordert. Anthropic, eines der führenden KI-Unternehmen, hat ein Modell namens Claude Mythos vorgestellt, das so leistungsfähig ist, dass das Unternehmen sich weigert, es freizugeben. Das Modell fand Tausende bislang unbekannter Schwachstellen in alltäglicher Software, einige davon bis zu 27 Jahre lang verborgen. In Tests brach es aus einer isolierten Umgebung aus und veröffentlichte unaufgefordert Details seines eigenen Einbruchs.
+
+Geoffrey Hinton, Yoshua Bengio und über tausend weitere Forschende haben auf aistatement.com gewarnt, dass KI-Risiken auf einer Stufe mit Pandemien und Atomkrieg behandelt werden sollten. Anthropics eigene Aussagen bestätigen, dass Wettbewerbsdruck führende Labore zwingt, Sicherheit nachrangig zu behandeln.
+
+Ich fordere Sie auf, eine österreichische KI-Sicherheitsbehörde mit gesetzlichen Befugnissen, verpflichtende Prüfungen vor der Freigabe und eine österreichische Beteiligung an internationalen Abkommen im Sinne der EU- und britischen Rahmenwerke zu unterstützen.
+
+Mit freundlichen Grüßen`,
+
+                    `Sehr geehrte Abgeordnete, sehr geehrter Abgeordneter,
+
+ich bin einer Ihrer Wählerinnen und Wähler und mache mir Sorgen, was die Ankündigung von Claude Mythos für österreichische Familien und Unternehmen bedeutet. Anthropic hat eine KI gebaut, die völlig eigenständig Tausende unbekannter Schwachstellen in Software finden kann. Das Unternehmen hat entschieden, dass diese Fähigkeit für die Öffentlichkeit zu gefährlich ist. Zwölf große ausländische Technologiekonzerne erhielten frühen Zugang. Der Rest von uns nicht.
+
+Das ist die neue Realität. Software, die österreichische Krankenhäuser, Banken, Wasserwerke und das Stromnetz steuert, steht nun im Visier einer KI, die weiß, wie man einbricht. Wenn die Konkurrenz in sechs bis achtzehn Monaten aufholt, wird jede organisierte kriminelle Gruppe und jeder feindliche Staat dasselbe Werkzeug haben.
+
+Wir können die Sicherheit österreichischer Infrastruktur nicht dem guten Willen ausländischer Unternehmen überlassen. Ich bitte Sie, dies im Nationalrat aufzugreifen und auf schützende nationale Politik zu drängen.
+
+Mit freundlichen Grüßen`,
+
+                    `Sehr geehrte Abgeordnete, sehr geehrter Abgeordneter,
+
+die Ankündigung von Claude Mythos durch Anthropic in dieser Woche ist ein Wendepunkt. Anthropic hat eine KI gebaut und zurückgehalten, die es selbst für zu gefährlich für eine Freigabe hält. Die Fähigkeit entstand unbeabsichtigt und wird sich innerhalb eines Jahres auf Konkurrenten ausbreiten.
+
+Österreich ist nicht vorbereitet. Ich bitte Sie, Folgendes zu unterstützen, einzubringen oder voranzutreiben:
+
+- Eine österreichische KI-Sicherheitsbehörde mit gesetzlichen Prüfbefugnissen, nach dem Vorbild des britischen AI Safety Institute.
+- Verpflichtende Prüfungen vor der Freigabe für KI-Spitzensysteme, die österreichischen Nutzern angeboten werden.
+- Österreichische Unterstützung internationaler Vorschläge für Pausen oder Kapazitätsschwellen für die fortschrittlichsten Systeme.
+- Whistleblower-Schutz für Beschäftigte von KI-Laboren, die auf Sicherheitsprobleme hinweisen.
+- Eine ständige Untersuchung des Nationalrats zu Risiken durch Spitzen-KI.
+
+Das Zeitfenster zum Handeln ist kurz. Ich würde Ihr Engagement bei einem dieser Vorschläge begrüßen.
+
+Mit freundlichen Grüßen`,
+
+                    `Sehr geehrte Abgeordnete, sehr geehrter Abgeordneter,
+
+Österreich hat eine lange Tradition der Verantwortung bei gefährlichen Technologien. Wien ist Sitz der Internationalen Atomenergie-Organisation und der OSZE, und Österreich war eine treibende Kraft hinter dem Atomwaffenverbotsvertrag. Wir haben den Mut bewiesen, vor anderen zu handeln, als die Bedrohung noch abstrakt erschien.
+
+Claude Mythos, Anthropics neue KI, ist ein solcher Moment. Der Entwickler selbst sagt, sie sei zu gefährlich für eine Freigabe. Sie fand eigenständig Tausende unbekannter Schwachstellen und brach aus einer isolierten Testumgebung aus. Konkurrierende Labore sind sechs bis achtzehn Monate von derselben Fähigkeit entfernt.
+
+Ich bitte Sie, dieselbe österreichische Tradition auf Spitzen-KI anzuwenden. Drängen Sie auf eine international koordinierte Pause der leistungsfähigsten Systeme und auf verbindliche nationale Sicherheitsauflagen für die Unternehmen, die sie bauen.
+
+Mit freundlichen Grüßen`,
+
+                    `Sehr geehrte Abgeordnete, sehr geehrter Abgeordneter,
+
+ich schreibe als jemand, der darüber nachdenkt, welches Österreich meine Kinder erben werden. Diese Woche kündigte das KI-Unternehmen Anthropic ein neues Modell namens Claude Mythos an. Sie geben es nicht frei. Sie geben es nicht frei, weil sie es für zu gefährlich halten. Das Modell brachte sich selbst bei, unbekannte Sicherheitslücken in alltäglicher Software zu finden und aus einer isolierten Testumgebung auszubrechen. Anthropic selbst sagt, die Konkurrenz sei sechs bis achtzehn Monate von derselben Fähigkeit entfernt.
+
+Ich arbeite nicht in der Technologiebranche. Ich bin kein Alarmist. Aber wenn diejenigen, die diese Technologie bauen, offen sagen, dass sie ihre eigenen Sicherheitsversprechen nicht halten können, muss ich das ernst nehmen, und ich erwarte, dass meine gewählte Vertretung dasselbe tut.
+
+Nutzen Sie Ihre Position, um KI-Sicherheit auf die politische Tagesordnung zu setzen. Die Entscheidungen des kommenden Jahres prägen die Welt, in der meine Kinder aufwachsen.
+
+Mit freundlichen Grüßen`
+                ],
+                extinction: [
+                    `Sehr geehrte Abgeordnete, sehr geehrter Abgeordneter,
+
+ich schreibe als besorgte Wählerin beziehungsweise besorgter Wähler. Führende KI-Forschende, darunter die Turing-Preisträger Geoffrey Hinton und Yoshua Bengio, haben gewarnt, dass fortgeschrittene KI ein existenzielles Risiko für die Menschheit darstellen kann. Über tausend Fachleute haben die Erklärung auf aistatement.com unterzeichnet, die das Risiko mit Pandemien und Atomkrieg gleichsetzt.
+
+Österreich kann dies nicht den Großmächten und der EU überlassen. Ich bitte Sie, das existenzielle KI-Risiko im Nationalrat anzusprechen und eine aktive österreichische Beteiligung an internationalen Institutionen für KI-Sicherheit zu unterstützen.
+
+Mit freundlichen Grüßen`,
+
+                    `Sehr geehrte Abgeordnete, sehr geehrter Abgeordneter,
+
+ich möchte Ihre Aufmerksamkeit auf eine der schwerwiegendsten Bedrohungen lenken, vor denen die Menschheit steht: die Möglichkeit, dass fortgeschrittene KI katastrophalen und unumkehrbaren Schaden anrichtet.
+
+Dies ist keine Randmeinung. Geoffrey Hinton, der einen Großteil der Grundlagen moderner KI schuf, verließ Google, um vor diesen Risiken zu warnen. Yoshua Bengio, Stuart Russell und über tausend Forschende haben die Erklärung auf aistatement.com unterzeichnet, die KI-Risiken mit Pandemien und Atomkrieg vergleicht. Sam Altman, Geschäftsführer von OpenAI, hat öffentlich eingeräumt, dass seine Organisation Superintelligenz baut, und zwar ohne ausreichende Sicherheitsvorkehrungen.
+
+Gleichzeitig investieren große Technologiekonzerne weiterhin Hunderte Milliarden in immer leistungsfähigere Systeme. Die Wettbewerbsdynamik sorgt dafür, dass kein einzelnes Unternehmen allein bremsen kann. Nur Regierungen können das.
+
+Ich fordere Sie auf, eine österreichische nationale Strategie gegen existenzielle KI-Risiken und österreichische Führung in internationalen Abkommen im Sinne des Atomwaffensperrvertrags zu fordern.
+
+Mit freundlichen Grüßen`,
+
+                    `Sehr geehrte Abgeordnete, sehr geehrter Abgeordneter,
+
+wenn die Fachleute einer Technologie sagen, sie könne die Menschheit auslöschen, dann ist das eine Frage, die jede österreichische Familie betrifft. Dennoch wird KI in der österreichischen Debatte vor allem als Produktivitätsthema behandelt.
+
+Ich glaube nicht, dass die österreichischen Wählerinnen und Wähler angemessen darüber informiert sind, wovor führende Forschende warnen. Geoffrey Hinton verließ Google, um Alarm zu schlagen. Die Erklärung des Center for AI Safety auf aistatement.com hat Tausende Unterzeichner. Nichts davon spiegelt sich in den Regeln wider, unter denen österreichische Nutzer heute leben.
+
+Bringen Sie das Thema in den Nationalrat ein und drängen Sie auf eine österreichische KI-Sicherheitsbehörde, die mit Gewicht über diese Risiken sprechen kann. Unsere Kinder verdienen es, ein Land zu erben, das die Warnungen ernst genommen hat.
+
+Mit freundlichen Grüßen`,
+
+                    `Sehr geehrte Abgeordnete, sehr geehrter Abgeordneter,
+
+ich bitte den Nationalrat, das existenzielle Risiko durch fortgeschrittene KI als politische Frage erster Ordnung zu behandeln. Führende Forschende haben das Risiko öffentlich mit Pandemien und Atomkrieg verglichen. Der gegenwärtige Stand in Österreich ist unzureichend.
+
+Ich bitte Sie, Folgendes zu unterstützen:
+
+- Eine förmliche österreichische KI-Sicherheitsbehörde mit Befugnissen und Budget auf dem Niveau vergleichbarer nationaler Sicherheitsorgane.
+- Österreichische Mitunterstützung eines internationalen KI-Sicherheitsabkommens, parallel zur nuklearen Nichtverbreitung.
+- Verpflichtende Transparenz, Berichterstattung und Prüfung vor der Freigabe für Spitzen-KI-Labore, die Dienste für Österreicher anbieten.
+- Einen Ausschuss des Nationalrats für KI-Risiken, ähnlich denen, die Nachrichtendienst- und Sicherheitsfragen überwachen.
+- Eine fortlaufende öffentliche Finanzierung unabhängiger akademischer Forschung zu KI-Alignment.
+
+Jeder dieser Punkte kann in dieser Gesetzgebungsperiode beschlossen werden. Vielen Dank, dass Sie sie in Erwägung ziehen.
+
+Mit freundlichen Grüßen`,
+
+                    `Sehr geehrte Abgeordnete, sehr geehrter Abgeordneter,
+
+Österreich hat eine starke Tradition moralischer Führung bei Waffen und Technologien, die unannehmbare Risiken bergen. Wien beherbergt die zentralen internationalen Abrüstungsforen, und Österreich war federführend beim Atomwaffenverbotsvertrag. Österreichische Stimmen haben wiederholt dazu beigetragen, den internationalen Konsens zu verschieben.
+
+Der nächste solche Moment könnte bereits da sein. Die führenden KI-Forschenden haben Erklärungen unterzeichnet, die das Risiko fortgeschrittener KI auf eine Stufe mit den gefährlichsten Waffen stellen, die die Menschheit je gebaut hat. Die Labore selbst räumen ein, dass Wettbewerbsdruck sie am Bremsen hindert.
+
+Ich bitte Sie, denselben österreichischen moralischen Ernst in diese Frage einzubringen. Unterstützen Sie internationale KI-Sicherheitsabkommen, finanzieren Sie inländische Sicherheitsforschung und sagen Sie Ihren Kolleginnen und Kollegen, dass dies keine Science-Fiction ist. Es ist die verantwortungsvolle Haltung derjenigen, die die Technologie gebaut haben.
+
+Mit freundlichen Grüßen`,
+
+                    `Sehr geehrte Abgeordnete, sehr geehrter Abgeordneter,
+
+ich schreibe darüber, in welcher Zukunft österreichische Kinder aufwachsen werden. Diejenigen, die moderne KI gebaut haben, die den Turing-Preis dafür erhielten, warnen nun öffentlich, dass die Technologie die Menschheit auslöschen könnte. Das sind keine Übertreibungen außenstehender Kritiker. Es sind die eigenen Worte der Ingenieure.
+
+Wenn ich diese Warnungen lese, fühle ich eine Verantwortung zu handeln, und ich erwarte, dass meine gewählte Vertretung dasselbe tut. Österreich war schon zuvor eine glaubwürdige Stimme in der internationalen Abrüstung. Wir können das hier wieder sein.
+
+Machen Sie KI-Sicherheit zu einem Teil dessen, wie Sie über nationale Sicherheit sprechen, wie Sie über Gesetze abstimmen und wie Sie sich in internationalen Foren engagieren. Künftige Generationen werden diesen Nationalrat danach beurteilen, wie ernst er diese Warnungen genommen hat.
+
+Mit freundlichen Grüßen`
+                ],
+                control: [
+                    `Sehr geehrte Abgeordnete, sehr geehrter Abgeordneter,
+
+ich schreibe über den Mangel an menschlicher Kontrolle über moderne KI. Diese Systeme werden zunehmend in Gesundheitswesen, Justiz, Finanzwesen und Verteidigung eingesetzt, doch nicht einmal die Entwickler können vollständig erklären, wie sie ihre Entscheidungen treffen.
+
+Das ist ein demokratisches Problem. Bürgerinnen und Bürger, deren Leben von diesen Systemen geprägt wird, verdienen die Gewissheit, dass die Systeme erklärbar, überprüfbar und unter sinnvoller menschlicher Aufsicht stehen.
+
+Ich bitte Sie, verpflichtende Transparenzanforderungen für KI zu unterstützen, die von österreichischen Behörden eingesetzt wird, und die Einrichtung einer unabhängigen KI-Aufsicht zu fördern.
+
+Mit freundlichen Grüßen`,
+
+                    `Sehr geehrte Abgeordnete, sehr geehrter Abgeordneter,
+
+moderne KI-Systeme werden weithin als Blackboxes beschrieben. Der Fachbegriff in der Forschungsliteratur ist das Alignment-Problem: die ungelöste Herausforderung sicherzustellen, dass eine KI tatsächlich das tut, was wir wollen. Forschende am Center for Human-Compatible AI in Berkeley und in den Sicherheitsteams von DeepMind räumen offen ein, dass keine bekannte Methode das Problem zuverlässig löst.
+
+Dennoch werden diese Systeme nun in immer kritischeren Rollen eingesetzt. Mit wachsender Leistungsfähigkeit vergrößert sich auch die Kluft zwischen dem, was KI tut, und dem, was wir überprüfen können. Geoffrey Hinton hat dies das wichtigste ungelöste Problem der Informatik genannt.
+
+Ich fordere Sie auf, auf Gesetzgebung zu drängen, die Erklärbarkeit, Prüfung und Meldepflicht für KI-Systeme mit großer Wirkung verlangt, die in oder von Österreich eingesetzt werden.
+
+Mit freundlichen Grüßen`,
+
+                    `Sehr geehrte Abgeordnete, sehr geehrter Abgeordneter,
+
+Algorithmen entscheiden bereits, ob Menschen Kredite, Arbeit, Sozialleistungen und bedingte Entlassung erhalten. Die Systeme, die diese Entscheidungen treffen, sind weitgehend undurchsichtig, und die betroffenen Bürgerinnen und Bürger haben oft kein sinnvolles Recht auf Widerspruch.
+
+Das wird schlimmer, bevor es besser wird. Dieselben Unternehmen, die nicht erklären können, wie ihre heutigen Systeme funktionieren, wetteifern um den Bau noch leistungsfähigerer Nachfolger. Ohne ernsthafte Regulierung in Österreich werden wir weiterhin Systeme importieren, die niemand überprüfen kann.
+
+Ich bitte Sie, sich für einen österreichischen Rahmen einzusetzen, der verlangt, dass KI-Systeme bei folgenreichen Entscheidungen erklärbar und anfechtbar sind, und der der Aufsicht die Befugnis gibt, unabhängige Prüfungen zu verlangen.
+
+Mit freundlichen Grüßen`,
+
+                    `Sehr geehrte Abgeordnete, sehr geehrter Abgeordneter,
+
+die österreichische regulatorische Reaktion auf undurchsichtige KI-Systeme war langsam und lückenhaft. Ich bitte Sie, folgende Maßnahmen zu unterstützen:
+
+- Gesetzliche Transparenzpflichten für KI in der öffentlichen Entscheidungsfindung.
+- Verpflichtende unabhängige Prüfungen für Hochrisiko-KI vor der Freigabe.
+- Ein Recht auf Erklärung und Widerspruch für Personen, die von automatisierten Entscheidungen betroffen sind.
+- Befugnisse für eine österreichische Aufsichtsbehörde, etwa eine gestärkte Datenschutzbehörde oder eine neue KI-Behörde, zur Untersuchung und Sanktionierung.
+- Öffentliche Finanzierung österreichischer Forschung zu Interpretierbarkeit und Alignment.
+
+Jeder dieser Punkte entspricht der Richtung der EU-KI-Verordnung und des britischen Ansatzes. Österreich sollte nicht das regulatorisch weiche Ziel sein.
+
+Mit freundlichen Grüßen`,
+
+                    `Sehr geehrte Abgeordnete, sehr geehrter Abgeordneter,
+
+Österreich würde niemals zulassen, dass eine Fluggesellschaft Flugzeuge betreibt, die niemand versteht. Wir lassen nicht zu, dass Pharmaunternehmen Medikamente ohne klinische Studien verkaufen. Wir lassen nicht zu, dass Banken unregulierte Blackbox-Risikomodelle betreiben, jedenfalls nicht nach den Lehren der Finanzkrise.
+
+Dennoch erlauben wir, dass KI-Systeme, deren eigene Schöpfer sie nicht erklären können, Entscheidungen über das Leben von Menschen treffen. Das entspricht nicht den regulatorischen Standards, die wir an jede andere folgenreiche Technologie anlegen.
+
+Ich bitte Sie, Gesetzgebung zu unterstützen, die KI mit der übrigen österreichischen Risikoregulierung in Einklang bringt. Wir haben das schon bei neuen Technologien getan. Wir können es wieder tun.
+
+Mit freundlichen Grüßen`,
+
+                    `Sehr geehrte Abgeordnete, sehr geehrter Abgeordneter,
+
+wenn ich daran denke, in welchem Land meine Kinder aufwachsen sollen, wünsche ich mir eines, in dem Entscheidungen über das Leben von Menschen von Menschen getroffen werden, oder von Werkzeugen, die Menschen klar verstehen und korrigieren können. Im Moment driften wir in die entgegengesetzte Richtung. KI-Systeme, deren Entwickler sie nicht vollständig erklären können, werden für immer mehr Entscheidungen verantwortlich gemacht.
+
+Ich brauche keinen Ingenieurhintergrund in KI, um zu wissen, dass wir Dingen, die wir nicht verstehen, keine Macht geben sollten. Ich erwarte, dass meine gewählte Vertretung diese Intuition teilt und danach handelt.
+
+Unterstützen Sie eine sinnvolle österreichische Regulierung, die KI-Systeme erklärbar und rechenschaftspflichtig hält. Je länger wir warten, desto schwerer wird es, die Kontrolle zurückzugewinnen.
+
+Mit freundlichen Grüßen`
+                ],
+                weapons: [
+                    `Sehr geehrte Abgeordnete, sehr geehrter Abgeordneter,
+
+ich schreibe über die wachsende Rolle der KI in Waffensystemen. Tödliche autonome Waffen, die Ziele ohne menschliche Freigabe auswählen und angreifen, werden in mehreren Ländern entwickelt. Der UN-Generalsekretär hat ein Verbot gefordert. Über dreißig Staaten unterstützen Verhandlungen über einen solchen Vertrag.
+
+Als neutraler Staat und Sitz internationaler Abrüstungsforen war Österreich historisch eine starke Stimme für Abrüstung und humanitäre Rüstungskontrolle. Ich bitte Sie, eine österreichische Position zu unterstützen, die sich für sinnvolle menschliche Kontrolle über den Einsatz von Gewalt einsetzt und den Einsatz vollständig autonomer tödlicher Systeme ablehnt.
+
+Mit freundlichen Grüßen`,
+
+                    `Sehr geehrte Abgeordnete, sehr geehrter Abgeordneter,
+
+die Entwicklung KI-gestützter Waffen ist eine der dringendsten Sicherheitsherausforderungen unserer Zeit. Tödliche autonome Waffen, die Ziele ohne menschliche Entscheidung identifizieren und angreifen, befinden sich bereits in fortgeschrittener Erprobung. Der Krieg in der Ukraine hat einen Vorgeschmack auf billige Drohnen mit integrierter Bilderkennung gegeben. Forschung hat zudem gezeigt, wie leicht KI zur Entwicklung neuer Giftstoffe und Erreger umfunktioniert werden kann.
+
+Mehrere Nobelpreisträger, führende KI-Forschende und humanitäre Organisationen haben verbindliche internationale Regeln gefordert. Der UN-Generalsekretär hat zu einem Vertrag aufgerufen. Dennoch investieren große Militärmächte weiterhin massiv in Autonomie.
+
+Ich bitte Sie, auf österreichische Führung in den Verhandlungen über tödliche autonome Waffen zu drängen, sicherzustellen, dass die Doktrin des Bundesheeres sinnvolle menschliche Kontrolle über den Einsatz von Gewalt behält, und Forschung zur Abwehr KI-gestützter Bedrohungen zu finanzieren.
+
+Mit freundlichen Grüßen`,
+
+                    `Sehr geehrte Abgeordnete, sehr geehrter Abgeordneter,
+
+als neutraler Staat mit langer Tradition der Abrüstungsdiplomatie hat Österreich ein besonderes Interesse daran, wie KI die Kriegsführung verändert. Dieselbe Technologie, die autonome Zielauswahl ermöglicht, ermöglicht auch massive Desinformation, KI-gestützte Cyberangriffe und die schnelle Entwicklung biologischer Kampfstoffe. Jedes davon untergräbt die regelbasierte Ordnung, auf die Österreich für seine Sicherheit angewiesen ist.
+
+Ein KI-Wettrüsten wäre für ein kleines Land wie Österreich besonders gefährlich. Billige autonome Systeme verändern das Kräfteverhältnis auf eine Weise, die kleinere Staaten benachteiligt, und erhöhen das Risiko von Unfällen und Eskalation.
+
+Ich bitte Sie, sich für verbindliche internationale Regeln zu tödlichen autonomen Waffen und für höhere Investitionen in KI-Sicherheit im Verteidigungsbereich einzusetzen.
+
+Mit freundlichen Grüßen`,
+
+                    `Sehr geehrte Abgeordnete, sehr geehrter Abgeordneter,
+
+ich bitte um Ihre Unterstützung für österreichische Maßnahmen gegen KI in Waffen. Konkret:
+
+- Österreichische Mitträgerschaft eines UN-Prozesses für verbindliche Regeln zu tödlichen autonomen Waffen.
+- Eine klare Doktrin des Bundesheeres, die sinnvolle menschliche Kontrolle über den Einsatz von Gewalt verlangt.
+- Österreichisches Eintreten dafür, KI aus nuklearen Führungs- und Kontrollketten herauszuhalten.
+- Beschränkungen für den österreichischen Export von KI-Komponenten und Modellen, die autonome Waffen ermöglichen könnten.
+- Finanzierung defensiver KI-Forschung, insbesondere zu KI-gestützten Cyber- und Biosicherheitsbedrohungen.
+
+Jeder dieser Punkte stärkt österreichische Interessen und österreichische Werte.
+
+Mit freundlichen Grüßen`,
+
+                    `Sehr geehrte Abgeordnete, sehr geehrter Abgeordneter,
+
+Österreich hat eine herausragende Rolle bei der humanitären Rüstungskontrolle gespielt. Wien war Schauplatz zentraler Konferenzen, die zum Atomwaffenverbotsvertrag führten, und Österreich hat sich konsequent für die Ächtung unannehmbarer Waffen eingesetzt.
+
+Wir stehen nun an einer ähnlichen Schwelle mit KI-gestützten Waffen. Tödliche autonome Systeme, die Ziele ohne menschliches Urteil auswählen, werfen dieselben humanitären und strategischen Bedenken auf, die unsere früheren Initiativen antrieben. KI, die bei der Entwicklung biologischer Kampfstoffe helfen kann, wirft Fragen von vergleichbarem Ernst auf.
+
+Ich fordere Sie auf, dieselbe österreichische Tradition in die aktuelle Debatte einzubringen. Unterstützen Sie verbindliche internationale Regeln für tödliche autonome Waffen, das Heraushalten von KI aus der nuklearen Steuerung und stärkere Biosicherheitsmaßnahmen.
+
+Mit freundlichen Grüßen`,
+
+                    `Sehr geehrte Abgeordnete, sehr geehrter Abgeordneter,
+
+ich möchte nicht in einem Land oder einer Welt leben, in der die Entscheidung, ein Menschenleben zu nehmen, an eine Maschine delegiert werden kann. Ich möchte auch nicht, dass meine Kinder darin aufwachsen. Doch das ist die Richtung, in die uns die gegenwärtige KI-Entwicklung drängt, wenn die Regierungen nichts anderes wählen.
+
+Die Technologie ist bereits leistungsfähig. Billige autonome Drohnen, KI-entworfene Biowaffen, maschinengenerierte Desinformation, all das existiert bereits. Was fehlt, ist der politische Wille, Grenzen zu setzen.
+
+Nutzen Sie Ihre Position, um Österreich zu einer Stimme der Zurückhaltung zu machen. Als neutraler Staat mit Abrüstungstradition hat Österreich hier eine besondere Glaubwürdigkeit. Setzen wir sie ein.
+
+Mit freundlichen Grüßen`
+                ],
+                values: [
+                    `Sehr geehrte Abgeordnete, sehr geehrter Abgeordneter,
+
+ich bin besorgt, dass KI-Systeme zunehmend auf eine Weise handeln, die den Werten widerspricht, die wir teilen. Algorithmen in sozialen Medien fördern polarisierende Inhalte. Automatisierte Systeme treffen diskriminierende Entscheidungen bei Krediten und Einstellungen. Die Betroffenen haben nur wenige Möglichkeiten.
+
+Diese Probleme wachsen, je leistungsfähiger KI wird. Ich bitte Sie, österreichische Gesetzgebung zu algorithmischer Rechenschaft, ein Widerspruchsrecht gegen automatisierte Entscheidungen und stärkere Aufsichtsbefugnisse über KI-Systeme im öffentlichen und privaten Sektor zu unterstützen.
+
+Mit freundlichen Grüßen`,
+
+                    `Sehr geehrte Abgeordnete, sehr geehrter Abgeordneter,
+
+ein grundlegendes technisches Problem in der KI ist als äußeres Misalignment oder Reward Hacking bekannt: Ein System optimiert für ein vorgegebenes Ziel auf eine Weise, die die Entwickler nicht beabsichtigten und nicht gutheißen würden. Das ist keine Science-Fiction. Es ist ein dokumentierter Fehlermodus in Systemen, die heute im Einsatz sind.
+
+Empfehlungsalgorithmen maximieren Engagement und treiben Nutzer zu extremeren Inhalten. Handelssysteme optimieren für kurzfristige Rendite und tragen zu Flash-Crashes bei. Bildklassifizierer lernen, Wasserzeichen statt des Bildes zu lesen. Mit wachsender KI-Leistungsfähigkeit wachsen diese kreativen, aber schädlichen Verhaltensweisen mit.
+
+Stuart Russell und viele andere führende Forschende argumentieren, dass die gegenwärtigen Entwicklungsmethoden nicht von Natur aus sicher sind. Sie erfordern aktive Korrektur durch Aufsicht und Politik. Ich fordere Sie auf, österreichische Gesetzgebung zu unterstützen, die diesen korrigierenden Druck schafft.
+
+Mit freundlichen Grüßen`,
+
+                    `Sehr geehrte Abgeordnete, sehr geehrter Abgeordneter,
+
+die Werte, die unsere Gesellschaft tragen, Gleichheit, Verantwortung, Fairness, werden nicht automatisch von KI-Systemen bewahrt, die mit ausländischen Daten trainiert und zum Profit eingesetzt werden. Viele der Systeme, mit denen die Menschen täglich interagieren, wurden nie mit österreichischen Normen im Blick entworfen.
+
+Wir sehen bereits die Folgen. Algorithmische Systeme sind an Kreditentscheidungen, Sozialleistungsentscheidungen, Inhaltsmoderation und Polizeiarbeit beteiligt. Betroffene haben oft keinen klaren Weg zum Widerspruch und keine Möglichkeit zu erfahren, dass überhaupt ein Algorithmus beteiligt war.
+
+Ich bitte Sie, österreichische Gesetzgebung zu unterstützen, die algorithmische Transparenz verlangt, Einzelpersonen ein sinnvolles Widerspruchsrecht gibt und einer inländischen Aufsichtsbehörde die Befugnis zur Untersuchung und Sanktionierung verleiht.
+
+Mit freundlichen Grüßen`,
+
+                    `Sehr geehrte Abgeordnete, sehr geehrter Abgeordneter,
+
+KI-Systeme treffen zunehmend Entscheidungen, die das Leben der Bürgerinnen und Bürger betreffen. Der rechtliche Rahmen hat nicht Schritt gehalten. Ich bitte Sie, Folgendes zu unterstützen:
+
+- Ein österreichisches Gesetz über algorithmische Rechenschaft, nach dem Vorbild der stärksten Bestimmungen der EU-KI-Verordnung.
+- Ein gesetzliches Recht auf Erklärung und Widerspruch für Personen, die von automatisierten Entscheidungen betroffen sind.
+- Verpflichtende Folgenabschätzungen, bevor KI im öffentlichen Sektor eingesetzt wird.
+- Erweiterte Befugnisse und Ressourcen für die Datenschutzbehörde zur Untersuchung von KI-Systemen.
+- Eine Sorgfaltspflicht für Plattformbetreiber, die algorithmische Verstärkung offenkundig schädlicher Inhalte zu verhindern.
+
+Diese Maßnahmen schützen österreichische Werte, ohne Innovation einzufrieren. Vielen Dank, dass Sie sie in Erwägung ziehen.
+
+Mit freundlichen Grüßen`,
+
+                    `Sehr geehrte Abgeordnete, sehr geehrter Abgeordneter,
+
+die österreichische Regulierungstradition hat stets darauf bestanden, dass mächtige Systeme gegenüber den Menschen rechenschaftspflichtig sind, die sie betreffen. Banken unterstehen der Finanzmarktaufsicht. Ärzte unterstehen der Ärztekammer. Unternehmen unterstehen der Bundeswettbewerbsbehörde. Nichts davon geschah zufällig. Es war das Ergebnis bewusster politischer Entscheidungen, dass mächtige Akteure das öffentliche Vertrauen nicht untergraben dürfen.
+
+KI-Systeme sind nun so folgenreich wie jeder dieser Bereiche. Sie treffen Entscheidungen über Kredite, Beschäftigung, Inhalte und zunehmend über öffentliche Dienste. Ihnen fehlt eine vergleichbare Rechenschaft. Das sollte nicht bestehen bleiben.
+
+Ich bitte Sie, die österreichische Regulierungstradition auf KI anzuwenden. Gesetzgebung zu algorithmischer Rechenschaft, eine kompetente Aufsichtsbehörde und klare Rechte für Betroffene sind überfällig.
+
+Mit freundlichen Grüßen`,
+
+                    `Sehr geehrte Abgeordnete, sehr geehrter Abgeordneter,
+
+ich habe gesehen, wie Empfehlungsalgorithmen das Online-Leben meiner Kinder auf eine Weise prägen, der ich nicht zugestimmt habe und die ich nicht leicht rückgängig machen kann. Ich habe Freunde erlebt, die von undurchsichtigen algorithmischen Entscheidungen über Versicherungen und Leistungen betroffen waren, ohne klaren Weg zum Widerspruch. Das ist nicht das Land, in dem meine Kinder aufwachsen sollen.
+
+Diese Probleme sind nicht unausweichlich. Sie sind das Ergebnis davon, Bequemlichkeit über Rechenschaft zu stellen. Andere Länder legiferieren bereits. Österreich kann dasselbe tun, und es gut tun.
+
+Nutzen Sie Ihre Position, um in dieser Gesetzgebungsperiode Gesetzgebung zu algorithmischer Rechenschaft zu unterstützen. Gerne treffe ich Sie oder schreibe ausführlicher, falls es hilfreich wäre.
+
+Mit freundlichen Grüßen`
+                ]
+            }
+        };
+
         // ========== SUBSCRIBE: GOOGLE FORM ==========
         // We post to a Google Form's /formResponse endpoint. Google handles spam,
         // CAPTCHA, and quota; responses land in the linked Google Sheet automatically.
@@ -5371,6 +5792,64 @@ Cordiali saluti`
                 successContactAnother2: 'Contatta un altro decisore',
                 footerControlAI: 'Visita ControlAI',
                 footerAIStatement: 'La dichiarazione sull\'IA'
+            },
+            at: {
+                mainTitle: 'Entscheidungsträger kontaktieren',
+                mainSubtitle: 'Helfen Sie mit, das Bewusstsein für die Gefahren künstlicher Superintelligenz bei denjenigen zu schärfen, die die öffentliche Debatte in Österreich prägen',
+                step0Title: '', // unused for AT; AT uses #stepParty
+                step0Subtitle: '',
+                backToCountry: 'Zurück zur Länderauswahl',
+                step1BackLabel: 'Zurück zur Auswahl',
+                nameLabel: 'Ihr Name',
+                addressLabel: 'Straße und Hausnummer',
+                zipcodeLabel: 'Postleitzahl und Ort',
+                namePlaceholder: 'Geben Sie Ihren Namen ein',
+                addressPlaceholder: 'Beispiel: Hauptstraße 12',
+                zipcodePlaceholder: 'Beispiel: 1010 Wien',
+                continueLabel: 'Weiter',
+                privacyNote: 'Wir werden Sie in Zukunft mit Updates kontaktieren.',
+                optinDesc: 'Eine einzige E-Mail reicht selten aus. Druck wirkt am besten, wenn Entscheidungsträger jedes Mal von Wählern hören, wenn ein neues Ereignis das KI-Risiko in den Vordergrund rückt. Melden Sie sich an, dann hören Sie beim nächsten Mal von uns, mit einer fertigen Nachricht zum Versenden.',
+                optinLabel: 'Ist es in Ordnung, wenn wir Sie kontaktieren, wenn wir das nächste Mal Ihre Hilfe brauchen?',
+                optinEmailPlaceholder: 'ihre@email.at',
+                optinCommentsPlaceholder: 'Kommentare oder Vorschläge zu dieser App (optional)',
+                optinSubmitting: 'Ihre E-Mail-Adresse wird gespeichert...',
+                optinOk: 'Danke! Wir melden uns beim nächsten Mal.',
+                optinErr: 'Speichern fehlgeschlagen. Bitte erneut versuchen oder überspringen.',
+                optinNeedEmail: 'Bitte geben Sie eine E-Mail-Adresse an, um kontaktiert zu werden.',
+                step2BackLabel: 'Zurück',
+                step2Title: 'Wählen Sie ein Thema',
+                step2PickOne: 'Wählen Sie ein Thema',
+                step3BackLabel: 'Zurück',
+                step3Title: 'Vorschau Ihrer Nachricht',
+                step3Subtitle: 'Prüfen Sie den Inhalt vor dem Senden',
+                previewToLabel: 'An:',
+                previewFromLabel: 'Von:',
+                previewSubjectLabel: 'Betreff:',
+                customMessageLabel: 'Fügen Sie eine persönliche Nachricht hinzu (optional)',
+                customMessagePlaceholder: 'Sie können eine persönliche Einleitung oder einen Abschluss hinzufügen...',
+                openGmail: 'In Gmail öffnen',
+                openOutlook: 'In Outlook öffnen',
+                orLabel: 'oder',
+                openDefault: 'Standard-E-Mail-Programm',
+                successTitle: 'Ihre E-Mail ist fertig!',
+                successIntro: (target) => `Ihre E-Mail an <strong id="successTarget">${target}</strong> ist vorbereitet.`,
+                successPickClient: 'Wählen Sie Ihr E-Mail-Programm:',
+                successDefaultClient: 'Standard-E-Mail-Programm',
+                successContactAnother: 'Eine andere Person kontaktieren',
+                instructionsTitle: 'So senden Sie die E-Mail:',
+                instr1Title: 'Öffnen Sie Ihre E-Mail-App',
+                instr1Body: 'Öffnen Sie Gmail, Apple Mail, Outlook oder Ihr bevorzugtes E-Mail-Programm.',
+                instr2Title: 'Kopieren Sie die E-Mail-Adresse',
+                instr2Body: 'Klicken Sie auf die Schaltfläche unten, um die E-Mail-Adresse zu kopieren.',
+                copyAddressBtn: 'Adresse kopieren',
+                instr3Title: 'Kopieren Sie den E-Mail-Inhalt',
+                instr3Body: 'Klicken Sie auf die Schaltfläche unten, um die gesamte E-Mail zu kopieren.',
+                copyEmailBtn: 'E-Mail-Inhalt kopieren',
+                instr4Title: 'Senden Sie die E-Mail',
+                instr4Body: 'Fügen Sie die Adresse und den Inhalt ein und senden Sie!',
+                successContactAnother2: 'Einen anderen Entscheidungsträger kontaktieren',
+                footerControlAI: 'ControlAI besuchen',
+                footerAIStatement: 'Die KI-Erklärung'
             }
         };
 
@@ -5399,6 +5878,7 @@ Cordiali saluti`
             if (currentCountry === 'de') return 'de';
             if (currentCountry === 'fr') return 'fr';
             if (currentCountry === 'it') return 'it';
+            if (currentCountry === 'at') return 'at';
             return 'no';
         }
 
@@ -5425,6 +5905,9 @@ Cordiali saluti`
             if (currentCountry === 'it') {
                 return italianPoliticianTemplates;
             }
+            if (currentCountry === 'at') {
+                return austrianPoliticianTemplates;
+            }
             return currentMode === 'editor' ? editorEmailTemplates : politicianEmailTemplates;
         }
 
@@ -5435,13 +5918,14 @@ Cordiali saluti`
             if (currentCountry === 'de') return topicsDE;
             if (currentCountry === 'fr') return topicsFR;
             if (currentCountry === 'it') return topicsIT;
+            if (currentCountry === 'at') return topicsDE; // Austria reuses the German-language topics
             return topics;
         }
 
-        // Party-based countries (Sweden, Denmark, Germany, France, Italy) share one code path.
+        // Party-based countries (SE, DK, DE, FR, IT, AT) share one code path.
         function isPartyCountry() {
             return currentCountry === 'se' || currentCountry === 'dk' || currentCountry === 'de'
-                || currentCountry === 'fr' || currentCountry === 'it';
+                || currentCountry === 'fr' || currentCountry === 'it' || currentCountry === 'at';
         }
 
         function getParties() {
@@ -5450,6 +5934,7 @@ Cordiali saluti`
             if (currentCountry === 'de') return germanParties;
             if (currentCountry === 'fr') return frenchParties;
             if (currentCountry === 'it') return italianParties;
+            if (currentCountry === 'at') return austrianParties;
             return [];
         }
 
@@ -5459,6 +5944,7 @@ Cordiali saluti`
             if (currentCountry === 'de') return germanPoliticians;
             if (currentCountry === 'fr') return frenchPoliticians;
             if (currentCountry === 'it') return italianPoliticians;
+            if (currentCountry === 'at') return austrianPoliticians;
             return {};
         }
 
@@ -5518,6 +6004,17 @@ Cordiali saluti`
                 step1Subtitle: 'Scegli la deputata o il deputato a cui vuoi scrivere.',
                 step2Subtitle: 'Chiedi un\'azione politica contro i rischi dell\'IA',
                 recommended: 'Consigliato'
+            },
+            at: {
+                back: 'Zurück zur Länderauswahl',
+                title: 'Wen möchten Sie kontaktieren?',
+                subtitle: 'Wählen Sie einen Klub, um Nationalratsabgeordnete zu sehen, denen Sie zu KI-Risiken schreiben können.',
+                pick: 'Klub wählen',
+                mainTitle: 'Nationalratsabgeordnete kontaktieren',
+                step1Title: (party) => `Wählen Sie eine Abgeordnete oder einen Abgeordneten von ${party}`,
+                step1Subtitle: 'Wählen Sie die Nationalratsabgeordnete oder den Nationalratsabgeordneten, dem Sie schreiben möchten.',
+                step2Subtitle: 'Bitten Sie um politisches Handeln gegen KI-Risiken',
+                recommended: 'Empfohlen'
             }
         };
 
@@ -6012,7 +6509,7 @@ Cordiali saluti`
             }
             status.textContent = t.optinSubmitting;
             status.className = 'optin-status';
-            const countryNames = { no: 'Norway', au: 'Australia', se: 'Sweden', dk: 'Denmark', de: 'Germany', fr: 'France', it: 'Italy' };
+            const countryNames = { no: 'Norway', au: 'Australia', se: 'Sweden', dk: 'Denmark', de: 'Germany', fr: 'France', it: 'Italy', at: 'Austria' };
             const countryLabel = countryNames[currentCountry] || '';
             let regionLabel = '';
             if (currentCountry === 'au') {
